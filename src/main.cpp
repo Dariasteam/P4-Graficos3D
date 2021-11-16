@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 
 	initContext(argc, argv);
 	initOGL();
-	initShader("../shaders_P3/shader.v1.vert", "../shaders_P3/shader.v1.frag");
+	initShader("shaders_P3/shader.v1.vert", "shaders_P3/shader.v1.frag");
 	initObj();
 
 	glutMainLoop();
@@ -293,8 +293,8 @@ void initObj()
 		cubeNTriangleIndex * sizeof(unsigned int) * 3, cubeTriangleIndex,
 		GL_STATIC_DRAW);
 
-	colorTexId = loadTex("../img/color2.png");
-	emiTexId = loadTex("../img/emissive.png");
+	colorTexId = loadTex("img/color2.png");
+	emiTexId = loadTex("img/emissive.png");
 
 	model = glm::mat4(1.0f);
 
