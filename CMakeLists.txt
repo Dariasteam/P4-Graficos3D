@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES
     src/auxiliar.cpp
     #src/OGLObject.cpp
+    src/Camera.cpp
     src/main.cpp
 )
 
@@ -25,7 +26,7 @@ add_definitions ("-std=c++1z")
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(ASSIMP REQUIRED)
+find_package(assimp REQUIRED)
 
 include_directories( ${OPENGL_INCLUDE_DIRS}
                      ${GLUT_INCLUDE_DIRS}
@@ -41,5 +42,6 @@ target_link_libraries(p3 ${OPENGL_LIBRARIES}
                          ${GLEW_LIBRARIES}
                          ${FREEIMAGE_INCLUDE_DIRS}
                          ${ASSIMP_LIBRARIES}
-                         "-lfreeimage") #Un poco chapuza pero no me quería complicar
+                         "-lfreeimage"
+                         "-lglut") #Un poco chapuza pero no me quería complicar
 

@@ -1,4 +1,5 @@
 #include "BOX.h"
+#include "Camera.h"
 #include "auxiliar.h"
 
 
@@ -18,11 +19,12 @@
 //////////////////////////////////////////////////////////////
 
 //Matrices
-glm::mat4	proj = glm::mat4(1.0f);
-glm::mat4	view = glm::mat4(1.0f);
+//glm::mat4	proj = glm::mat4(1.0f);
+//glm::mat4	view = glm::mat4(1.0f);
 glm::mat4	model = glm::mat4(1.0f);
 int w, h;
 
+AbstractCameraHandler* camera = new FPSCameraHandler;
 
 //////////////////////////////////////////////////////////////
 // Variables que nos dan acceso a Objetos OpenGL
@@ -126,7 +128,7 @@ int main(int argc, char** argv)
 
 	initContext(argc, argv);
 	initOGL();
-	initShader("shaders_P3/shader.v1.vert", "shaders_P3/shader.v1.frag");
+	initShader("shaders_P3/shader.v0.vert", "shaders_P3/shader.v0.frag");
 	initObj();
 
 	glutMainLoop();
@@ -165,7 +167,7 @@ void initContext(int argc, char** argv)
 	glutDisplayFunc(renderFunc);
 	glutIdleFunc(idleFunc);
 	glutKeyboardFunc(keyboardFunc);
-	glutMouseFunc(mouseFunc);
+	//glutMotionFunc(mouseMotionFunc);
 }
 
 void initOGL()
@@ -176,10 +178,6 @@ void initOGL()
 	glFrontFace(GL_CCW);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_CULL_FACE);
-
-	proj = glm::perspective(glm::radians(60.0f), 1.0f, 0.1f, 50.0f);
-	view = glm::mat4(1.0f);
-	view[3].z = -6;
 }
 
 void destroy()
@@ -306,7 +304,7 @@ GLuint loadShader(const char *fileName, GLenum type)
 	char* source = loadStringFromFile(fileName, fileLen);
 
 	//////////////////////////////////////////////
-	//Creaci�n y compilaci�n del Shader
+	//Creación y compilación del Shader
 	GLuint shader;
 	shader = glCreateShader(type);
 	glShaderSource(shader, 1,
@@ -340,8 +338,10 @@ void renderFunc()
 
 	glUseProgram(program);
 
-	//glViewport(0, 0, w/2, h);
 	glViewport(0, 0, w, h);
+
+	const auto view = camera->get_view_matrix();
+	const auto proj = camera->get_projection_matrix();
 
 	glm::mat4 modelView = view * model;
 	glm::mat4 modelViewProj = proj * modelView;
@@ -373,35 +373,13 @@ void renderFunc()
 	glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
 		GL_UNSIGNED_INT, (void*)0);
 
-	/**glViewport(w / 2, 0, w / 2, h);
-	//Subir uniforms
-	//Render calls
-	glm::mat4 v = view;
-	v[3].x += 0.1f;
-	modelView = v * model;
-	modelViewProj = proj * modelView;
-	normal = glm::transpose(glm::inverse(modelView));
-
-	if (uModelViewMat != -1)
-		glUniformMatrix4fv(uModelViewMat, 1, GL_FALSE,
-			&(modelView[0][0]));
-	if (uModelViewProjMat != -1)
-		glUniformMatrix4fv(uModelViewProjMat, 1, GL_FALSE,
-			&(modelViewProj[0][0]));
-	if (uNormalMat != -1)
-		glUniformMatrix4fv(uNormalMat, 1, GL_FALSE,
-			&(normal[0][0]));
-
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
-		GL_UNSIGNED_INT, (void*)0);*/
-
 	glutSwapBuffers();
 }
 
 void resizeFunc(int width, int height)
 {
-	//glViewport(0, 0, width, height);
+	camera->update_aspect_ratio(width, height);
+
 	w = width; h = height;
 
 	glutPostRedisplay();
@@ -417,12 +395,18 @@ void idleFunc()
 
 	glutPostRedisplay();
 }
-void keyboardFunc(unsigned char key, int x, int y){}
-void mouseFunc(int button, int state, int x, int y){}
 
+void keyboardFunc(unsigned char key, int x, int y) {
+	camera->handle_keys(key);
+}
 
+void mouseFunc(int button, int state, int x, int y) {
+	camera->handle_mouse_buttons(button, state, x, y);
+}
 
-
+void mouseMotionFunc(int x, int y) {
+	camera->handle_mouse_motion(x, y);
+}
 
 
 
