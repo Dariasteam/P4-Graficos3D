@@ -1,8 +1,6 @@
 #ifndef _ASSIMP_MANAGER_H_
 #define _ASSIMP_MANAGER_H_
 
-#include "IGlib.h"
-
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
@@ -121,6 +119,7 @@ public:
 				auxMeshFacesIndex[j * 3 + 2] = auxFace.mIndices[2];
 			}
 
+			/*
 			return IGlib::createObj(n_faces,
 															n_vertices,
 															auxMeshFacesIndex,
@@ -129,6 +128,7 @@ public:
 															auxMeshNormals,
 															auxMeshTexCoords,
 															auxMeshTangents);
+			*/
 		}
 
 		return true;

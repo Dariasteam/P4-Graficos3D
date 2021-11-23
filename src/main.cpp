@@ -1,5 +1,6 @@
 #include "BOX.h"
 #include "Camera.h"
+#include "Spatial.h"
 #include "auxiliar.h"
 
 
@@ -12,19 +13,151 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
+#include <vector>
 
+class OpenGLManager {
+public:
+	// We use this to preallocate all possible objects of the scene
+	unsigned vao;
+
+	unsigned posVBO;
+	unsigned colorVBO;
+	unsigned normalVBO;
+	unsigned texCoordVBO;
+	unsigned triangleIndexVBO;
+
+	int inPos;
+	int inColor;
+	int inNormal;
+	int inTexCoord;
+
+	// Identificadores de texturas opengl
+	int colorTexId;
+	int emiTexId;
+
+	int load_textures() {
+		colorTexId = loadTex("img/color2.png");
+		emiTexId = loadTex("img/emissive.png");
+	}
+
+	//Crea una textura, la configura, la sube a OpenGL,
+	//y devuelve el identificador de la textura
+	unsigned int loadTex(const char* fileName) {
+		unsigned char* map;
+		unsigned int w, h;
+		map = loadTexture(fileName, w, h);
+		if (!map)
+		{
+			std::cout << "Error cargando el fichero: "
+				<< fileName << std::endl;
+			exit(-1);
+		}
+
+		unsigned int texId;
+		glGenTextures(1, &texId);
+		glBindTexture(GL_TEXTURE_2D, texId);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA,
+			GL_UNSIGNED_BYTE, (GLvoid*)map);
+
+		delete[] map;
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+			GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+		return texId;
+	}
+
+	int instantiateMesh(const unsigned n_vertices,
+											const unsigned n_faces,
+											const unsigned* faceIndices,
+											const float* vertexCoord,
+											const float* vertexColors,
+											const float* normals,
+											const float* texCoords,
+											const float* tangents) {
+
+		glGenBuffers(1, &posVBO);
+		glGenBuffers(1, &colorVBO);
+		glGenBuffers(1, &normalVBO);
+		glGenBuffers(1, &texCoordVBO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
+		glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 2,
+								 texCoords, GL_STATIC_DRAW);
+
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		glBindBuffer(GL_ARRAY_BUFFER, posVBO);
+		glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3,
+								 NULL, GL_STATIC_DRAW);
+
+		glBufferSubData(GL_ARRAY_BUFFER, 0, n_vertices * sizeof(float) * 3,
+										vertexCoord);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		if (inPos != -1)
+			glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+		glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3,
+								 vertexColors, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		if (inColor != -1)
+			glEnableVertexAttribArray(1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+		glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3,
+								 normals, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		if (inNormal != -1)
+			glEnableVertexAttribArray(inNormal);
+
+
+		glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		if (inTexCoord != -1)
+			glEnableVertexAttribArray(3);
+
+		glGenBuffers(1, &triangleIndexVBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			n_faces * sizeof(unsigned int) * 3, faceIndices,
+			GL_STATIC_DRAW);
+	}
+
+	~OpenGLManager() {
+		glDeleteBuffers(1, &posVBO);
+		glDeleteBuffers(1, &colorVBO);
+		glDeleteBuffers(1, &normalVBO);
+		glDeleteBuffers(1, &texCoordVBO);
+		glDeleteBuffers(1, &triangleIndexVBO);
+		glDeleteVertexArrays(1, &vao);
+	}
+};
+
+OpenGLManager opengl_manager;
 
 //////////////////////////////////////////////////////////////
 // Datos que se almacenan en la memoria de la CPU
 //////////////////////////////////////////////////////////////
 
 //Matrices
-//glm::mat4	proj = glm::mat4(1.0f);
-//glm::mat4	view = glm::mat4(1.0f);
 glm::mat4	model = glm::mat4(1.0f);
 int w, h;
 
 AbstractCameraHandler* camera = new FPSCameraHandler;
+std::vector<Spatial*> scene_objects;
 
 //////////////////////////////////////////////////////////////
 // Variables que nos dan acceso a Objetos OpenGL
@@ -43,7 +176,7 @@ int uNormalMat;
 int uColorTex; // Identificadores de variables del shader (puerto del texture unit)
 int uEmiTex;
 
-
+/*
 //Atributos
 int inPos;
 int inColor;
@@ -58,10 +191,10 @@ unsigned int normalVBO;
 unsigned int texCoordVBO;
 unsigned int triangleIndexVBO;
 
+*/
 //Textures identificadro de la textura en si
 unsigned int colorTexId;
 unsigned int emiTexId;
-
 
 //////////////////////////////////////////////////////////////
 // Funciones auxiliares
@@ -87,40 +220,6 @@ void destroy();
 //!Por implementar
 GLuint loadShader(const char *fileName, GLenum type);
 
-//Crea una textura, la configura, la sube a OpenGL,
-//y devuelve el identificador de la textura
-//!!Por implementar
-unsigned int loadTex(const char* fileName) {
-	unsigned char* map;
-	unsigned int w, h;
-	map = loadTexture(fileName, w, h);
-	if (!map)
-	{
-		std::cout << "Error cargando el fichero: "
-			<< fileName << std::endl;
-		exit(-1);
-	}
-
-	unsigned int texId;
-	glGenTextures(1, &texId);
-	glBindTexture(GL_TEXTURE_2D, texId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA,
-		GL_UNSIGNED_BYTE, (GLvoid*)map);
-
-	delete[] map;
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-		GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-
-	return texId;
-
-}
-
 
 int main(int argc, char** argv)
 {
@@ -129,7 +228,14 @@ int main(int argc, char** argv)
 	initContext(argc, argv);
 	initOGL();
 	initShader("shaders_P3/shader.v0.vert", "shaders_P3/shader.v0.frag");
-	initObj();
+	opengl_manager.instantiateMesh(cubeNVertex,
+																 cubeNTriangleIndex,
+																 cubeTriangleIndex,
+																 cubeVertexPos,
+																 cubeVertexColor,
+																 cubeVertexNormal,
+																 cubeVertexTexCoord,
+																 cubeVertexTangent);
 
 	glutMainLoop();
 
@@ -150,7 +256,7 @@ void initContext(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(0, 0);
-	glutCreateWindow("Pr�cticas OGL");
+	glutCreateWindow("Prácticas OGL");
 
 
 	glewExperimental = GL_TRUE;
@@ -187,13 +293,6 @@ void destroy()
 	glDeleteShader(vshader);
 	glDeleteShader(fshader);
 	glDeleteProgram(program);
-	glDeleteBuffers(1, &posVBO);
-	glDeleteBuffers(1, &colorVBO);
-	glDeleteBuffers(1, &normalVBO);
-	glDeleteBuffers(1, &texCoordVBO);
-	glDeleteBuffers(1, &triangleIndexVBO);
-	glDeleteVertexArrays(1, &vao);
-
 }
 
 void initShader(const char *vname, const char *fname)
@@ -227,10 +326,10 @@ void initShader(const char *vname, const char *fname)
 	uModelViewMat = glGetUniformLocation(program, "modelView");
 	uModelViewProjMat = glGetUniformLocation(program, "modelViewProj");
 
-	inPos = glGetAttribLocation(program, "inPos");
-	inColor = glGetAttribLocation(program, "inColor");
-	inNormal = glGetAttribLocation(program, "inNormal");
-	inTexCoord = glGetAttribLocation(program, "inTexCoord");
+	opengl_manager.inPos = glGetAttribLocation(program, "inPos");
+	opengl_manager.inColor = glGetAttribLocation(program, "inColor");
+	opengl_manager.inNormal = glGetAttribLocation(program, "inNormal");
+	opengl_manager.inTexCoord = glGetAttribLocation(program, "inTexCoord");
 
 	glUseProgram(program);
 
@@ -238,65 +337,6 @@ void initShader(const char *vname, const char *fname)
 	if (uEmiTex != -1) glUniform1i(uEmiTex, 1);
 }
 
-
-void initObj()
-{
-	glGenBuffers(1, &posVBO);
-	glGenBuffers(1, &colorVBO);
-	glGenBuffers(1, &normalVBO);
-	glGenBuffers(1, &texCoordVBO);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-	glBufferData(GL_ARRAY_BUFFER, cubeNVertex * sizeof(float) * 2,
-		cubeVertexTexCoord, GL_STATIC_DRAW);
-
-
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-	glBufferData(GL_ARRAY_BUFFER, cubeNVertex * sizeof(float) * 3,
-		NULL, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, cubeNVertex * sizeof(float) * 3,
-		cubeVertexPos);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	if (inPos != -1)
-		glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
-	glBufferData(GL_ARRAY_BUFFER, cubeNVertex * sizeof(float) * 3,
-		cubeVertexColor, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	if (inColor != -1)
-		glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-	glBufferData(GL_ARRAY_BUFFER, cubeNVertex * sizeof(float) * 3,
-		cubeVertexNormal, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	if (inNormal != -1)
-		glEnableVertexAttribArray(inNormal);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	if (inTexCoord != -1)
-		glEnableVertexAttribArray(3);
-
-	glGenBuffers(1, &triangleIndexVBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		cubeNTriangleIndex * sizeof(unsigned int) * 3, cubeTriangleIndex,
-		GL_STATIC_DRAW);
-
-	colorTexId = loadTex("img/color2.png");
-	emiTexId = loadTex("img/emissive.png");
-
-	model = glm::mat4(1.0f);
-
-}
 
 GLuint loadShader(const char *fileName, GLenum type)
 {
@@ -330,10 +370,7 @@ GLuint loadShader(const char *fileName, GLenum type)
 	return shader;
 }
 
-unsigned int loadTex(const char* fileName);
-
-void renderFunc()
-{
+void renderFunc() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(program);
@@ -348,28 +385,24 @@ void renderFunc()
 	glm::mat4 normal = glm::transpose(glm::inverse(modelView));
 
 	if (uModelViewMat != -1)
-		glUniformMatrix4fv(uModelViewMat, 1, GL_FALSE,
-			&(modelView[0][0]));
+		glUniformMatrix4fv(uModelViewMat, 1, GL_FALSE, &(modelView[0][0]));
 	if (uModelViewProjMat != -1)
-		glUniformMatrix4fv(uModelViewProjMat, 1, GL_FALSE,
-			&(modelViewProj[0][0]));
+		glUniformMatrix4fv(uModelViewProjMat, 1, GL_FALSE, &(modelViewProj[0][0]));
 	if (uNormalMat != -1)
-		glUniformMatrix4fv(uNormalMat, 1, GL_FALSE,
-			&(normal[0][0]));
+		glUniformMatrix4fv(uNormalMat, 1, GL_FALSE, &(normal[0][0]));
 
 	//Texturas
-	if (uColorTex != -1)
-	{
+	if (uColorTex != -1) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, colorTexId);
 	}
-	if (uEmiTex != -1)
-	{
+
+	if (uEmiTex != -1) {
 		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, emiTexId);
 	}
 
-	glBindVertexArray(vao);
+	glBindVertexArray(opengl_manager.vao);
 	glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
 		GL_UNSIGNED_INT, (void*)0);
 
@@ -379,20 +412,16 @@ void renderFunc()
 void resizeFunc(int width, int height)
 {
 	camera->update_aspect_ratio(width, height);
-
 	w = width; h = height;
-
 	glutPostRedisplay();
-
 }
 
-void idleFunc()
-{
-	model = glm::mat4(1.0f);
-	static float angle = 0.0f;
-	angle = (angle > 3.141592f * 2.0f) ? 0 : angle + 0.01f;
-	model = glm::rotate(model, angle, glm::vec3(1.0f, 1.0f, 0.0f));
-
+float dummy_time = 0;
+void idleFunc() {
+	for (auto object : scene_objects) {
+		object->update(dummy_time);
+	}
+	dummy_time += 1;
 	glutPostRedisplay();
 }
 
@@ -407,8 +436,3 @@ void mouseFunc(int button, int state, int x, int y) {
 void mouseMotionFunc(int x, int y) {
 	camera->handle_mouse_motion(x, y);
 }
-
-
-
-
-
