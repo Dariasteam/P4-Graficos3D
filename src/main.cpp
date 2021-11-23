@@ -34,10 +34,11 @@ unsigned int fshader;
 unsigned int program;
 
 //Variables Uniform
+/*
 int uModelViewMat;
 int uModelViewProjMat;
 int uNormalMat;
-
+*/
 
 //Texturas Uniform
 int uColorTex; // Identificadores de variables del shader (puerto del texture unit)
@@ -74,11 +75,12 @@ void resizeFunc(int width, int height);
 void idleFunc();
 void keyboardFunc(unsigned char key, int x, int y);
 void mouseFunc(int button, int state, int x, int y);
+void mouseMotionFunc (int, int);
 
 //Funciones de inicializaci�n y destrucci�n
 void initContext(int argc, char** argv);
 void initOGL();
-void initShader(const char *vname, const char *fname);
+void initShader(const std::string& vname, const std::string& fname);
 void initObj();
 void destroy();
 
@@ -93,7 +95,8 @@ int main(int argc, char** argv) {
 
 	initContext(argc, argv);
 	initOGL();
-	initShader("shaders_P3/shader.v0.vert", "shaders_P3/shader.v0.frag");
+	initShader("shaders_P3/shader.v0.vert",
+						 "shaders_P3/shader.v0.frag");
 
 	Mesh* cubemesh1 = new Mesh;
 	Mesh* cubemesh2 = new Mesh;
@@ -112,6 +115,8 @@ int main(int argc, char** argv) {
 																 cubeVertexNormal,
 																 cubeVertexTexCoord,
 																 cubeVertexTangent);
+
+	opengl_manager.set_mesh_per_program(0, 0);
 
 	glutMainLoop();
 	destroy();
@@ -147,7 +152,7 @@ void initContext(int argc, char** argv)
 	glutDisplayFunc(renderFunc);
 	glutIdleFunc(idleFunc);
 	glutKeyboardFunc(keyboardFunc);
-	//glutMotionFunc(mouseMotionFunc);
+	glutMotionFunc(mouseMotionFunc);
 }
 
 void initOGL()
@@ -169,8 +174,9 @@ void destroy()
 	glDeleteProgram(program);
 }
 
-void initShader(const char *vname, const char *fname)
+void initShader(const std::string& vname, const std::string& fname)
 {
+	/*
 	vshader = loadShader(vname, GL_VERTEX_SHADER);
 	fshader = loadShader(fname, GL_FRAGMENT_SHADER);
 
@@ -204,45 +210,32 @@ void initShader(const char *vname, const char *fname)
 	opengl_manager.inColor = glGetAttribLocation(program, "inColor");
 	opengl_manager.inNormal = glGetAttribLocation(program, "inNormal");
 	opengl_manager.inTexCoord = glGetAttribLocation(program, "inTexCoord");
+	*/
 
-	glUseProgram(program);
+	std::vector<std::string> uniforms {
+		"normal",
+		"modelView",
+		"modelViewProj"
+	};
+
+	std::vector<std::string> attributes {
+		"inPos",
+		"inColor",
+		"inNormal",
+		"inTexCoord",
+	};
+
+	if (!opengl_manager.load_vertex_shader(vname)) exit(-1);
+	if (!opengl_manager.load_fragment_shader(fname)) exit(-1);
+	if (!opengl_manager.create_program(0, 0, uniforms, attributes)) exit(-1);
+
+//	glUseProgram(opengl_manager.programs[0].id);
 
 	if (uColorTex != -1) glUniform1i(uColorTex, 0);
 	if (uEmiTex != -1) glUniform1i(uEmiTex, 1);
 }
 
 
-GLuint loadShader(const char *fileName, GLenum type)
-{
-	unsigned int fileLen;
-	char* source = loadStringFromFile(fileName, fileLen);
-
-	//////////////////////////////////////////////
-	//Creación y compilación del Shader
-	GLuint shader;
-	shader = glCreateShader(type);
-	glShaderSource(shader, 1,
-		(const GLchar**)&source, (const GLint*)&fileLen);
-	glCompileShader(shader);
-	delete[] source;
-
-	GLint compiled;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
-	if (!compiled)
-	{
-		//Calculamos una cadena de error
-		GLint logLen;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
-		char* logString = new char[logLen];
-		glGetShaderInfoLog(shader, logLen, NULL, logString);
-		std::cout << "Error: " << logString << std::endl;
-		delete[] logString;
-		glDeleteShader(shader);
-		exit(-1);
-	}
-
-	return shader;
-}
 
 void renderFunc() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -266,26 +259,29 @@ void renderFunc() {
 	const auto view = camera->get_view_matrix();
 	const auto proj = camera->get_projection_matrix();
 
-	for (const auto obj : scene_objects) {
-		const auto model = obj->get_model_matrix();
+	for (auto program : opengl_manager.programs) {
+		glUseProgram(program.id);
 
-		glm::mat4 modelView = view * model;
-		glm::mat4 modelViewProj = proj * modelView;
-		glm::mat4 normal = glm::transpose(glm::inverse(modelView));
+		for (const unsigned obj_id : program.asociated_meshes) {
+			Spatial& object = *scene_objects[obj_id];
+			const auto model = object.get_model_matrix();
 
-		if (uModelViewMat != -1)
-			glUniformMatrix4fv(uModelViewMat, 1, GL_FALSE, &(modelView[0][0]));
-		if (uModelViewProjMat != -1)
-			glUniformMatrix4fv(uModelViewProjMat, 1, GL_FALSE, &(modelViewProj[0][0]));
-		if (uNormalMat != -1)
-			glUniformMatrix4fv(uNormalMat, 1, GL_FALSE, &(normal[0][0]));
+			glm::mat4 modelView = view * model;
+			glm::mat4 modelViewProj = proj * modelView;
+			glm::mat4 normal = glm::transpose(glm::inverse(modelView));
 
+			if (program.uniforms["modelView"] != -1)
+				glUniformMatrix4fv(program.uniforms["modelView"], 1, GL_FALSE, &(modelView[0][0]));
+			if (program.uniforms["modelViewProj"] != -1)
+				glUniformMatrix4fv(program.uniforms["modelViewProj"], 1, GL_FALSE, &(modelViewProj[0][0]));
+			if (program.uniforms["normal"] != -1)
+				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
 
-		glBindVertexArray(opengl_manager.vao);
-		glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
-		GL_UNSIGNED_INT, (void*)0);
+			glBindVertexArray(opengl_manager.vao);
+			glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
+								   	 GL_UNSIGNED_INT, (void*)0);
+		}
 	}
-
 
 	glutSwapBuffers();
 }

@@ -19,6 +19,8 @@ struct Spatial {
 protected:
 	glm::vec3 _translation {0, 0, 0};
 	glm::vec3 _rotation_angle {0, 0, 0};
+	glm::vec3 _scale {0, 0, 0};
+
 	glm::mat4 _local_transform = glm::mat4(1.0f);; // Transform / View
 
 	glm::mat4 prev_transform = _local_transform;

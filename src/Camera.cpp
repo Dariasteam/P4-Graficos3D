@@ -11,9 +11,6 @@ void AbstractCameraHandler::update_projection(double a) {
 	proj[2].z = (f + n) / (n - f);
 	proj[2].w = -1.0f;
 	proj[3].z = 2.0f * n * f / (n - f);
-
-  // FIXME
-  //IGlib::setProjMat(proj);
 }
 
 void AbstractCameraHandler::update_aspect_ratio(int width, int height) {
