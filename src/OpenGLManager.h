@@ -1,6 +1,7 @@
 #ifndef _OPENGL_MANAGER_H_
 #define _OPENGL_MANAGER_H_
 
+#include "Spatial.h"
 #include "auxiliar.h"
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -19,7 +20,7 @@ struct Program {
 	std::map<std::string, int> uniforms;
 	std::map<std::string, int> attributes;
 
-	std::unordered_set<unsigned> asociated_meshes;
+	std::unordered_set<Mesh*> asociated_meshes;
 };
 
 
@@ -65,7 +66,7 @@ public:
 											 const std::vector<std::string>& attributes_names,
 											 int pos = -1);
 
-	bool set_mesh_per_program (const unsigned meshId, const unsigned programId);
+	bool set_mesh_per_program (const unsigned programId, Mesh* mesh);
 
 	int load_textures();
 

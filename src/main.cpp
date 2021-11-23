@@ -95,17 +95,27 @@ int main(int argc, char** argv) {
 
 	initContext(argc, argv);
 	initOGL();
+	/*
 	initShader("shaders_P3/shader.v0.vert",
 						 "shaders_P3/shader.v0.frag");
 
-	Mesh* cubemesh1 = new Mesh;
-	Mesh* cubemesh2 = new Mesh;
+	*/
+	std::vector<std::string> uniforms {
+		"normal",
+		"modelView",
+		"modelViewProj"
+	};
 
-	cubemesh2->translation().x = -2;
-	cubemesh2->translation().y = 2;
+	std::vector<std::string> attributes {
+		"inPos",
+		"inColor",
+		"inNormal",
+		"inTexCoord",
+	};
 
-	scene_objects.push_back(cubemesh1);
-	scene_objects.push_back(cubemesh2);
+	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert")) exit(-1);
+	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag")) exit(-1);
+	if (!opengl_manager.create_program(0, 0, uniforms, attributes)) exit(-1);
 
 	opengl_manager.instantiateMesh(cubeNVertex,
 																 cubeNTriangleIndex,
@@ -116,7 +126,20 @@ int main(int argc, char** argv) {
 																 cubeVertexTexCoord,
 																 cubeVertexTangent);
 
-	opengl_manager.set_mesh_per_program(0, 0);
+	Mesh* cubemesh1 = new Mesh;
+	Mesh* cubemesh2 = new Mesh;
+
+	cubemesh2->translation().x = -2;
+	cubemesh2->translation().y = 2;
+
+	cubemesh1->set_obj_id(0);
+	cubemesh2->set_obj_id(0);
+
+	scene_objects.push_back(cubemesh1);
+	scene_objects.push_back(cubemesh2);
+
+	opengl_manager.set_mesh_per_program(0, cubemesh1);
+	opengl_manager.set_mesh_per_program(0, cubemesh2);
 
 	glutMainLoop();
 	destroy();
@@ -248,11 +271,15 @@ void renderFunc() {
 	if (uColorTex != -1) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, colorTexId);
+	} else {
+		std::cout << "ERROR cargando textura 1\n";
 	}
 
 	if (uEmiTex != -1) {
 		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, emiTexId);
+	} else {
+		std::cout << "ERROR cargando textura 2\n";
 	}
 
 	// Meshes
@@ -262,9 +289,8 @@ void renderFunc() {
 	for (auto program : opengl_manager.programs) {
 		glUseProgram(program.id);
 
-		for (const unsigned obj_id : program.asociated_meshes) {
-			Spatial& object = *scene_objects[obj_id];
-			const auto model = object.get_model_matrix();
+		for (Mesh* mesh : program.asociated_meshes) {
+			const auto model = mesh->get_model_matrix();
 
 			glm::mat4 modelView = view * model;
 			glm::mat4 modelViewProj = proj * modelView;

@@ -170,12 +170,12 @@ bool OpenGLManager::create_program(unsigned V,
   return true;
 }
 
-bool OpenGLManager::set_mesh_per_program (const unsigned meshId,
-                                          const unsigned programId) {
+bool OpenGLManager::set_mesh_per_program (const unsigned programId,
+                                          Mesh* mesh) {
   // FIXME: Runtime checks
   if (programId > programs.size() - 1) return false;
 
-  programs[programId].asociated_meshes.insert(meshId);
+  programs[programId].asociated_meshes.insert(mesh);
   return true;
 }
 

@@ -50,9 +50,11 @@ public:
 struct Mesh : public Spatial {
 protected:
 	int obj_id = -1;
-	int get_obj_id () { return obj_id; }
 
 public:
+	int get_obj_id () { return obj_id; }
+	void set_obj_id (int id) { obj_id = id; }
+
   glm::mat4 get_model_matrix () {
     glm::mat4 t = glm::translate(_local_transform, _translation);
     glm::mat4 r_x = glm::rotate(_local_transform, _rotation_angle.x, glm::vec3{1, 0, 0});
