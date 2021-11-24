@@ -1,13 +1,21 @@
 #include "OpenGLManager.h"
 #include <vector>
 
+// Guarantees that both texture id and uniform Id are created
 bool OpenGLManager::load_texture(const std::string& path,
                                  const std::string& name) {
   int tmp_tex_id = loadTex(path.c_str());
 
   if (tmp_tex_id == -1) return false;
 
+  unsigned tmp_u_tex;
+  glUniform1i(tmp_u_tex, tmp_tex_id);
+
+  if (tmp_u_tex == -1) return false;
+
   texture_ids[name] = tmp_tex_id;
+  texture_unit_handler[name] = tmp_u_tex;
+
   return true;
 }
 

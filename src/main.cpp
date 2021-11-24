@@ -43,9 +43,11 @@ int uModelViewProjMat;
 int uNormalMat;
 */
 
+/*
 //Texturas Uniform
 int uColorTex; // Identificadores de variables del shader (puerto del texture unit)
 int uEmiTex;
+*/
 
 /*
 //Atributos
@@ -88,7 +90,6 @@ void initOGL();
 void initShader(const std::string& vname, const std::string& fname);
 void initObj();
 void destroy();
-
 
 int main(int argc, char** argv) {
 	std::locale::global(std::locale("es_ES.UTF-8")); // acentos ;)
@@ -178,9 +179,6 @@ int main(int argc, char** argv) {
 	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh2);
 	opengl_manager.set_mesh_per_program(it->second.id, cubemesh3);
 
-	glUniform1i(uColorTex, opengl_manager.texture_ids["colorTex"]);
-	glUniform1i(uEmiTex, opengl_manager.texture_ids["emiTex"]);
-
 	glutMainLoop();
 	destroy();
 
@@ -238,14 +236,14 @@ void renderFunc() {
 	glViewport(0, 0, w, h);
 
 	//Texturas
-	if (uColorTex != -1) {
+	if (opengl_manager.texture_ids.find("colorTex") != opengl_manager.texture_ids.end()) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["colorTex"]);
 	} else {
 		std::cout << "ERROR cargando textura 1\n";
 	}
 
-	if (uEmiTex != -1) {
+	if (opengl_manager.texture_ids.find("emiTex") != opengl_manager.texture_ids.end()) {
 		glActiveTexture(GL_TEXTURE0 + 1);
 		glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["emiTex"]);
 	} else {
