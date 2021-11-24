@@ -39,6 +39,10 @@ public:
 
 	// linked shaders
 	std::map<unsigned, Program> programs;
+
+	std::map<std::string, unsigned> texture_unit_handler; // TU ids for shaders
+	std::map<std::string, unsigned> texture_ids;				  // Texture identifiers
+
 	std::vector<unsigned> vertex_shaders;
 	std::vector<unsigned> fragment_shaders;
 
@@ -66,7 +70,8 @@ public:
 
 	bool set_mesh_per_program (const unsigned programId, MeshInstance* mesh);
 
-	int load_textures();
+	bool load_texture(const std::string& path,
+										const std::string& name);
 
 	//Crea una textura, la configura, la sube a OpenGL,
 	//y devuelve el identificador de la textura
@@ -82,8 +87,7 @@ public:
 											const float* tangents,
 											Program& program);
 
-	int boundProgramToMesh (const unsigned meshId,
-													Program& program);
+	int boundProgramParameters (Program& program);
 
 	~OpenGLManager() {
 		destroy ();

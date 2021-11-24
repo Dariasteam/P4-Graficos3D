@@ -64,8 +64,10 @@ unsigned int triangleIndexVBO;
 
 */
 //Textures identificadro de la textura en si
+/*
 unsigned int colorTexId;
 unsigned int emiTexId;
+*/
 
 //////////////////////////////////////////////////////////////
 // Funciones auxiliares
@@ -88,17 +90,14 @@ void initObj();
 void destroy();
 
 
-//Carga el shader indicado, devuele el ID del shader
-//!Por implementar
-GLuint loadShader(const char *fileName, GLenum type);
-
-
 int main(int argc, char** argv) {
 	std::locale::global(std::locale("es_ES.UTF-8")); // acentos ;)
 
 	initContext(argc, argv);
 	initOGL();
-	opengl_manager.load_textures();
+
+	if (!opengl_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
+	if (!opengl_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
 	std::vector<std::string> uniforms {
 		"normal",
@@ -117,7 +116,6 @@ int main(int argc, char** argv) {
 
 	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v1.vert")) exit(-1);
 	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag")) exit(-1);
-
 
 	if (!opengl_manager.create_program(opengl_manager.vertex_shaders[0],
 																		 opengl_manager.fragment_shaders[0],
@@ -149,9 +147,18 @@ int main(int argc, char** argv) {
 																 cubeVertexTangent,
 																 it->second);
 
+	opengl_manager.boundProgramParameters(opengl_manager.programs.begin()->second);
+	opengl_manager.boundProgramParameters(it->second);
+
+
 	MeshInstance* cubemesh1 = new MeshInstance;
 	MeshInstance* cubemesh2 = new MeshInstance;
 	MeshInstance* cubemesh3 = new MeshInstance;
+
+	cubemesh1->update_logic = [](Spatial& self, const float dummy_time) {
+		self.rotation().x = dummy_time / 4;
+		self.rotation().y = dummy_time / 4;
+	};
 
 	cubemesh2->translation().x = -2;
 	cubemesh2->translation().y = 2;
@@ -167,15 +174,12 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	scene_objects.push_back(cubemesh3);
 
-	opengl_manager.boundProgramToMesh(0, opengl_manager.programs.begin()->second);
-	opengl_manager.boundProgramToMesh(0, it->second);
-
 	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh1);
 	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh2);
 	opengl_manager.set_mesh_per_program(it->second.id, cubemesh3);
 
-	glUniform1i(uColorTex, 0);
-	glUniform1i(uEmiTex, 1);
+	glUniform1i(uColorTex, opengl_manager.texture_ids["colorTex"]);
+	glUniform1i(uEmiTex, opengl_manager.texture_ids["emiTex"]);
 
 	glutMainLoop();
 	destroy();
@@ -231,21 +235,19 @@ void destroy() {
 void renderFunc() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glUseProgram(program);
-
 	glViewport(0, 0, w, h);
 
 	//Texturas
 	if (uColorTex != -1) {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, opengl_manager.colorTexId);
+		glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["colorTex"]);
 	} else {
 		std::cout << "ERROR cargando textura 1\n";
 	}
 
 	if (uEmiTex != -1) {
 		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, opengl_manager.emiTexId);
+		glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["emiTex"]);
 	} else {
 		std::cout << "ERROR cargando textura 2\n";
 	}
@@ -296,7 +298,7 @@ void idleFunc() {
 	for (auto object : scene_objects) {
 		object->update(dummy_time);
 	}
-	dummy_time += 1;
+	dummy_time += .1;
 	glutPostRedisplay();
 }
 

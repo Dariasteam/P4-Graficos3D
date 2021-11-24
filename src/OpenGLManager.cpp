@@ -1,9 +1,14 @@
 #include "OpenGLManager.h"
 #include <vector>
 
-int OpenGLManager::load_textures() {
-  colorTexId = loadTex("img/color2.png");
-  emiTexId = loadTex("img/emissive.png");
+bool OpenGLManager::load_texture(const std::string& path,
+                                 const std::string& name) {
+  int tmp_tex_id = loadTex(path.c_str());
+
+  if (tmp_tex_id == -1) return false;
+
+  texture_ids[name] = tmp_tex_id;
+  return true;
 }
 
 unsigned int OpenGLManager::loadTex(const char *fileName) {
@@ -13,7 +18,7 @@ unsigned int OpenGLManager::loadTex(const char *fileName) {
 
   if (!map) {
     std::cout << "Error cargando el fichero: " << fileName << std::endl;
-    exit(-1);
+    return -1;
   }
 
   unsigned int texId;
@@ -36,10 +41,9 @@ unsigned int OpenGLManager::loadTex(const char *fileName) {
 }
 
 
-int OpenGLManager::boundProgramToMesh (const unsigned meshId,
-                                       Program& program) {
+int OpenGLManager::boundProgramParameters (Program& program) {
 
-  // We are using indexes becasue the shaders are using layout / location
+  // We are using indexes because the shaders are using layout / location
 
   if (program.attributes["inPos"] != -1)
     glEnableVertexAttribArray(0);
