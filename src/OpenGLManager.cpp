@@ -35,6 +35,26 @@ unsigned int OpenGLManager::loadTex(const char *fileName) {
   return texId;
 }
 
+
+int OpenGLManager::boundProgramToMesh (const unsigned meshId,
+                                       Program& program) {
+
+  // We are using indexes becasue the shaders are using layout / location
+
+  if (program.attributes["inPos"] != -1)
+    glEnableVertexAttribArray(0);
+
+  if (program.attributes["inColor"] != -1)
+    glEnableVertexAttribArray(1);
+
+  if (program.attributes["inNormal"] != -1)
+    glEnableVertexAttribArray(2);
+
+  if (program.attributes["inTexCoord"] != -1)
+    glEnableVertexAttribArray(3);
+}
+
+
 int OpenGLManager::instantiateMesh(const unsigned n_vertices,
                                    const unsigned n_faces,
                                    const unsigned *faceIndices,
@@ -49,49 +69,35 @@ int OpenGLManager::instantiateMesh(const unsigned n_vertices,
   glGenBuffers(1, &normalVBO);
   glGenBuffers(1, &texCoordVBO);
 
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+
   glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
   glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 2, texCoords,
                GL_STATIC_DRAW);
 
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-
   glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, NULL,
+  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, vertexCoord,
                GL_STATIC_DRAW);
 
-  glBufferSubData(GL_ARRAY_BUFFER, 0, n_vertices * sizeof(float) * 3,
-                  vertexCoord);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  // FIXME: MUY FUERTE
-  if (program.attributes["inPos"] != -1)
-    glEnableVertexAttribArray(0);
-
   glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
   glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, vertexColors,
                GL_STATIC_DRAW);
 
+
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  //if (program.attributes["inColor"] != -1)
-    glEnableVertexAttribArray(1);
-
   glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
   glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, normals,
                GL_STATIC_DRAW);
 
+
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  if (program.attributes["inNormal"] != -1)
-    glEnableVertexAttribArray(program.attributes["inNormal"]);
-
   glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
   glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-  if (program.attributes["inTexCoord"] != -1)
-    glEnableVertexAttribArray(3);
 
   glGenBuffers(1, &triangleIndexVBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);

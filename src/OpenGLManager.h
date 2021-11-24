@@ -82,6 +82,9 @@ public:
 											const float* tangents,
 											Program& program);
 
+	int boundProgramToMesh (const unsigned meshId,
+													Program& program);
+
 	~OpenGLManager() {
 		destroy ();
 	}

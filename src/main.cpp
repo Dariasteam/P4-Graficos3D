@@ -167,6 +167,9 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	scene_objects.push_back(cubemesh3);
 
+	opengl_manager.boundProgramToMesh(0, opengl_manager.programs.begin()->second);
+	opengl_manager.boundProgramToMesh(0, it->second);
+
 	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh1);
 	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh2);
 	opengl_manager.set_mesh_per_program(it->second.id, cubemesh3);
