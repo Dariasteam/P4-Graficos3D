@@ -24,7 +24,7 @@ struct Program {
 	std::map<std::string, int> uniforms;
 	std::map<std::string, int> attributes;
 
-	std::unordered_set<Mesh*> asociated_meshes;
+	std::unordered_set<MeshInstance*> asociated_meshes;
 };
 
 
@@ -64,7 +64,7 @@ public:
 											 const std::vector<std::string>& attributes_names,
 											 int pos = -1);
 
-	bool set_mesh_per_program (const unsigned programId, Mesh* mesh);
+	bool set_mesh_per_program (const unsigned programId, MeshInstance* mesh);
 
 	int load_textures();
 

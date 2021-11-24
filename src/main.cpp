@@ -112,11 +112,22 @@ int main(int argc, char** argv) {
 		"inNormal",
 	};
 
+	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert")) exit(-1);
+	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag")) exit(-1);
+
 	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v1.vert")) exit(-1);
 	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag")) exit(-1);
+
+
 	if (!opengl_manager.create_program(opengl_manager.vertex_shaders[0],
 																		 opengl_manager.fragment_shaders[0],
 																		 uniforms, attributes)) exit(-1);
+
+	if (!opengl_manager.create_program(opengl_manager.vertex_shaders[1],
+																		 opengl_manager.fragment_shaders[1],
+																		 uniforms, attributes)) exit(-1);
+
+	auto it = ++opengl_manager.programs.begin();
 
 	opengl_manager.instantiateMesh(cubeNVertex,
 																 cubeNTriangleIndex,
@@ -128,23 +139,40 @@ int main(int argc, char** argv) {
 																 cubeVertexTangent,
 																 opengl_manager.programs.begin()->second);
 
-	Mesh* cubemesh1 = new Mesh;
-	Mesh* cubemesh2 = new Mesh;
+	opengl_manager.instantiateMesh(cubeNVertex,
+																 cubeNTriangleIndex,
+																 cubeTriangleIndex,
+																 cubeVertexPos,
+																 cubeVertexColor,
+																 cubeVertexNormal,
+																 cubeVertexTexCoord,
+																 cubeVertexTangent,
+																 it->second);
+
+	MeshInstance* cubemesh1 = new MeshInstance;
+	MeshInstance* cubemesh2 = new MeshInstance;
+	MeshInstance* cubemesh3 = new MeshInstance;
 
 	cubemesh2->translation().x = -2;
 	cubemesh2->translation().y = 2;
 
+	cubemesh3->translation().x = 2;
+	cubemesh3->translation().y = -2;
+
 	cubemesh1->set_obj_id(0);
 	cubemesh2->set_obj_id(0);
+	cubemesh3->set_obj_id(1);
 
 	scene_objects.push_back(cubemesh1);
 	scene_objects.push_back(cubemesh2);
+	scene_objects.push_back(cubemesh3);
 
 	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh1);
 	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh2);
+	opengl_manager.set_mesh_per_program(it->second.id, cubemesh3);
 
-	if (uColorTex != -1) glUniform1i(uColorTex, 0);
-	if (uEmiTex != -1) glUniform1i(uEmiTex, 1);
+	glUniform1i(uColorTex, 0);
+	glUniform1i(uEmiTex, 1);
 
 	glutMainLoop();
 	destroy();
@@ -229,7 +257,7 @@ void renderFunc() {
 		Program program = p.second;
 		glUseProgram(program.id);
 
-		for (Mesh* mesh : program.asociated_meshes) {
+		for (MeshInstance* mesh : program.asociated_meshes) {
 			const auto model = mesh->get_model_matrix();
 
 			glm::mat4 modelView = view * model;

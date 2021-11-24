@@ -47,7 +47,7 @@ public:
 	};
 };
 
-struct Mesh : public Spatial {
+struct MeshInstance : public Spatial {
 protected:
 	int obj_id = -1;
 
@@ -74,7 +74,7 @@ public:
 	}
 };
 
-struct CubeMesh : public Mesh {
+struct CubeMesh : public MeshInstance {
 	CubeMesh () {
 		/*
 		obj_id = IGlib::createObj(cubeNTriangleIndex,
@@ -89,7 +89,7 @@ struct CubeMesh : public Mesh {
 	}
 };
 
-struct LoadableMesh : public Mesh {
+struct LoadableMesh : public MeshInstance {
 	int load_mesh (const std::string& filename) {
 		int aux_obj_id = AssimpManager::import_from_file (filename);
 		if (aux_obj_id < 0) {

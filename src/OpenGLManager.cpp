@@ -75,7 +75,7 @@ int OpenGLManager::instantiateMesh(const unsigned n_vertices,
 
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-  if (program.attributes["inColor"] != -1)
+  //if (program.attributes["inColor"] != -1)
     glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
@@ -184,7 +184,7 @@ bool OpenGLManager::create_program(const unsigned V,
 }
 
 bool OpenGLManager::set_mesh_per_program (const unsigned programId,
-                                          Mesh* mesh) {
+                                          MeshInstance* mesh) {
 
   auto it = programs.find(programId);
   if (it == programs.end()) return false;
