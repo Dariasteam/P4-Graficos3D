@@ -5,6 +5,7 @@
 #include "OpenGLManager.h"
 
 #include <GL/glew.h>
+#include <glm/fwd.hpp>
 #define SOLVE_FGLUT_WARNING
 #include <GL/freeglut.h>
 
@@ -123,7 +124,8 @@ int main(int argc, char** argv) {
 																 cubeVertexColor,
 																 cubeVertexNormal,
 																 cubeVertexTexCoord,
-																 cubeVertexTangent);
+																 cubeVertexTangent,
+																 opengl_manager.programs.begin()->second);
 
 	Mesh* cubemesh1 = new Mesh;
 	Mesh* cubemesh2 = new Mesh;
@@ -283,6 +285,8 @@ void renderFunc() {
 	const auto view = camera->get_view_matrix();
 	const auto proj = camera->get_projection_matrix();
 
+	const glm::vec3 aux_v {1, 0, 0};
+
 	for (auto p : opengl_manager.programs) {
 		Program program = p.second;
 		glUseProgram(program.id);
@@ -302,6 +306,7 @@ void renderFunc() {
 				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
 
 			glBindVertexArray(opengl_manager.vao);
+
 			glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
 								   	 GL_UNSIGNED_INT, (void*)0);
 		}

@@ -80,11 +80,15 @@ public:
 
 	unsigned int loadTex(const char *fileName);
 
-	int instantiateMesh(const unsigned n_vertices, const unsigned n_faces,
-											const unsigned *faceIndices,
-											const float *vertexCoord, const float *vertexColors,
-											const float *normals, const float *texCoords,
-											const float *tangents);
+	int instantiateMesh(const unsigned n_vertices,
+											const unsigned n_faces,
+											const unsigned* faceIndices,
+											const float* vertexCoord,
+											const float* vertexColors,
+											const float* normals,
+											const float* texCoords,
+											const float* tangents,
+											Program& program);
 
 	~OpenGLManager() {
 		destroy ();

@@ -40,7 +40,8 @@ int OpenGLManager::instantiateMesh(const unsigned n_vertices,
                                    const float *vertexCoord,
                                    const float *vertexColors,
                                    const float *normals, const float *texCoords,
-                                   const float *tangents) {
+                                   const float *tangents,
+                                   Program& program) {
 
   glGenBuffers(1, &posVBO);
   glGenBuffers(1, &colorVBO);
@@ -64,7 +65,7 @@ int OpenGLManager::instantiateMesh(const unsigned n_vertices,
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
   // FIXME: MUY FUERTE
-  //if (inPos != -1)
+  if (program.attributes["inPos"] != -1)
     glEnableVertexAttribArray(0);
 
   glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
@@ -73,7 +74,7 @@ int OpenGLManager::instantiateMesh(const unsigned n_vertices,
 
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-  //if (inColor != -1)
+  if (program.attributes["inColor"] != -1)
     glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
@@ -82,12 +83,13 @@ int OpenGLManager::instantiateMesh(const unsigned n_vertices,
 
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-  //if (inNormal != -1)
-    //glEnableVertexAttribArray(inNormal);
+  if (program.attributes["inNormal"] != -1)
+    glEnableVertexAttribArray(program.attributes["inNormal"]);
 
   glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
   glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
-  //if (inTexCoord != -1)
+
+  if (program.attributes["inTexCoord"] != -1)
     glEnableVertexAttribArray(3);
 
   glGenBuffers(1, &triangleIndexVBO);
