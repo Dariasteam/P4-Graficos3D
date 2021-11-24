@@ -15,11 +15,22 @@
 #include <string>
 #include <unordered_set>
 
-struct Program {
+struct OglObject {
 	unsigned id;
+};
 
-	unsigned vertex_id;
-	unsigned fragment_id;
+struct FragmentShader : public OglObject {
+
+};
+
+struct VertexShader : public OglObject {
+
+};
+
+struct Program : OglObject{
+
+	const VertexShader* vertex;
+	const FragmentShader* fragment;
 
 	std::map<std::string, int> uniforms;
 	std::map<std::string, int> attributes;
@@ -34,13 +45,13 @@ private:
 
 public:
 	// linked shaders
-	std::map<std::string, Program> programs;
+	std::map<std::string, Program*> programs;
 
 	std::map<std::string, unsigned> texture_unit_handler; // TU ids for shaders
 	std::map<std::string, unsigned> texture_ids;				  // Texture identifiers
 
-	std::map<std::string, unsigned> vertex_shaders;
-	std::map<std::string, unsigned> fragment_shaders;
+	std::map<std::string, VertexShader*> vertex_shaders;
+	std::map<std::string, FragmentShader*> fragment_shaders;
 
 	// We use this to preallocate all possible objects of the scene
 	unsigned vao;
@@ -59,13 +70,14 @@ public:
 	bool load_fragment_shader (const std::string& path, const std::string& name);
 
 	bool create_program (const std::string& name,
-											 const std::string& vertex_s_name,
-											 const std::string& fragment_s_name,
+											 const VertexShader& vertex_shader,
+											 const FragmentShader& fragment_shader,
 											 const std::vector<std::string>& uniforms_names,
 											 const std::vector<std::string>& attributes_names,
 											 int pos = -1);
 
-	bool set_mesh_per_program (const std::string& program_name, MeshInstance* mesh);
+	void set_mesh_per_program (Program& program,
+														 MeshInstance* mesh) const;
 
 	bool load_texture(const std::string& path,
 										const std::string& name);
@@ -82,7 +94,7 @@ public:
 											const float* normals,
 											const float* texCoords,
 											const float* tangents,
-											Program& program);
+											const Program& program);
 
 	int boundProgramParameters (Program& program);
 

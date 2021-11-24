@@ -119,16 +119,24 @@ int main(int argc, char** argv) {
 	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
 	if (!opengl_manager.create_program("p0",
-																		 "v0",
-																		 "f0",
+																		 *opengl_manager.vertex_shaders["v0"],
+																		 *opengl_manager.fragment_shaders["f0"],
 																		 uniforms, attributes)) exit(-1);
 
 	if (!opengl_manager.create_program("p1",
-																		 "v1",
-																		 "f1",
+																		 *opengl_manager.vertex_shaders["v1"],
+																		 *opengl_manager.fragment_shaders["f1"],
 																		 uniforms, attributes)) exit(-1);
 
-	auto it = ++opengl_manager.programs.begin();
+	opengl_manager.instantiateMesh(cubeNVertex,
+																 cubeNTriangleIndex,
+																 cubeTriangleIndex,
+																 cubeVertexPos,
+																 cubeVertexColor,
+																 cubeVertexNormal,
+																 cubeVertexTexCoord,
+																 cubeVertexTangent,
+																 *opengl_manager.programs["p0"]);
 
 	opengl_manager.instantiateMesh(cubeNVertex,
 																 cubeNTriangleIndex,
@@ -138,20 +146,10 @@ int main(int argc, char** argv) {
 																 cubeVertexNormal,
 																 cubeVertexTexCoord,
 																 cubeVertexTangent,
-																 opengl_manager.programs.begin()->second);
+																 *opengl_manager.programs["p1"]);
 
-	opengl_manager.instantiateMesh(cubeNVertex,
-																 cubeNTriangleIndex,
-																 cubeTriangleIndex,
-																 cubeVertexPos,
-																 cubeVertexColor,
-																 cubeVertexNormal,
-																 cubeVertexTexCoord,
-																 cubeVertexTangent,
-																 it->second);
-
-	opengl_manager.boundProgramParameters(opengl_manager.programs.begin()->second);
-	opengl_manager.boundProgramParameters(it->second);
+	opengl_manager.boundProgramParameters(*opengl_manager.programs["p0"]);
+	opengl_manager.boundProgramParameters(*opengl_manager.programs["p1"]);
 
 
 	MeshInstance* cubemesh1 = new MeshInstance;
@@ -177,9 +175,9 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	scene_objects.push_back(cubemesh3);
 
-	opengl_manager.set_mesh_per_program("p0", cubemesh1);
-	opengl_manager.set_mesh_per_program("p0", cubemesh2);
-	opengl_manager.set_mesh_per_program("p1", cubemesh3);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], cubemesh1);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], cubemesh2);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
 
 	glutMainLoop();
 	destroy();
@@ -257,7 +255,7 @@ void renderFunc() {
 	const auto proj = camera->get_projection_matrix();
 
 	for (auto p : opengl_manager.programs) {
-		Program program = p.second;
+		Program program = *p.second;
 
 		glUseProgram(program.id);
 		glBindVertexArray(opengl_manager.vao);
