@@ -100,7 +100,7 @@ template <typename T>
 void OpenGLManager::insert_at (std::vector<T>& container,
                                T element, int pos) {
 
-  if (pos < container.size() - 1 && pos > 0)
+  if (pos < container.size() - 1 && pos >= 0)
     container[pos] = element;
   else
     container.push_back(element);
@@ -125,19 +125,21 @@ bool OpenGLManager::load_fragment_shader (const std::string path, int pos) {
   return true;
 }
 
-bool OpenGLManager::create_program(unsigned V,
-                                   unsigned F,
+bool OpenGLManager::create_program(const unsigned V,
+                                   const unsigned F,
                                    const std::vector<std::string>& uniforms_names,
                                    const std::vector<std::string>& attributes_names,
                                    int pos) {
 
-  unsigned program = glCreateProgram();
+  const unsigned program = glCreateProgram();
 
   Program aux_program;
   aux_program.id = program;
+  aux_program.vertex_id = V;
+  aux_program.fragment_id = F;
 
-	glAttachShader(program, vertex_shaders[V]);
-	glAttachShader(program, vertex_shaders[F]);
+	glAttachShader(program, V);
+	glAttachShader(program, F);
 	glLinkProgram(program);
 
   int linked;
@@ -150,35 +152,43 @@ bool OpenGLManager::create_program(unsigned V,
 		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
 		char* logString = new char[logLen];
 		glGetProgramInfoLog(program, logLen, NULL, logString);
-		std::cerr << "Error: " << logString << std::endl;
+		std::cerr << "Error linking program: " << logString << std::endl;
 		delete[] logString;
 		glDeleteProgram(program);
 		return false;
 	}
 
-  // IDs de uniforms
+  // Uniforms IDs
   for (const std::string& name : uniforms_names) {
-    aux_program.uniforms[name] = glGetUniformLocation(program, name.c_str());
+    int aux = glGetUniformLocation(program, name.c_str());
+    if (aux < 0) {
+      std::cout << "Error creando el uniform " << name << " " << aux << std::endl;
+    }
+    aux_program.uniforms[name] = aux;
   }
 
-  // IDs de atributos
+  // Attributes IDs
   for (const std::string& name : attributes_names) {
-    aux_program.attributes[name] = glGetAttribLocation(program, name.c_str());
+    int aux = glGetAttribLocation(program, name.c_str());
+    if (aux < 0) {
+      std::cout << "Error creando el atributo " << name << " " << aux << std::endl;
+    }
+    aux_program.attributes[name] = aux;
   }
 
-  insert_at(programs, aux_program);
+  programs[program] = aux_program;
   return true;
 }
 
 bool OpenGLManager::set_mesh_per_program (const unsigned programId,
                                           Mesh* mesh) {
-  // FIXME: Runtime checks
-  if (programId > programs.size() - 1) return false;
 
-  programs[programId].asociated_meshes.insert(mesh);
+  auto it = programs.find(programId);
+  if (it == programs.end()) return false;
+
+  it->second.asociated_meshes.insert(mesh);
   return true;
 }
-
 
 GLuint OpenGLManager::loadShader(const char *fileName, GLenum type) {
   unsigned int fileLen;

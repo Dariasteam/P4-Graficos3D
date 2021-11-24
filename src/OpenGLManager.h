@@ -17,6 +17,10 @@
 
 struct Program {
 	unsigned id;
+
+	unsigned vertex_id;
+	unsigned fragment_id;
+
 	std::map<std::string, int> uniforms;
 	std::map<std::string, int> attributes;
 
@@ -34,7 +38,7 @@ private:
 public:
 
 	// linked shaders
-	std::vector<Program> programs;
+	std::map<unsigned, Program> programs;
 	std::vector<unsigned> vertex_shaders;
 	std::vector<unsigned> fragment_shaders;
 
@@ -60,8 +64,8 @@ public:
 	bool load_vertex_shader (const std::string path, int pos = -1);
 	bool load_fragment_shader (const std::string path, int pos = -1);
 
-	bool create_program (unsigned V,
-											 unsigned F,
+	bool create_program (const unsigned V,
+											 const unsigned F,
 											 const std::vector<std::string>& uniforms_names,
 											 const std::vector<std::string>& attributes_names,
 											 int pos = -1);
@@ -83,12 +87,30 @@ public:
 											const float *tangents);
 
 	~OpenGLManager() {
+		destroy ();
+	}
+
+	void destroy() {
 		glDeleteBuffers(1, &posVBO);
 		glDeleteBuffers(1, &colorVBO);
 		glDeleteBuffers(1, &normalVBO);
 		glDeleteBuffers(1, &texCoordVBO);
 		glDeleteBuffers(1, &triangleIndexVBO);
 		glDeleteVertexArrays(1, &vao);
+
+		for (const auto& p : programs) {
+			glDetachShader(p.second.id, p.second.vertex_id);
+			glDetachShader(p.second.id, p.second.fragment_id);
+		}
+
+		for (const unsigned id : vertex_shaders)
+			glDeleteShader(id);
+
+		for (const unsigned id : fragment_shaders)
+			glDeleteShader(id);
+
+		for (const auto& p : programs)
+			glDeleteProgram(p.second.id);
 	}
 };
 

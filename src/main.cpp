@@ -29,9 +29,11 @@ int w, h;
 //////////////////////////////////////////////////////////////
 // Variables que nos dan acceso a Objetos OpenGL
 //////////////////////////////////////////////////////////////
+/*
 unsigned int vshader;
 unsigned int fshader;
 unsigned int program;
+*/
 
 //Variables Uniform
 /*
@@ -95,11 +97,7 @@ int main(int argc, char** argv) {
 
 	initContext(argc, argv);
 	initOGL();
-	/*
-	initShader("shaders_P3/shader.v0.vert",
-						 "shaders_P3/shader.v0.frag");
 
-	*/
 	std::vector<std::string> uniforms {
 		"normal",
 		"modelView",
@@ -110,12 +108,13 @@ int main(int argc, char** argv) {
 		"inPos",
 		"inColor",
 		"inNormal",
-		"inTexCoord",
 	};
 
 	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert")) exit(-1);
 	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag")) exit(-1);
-	if (!opengl_manager.create_program(0, 0, uniforms, attributes)) exit(-1);
+	if (!opengl_manager.create_program(opengl_manager.vertex_shaders[0],
+																		 opengl_manager.fragment_shaders[0],
+																		 uniforms, attributes)) exit(-1);
 
 	opengl_manager.instantiateMesh(cubeNVertex,
 																 cubeNTriangleIndex,
@@ -138,8 +137,11 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh1);
 	scene_objects.push_back(cubemesh2);
 
-	opengl_manager.set_mesh_per_program(0, cubemesh1);
-	opengl_manager.set_mesh_per_program(0, cubemesh2);
+	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh1);
+	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh2);
+
+	if (uColorTex != -1) glUniform1i(uColorTex, 0);
+	if (uEmiTex != -1) glUniform1i(uEmiTex, 1);
 
 	glutMainLoop();
 	destroy();
@@ -188,13 +190,8 @@ void initOGL()
 	glEnable(GL_CULL_FACE);
 }
 
-void destroy()
-{
-	glDetachShader(program, vshader);
-	glDetachShader(program, fshader);
-	glDeleteShader(vshader);
-	glDeleteShader(fshader);
-	glDeleteProgram(program);
+void destroy() {
+	opengl_manager.destroy();
 }
 
 void initShader(const std::string& vname, const std::string& fname)
@@ -263,7 +260,7 @@ void initShader(const std::string& vname, const std::string& fname)
 void renderFunc() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(program);
+	//glUseProgram(program);
 
 	glViewport(0, 0, w, h);
 
@@ -286,7 +283,8 @@ void renderFunc() {
 	const auto view = camera->get_view_matrix();
 	const auto proj = camera->get_projection_matrix();
 
-	for (auto program : opengl_manager.programs) {
+	for (auto p : opengl_manager.programs) {
+		Program program = p.second;
 		glUseProgram(program.id);
 
 		for (Mesh* mesh : program.asociated_meshes) {
