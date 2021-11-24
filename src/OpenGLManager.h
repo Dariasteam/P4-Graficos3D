@@ -31,20 +31,16 @@ struct Program {
 class OpenGLManager {
 private:
   GLuint loadShader(const char *fileName, GLenum type);
-	template <typename T>
-	void insert_at (std::vector<T>& container, T element, int pos = -1);
-
 
 public:
-
 	// linked shaders
-	std::map<unsigned, Program> programs;
+	std::map<std::string, Program> programs;
 
 	std::map<std::string, unsigned> texture_unit_handler; // TU ids for shaders
 	std::map<std::string, unsigned> texture_ids;				  // Texture identifiers
 
-	std::vector<unsigned> vertex_shaders;
-	std::vector<unsigned> fragment_shaders;
+	std::map<std::string, unsigned> vertex_shaders;
+	std::map<std::string, unsigned> fragment_shaders;
 
 	// We use this to preallocate all possible objects of the scene
 	unsigned vao;
@@ -59,16 +55,17 @@ public:
 	int colorTexId;
 	int emiTexId;
 
-	bool load_vertex_shader (const std::string path, int pos = -1);
-	bool load_fragment_shader (const std::string path, int pos = -1);
+	bool load_vertex_shader (const std::string& path, const std::string& name);
+	bool load_fragment_shader (const std::string& path, const std::string& name);
 
-	bool create_program (const unsigned V,
-											 const unsigned F,
+	bool create_program (const std::string& name,
+											 const std::string& vertex_s_name,
+											 const std::string& fragment_s_name,
 											 const std::vector<std::string>& uniforms_names,
 											 const std::vector<std::string>& attributes_names,
 											 int pos = -1);
 
-	bool set_mesh_per_program (const unsigned programId, MeshInstance* mesh);
+	bool set_mesh_per_program (const std::string& program_name, MeshInstance* mesh);
 
 	bool load_texture(const std::string& path,
 										const std::string& name);
@@ -96,28 +93,7 @@ public:
 	void init_context ();
 	void init_OGL ();
 
-	void destroy() {
-		glDeleteBuffers(1, &posVBO);
-		glDeleteBuffers(1, &colorVBO);
-		glDeleteBuffers(1, &normalVBO);
-		glDeleteBuffers(1, &texCoordVBO);
-		glDeleteBuffers(1, &triangleIndexVBO);
-		glDeleteVertexArrays(1, &vao);
-
-		for (const auto& p : programs) {
-			glDetachShader(p.second.id, p.second.vertex_id);
-			glDetachShader(p.second.id, p.second.fragment_id);
-		}
-
-		for (const unsigned id : vertex_shaders)
-			glDeleteShader(id);
-
-		for (const unsigned id : fragment_shaders)
-			glDeleteShader(id);
-
-		for (const auto& p : programs)
-			glDeleteProgram(p.second.id);
-	}
+	void destroy();
 };
 
 

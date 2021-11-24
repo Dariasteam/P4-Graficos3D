@@ -119,42 +119,38 @@ int OpenGLManager::instantiateMesh(const unsigned n_vertices,
                faceIndices, GL_STATIC_DRAW);
 }
 
-template <typename T>
-void OpenGLManager::insert_at (std::vector<T>& container,
-                               T element, int pos) {
-
-  if (pos < container.size() - 1 && pos >= 0)
-    container[pos] = element;
-  else
-    container.push_back(element);
-}
-
-bool OpenGLManager::load_vertex_shader (const std::string path, int pos) {
+bool OpenGLManager::load_vertex_shader (const std::string& path,
+                                        const std::string& name) {
   int vshader = loadShader(path.c_str(), GL_VERTEX_SHADER);
 
   if (vshader < 0) return false;
 
-  insert_at(vertex_shaders, unsigned(vshader));
+  vertex_shaders[name] = vshader;
   return true;
 }
 
-bool OpenGLManager::load_fragment_shader (const std::string path, int pos) {
+bool OpenGLManager::load_fragment_shader (const std::string& path,
+                                          const std::string& name) {
 
   int fshader = loadShader(path.c_str(), GL_FRAGMENT_SHADER_ARB);
 
   if (fshader < 0) return false;
 
-  insert_at(fragment_shaders, unsigned(fshader));
+  fragment_shaders[name] = fshader;
   return true;
 }
 
-bool OpenGLManager::create_program(const unsigned V,
-                                   const unsigned F,
+bool OpenGLManager::create_program(const std::string& program_name,
+                                   const std::string& vertex_s_name,
+                                   const std::string& fragment_s_name,
                                    const std::vector<std::string>& uniforms_names,
                                    const std::vector<std::string>& attributes_names,
                                    int pos) {
 
   const unsigned program = glCreateProgram();
+
+  unsigned V = vertex_shaders[vertex_s_name];
+  unsigned F = fragment_shaders[fragment_s_name];
 
   Program aux_program;
   aux_program.id = program;
@@ -185,7 +181,7 @@ bool OpenGLManager::create_program(const unsigned V,
   for (const std::string& name : uniforms_names) {
     int aux = glGetUniformLocation(program, name.c_str());
     if (aux < 0) {
-      std::cout << "Error creando el uniform " << name << " " << aux << std::endl;
+      std::cout << "Error creando el uniform " << name << " " << aux << " para el programa " << program << std::endl;
     }
     aux_program.uniforms[name] = aux;
   }
@@ -194,19 +190,19 @@ bool OpenGLManager::create_program(const unsigned V,
   for (const std::string& name : attributes_names) {
     int aux = glGetAttribLocation(program, name.c_str());
     if (aux < 0) {
-      std::cout << "Error creando el atributo " << name << " " << aux << std::endl;
+      std::cout << "Error creando el atributo " << name << " " << aux << " para el programa " << program << std::endl;
     }
     aux_program.attributes[name] = aux;
   }
 
-  programs[program] = aux_program;
+  programs[program_name] = aux_program;
   return true;
 }
 
-bool OpenGLManager::set_mesh_per_program (const unsigned programId,
+bool OpenGLManager::set_mesh_per_program (const std::string& program_name,
                                           MeshInstance* mesh) {
 
-  auto it = programs.find(programId);
+  auto it = programs.find(program_name);
   if (it == programs.end()) return false;
 
   it->second.asociated_meshes.insert(mesh);
@@ -247,6 +243,31 @@ void OpenGLManager::init_context() {
 
 }
 
-void OpenGLManager::init_OGL() {
+void OpenGLManager::init_OGL() {}
 
+
+void OpenGLManager::destroy() {
+  glDeleteBuffers(1, &posVBO);
+  glDeleteBuffers(1, &colorVBO);
+  glDeleteBuffers(1, &normalVBO);
+  glDeleteBuffers(1, &texCoordVBO);
+  glDeleteBuffers(1, &triangleIndexVBO);
+  glDeleteVertexArrays(1, &vao);
+
+  for (const auto &p : programs) {
+    const auto program = p.second;
+    glDetachShader(program.id, program.vertex_id);
+    glDetachShader(program.id, program.fragment_id);
+  }
+
+  for (const auto& s : vertex_shaders)
+    glDeleteShader(s.second);
+
+  for (const auto& s : fragment_shaders)
+    glDeleteShader(s.second);
+
+  for (const auto &p : programs) {
+    const auto program = p.second;
+    glDeleteProgram(program.id);
+  }
 }

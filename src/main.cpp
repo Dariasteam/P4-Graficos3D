@@ -112,18 +112,20 @@ int main(int argc, char** argv) {
 		"inNormal",
 	};
 
-	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert")) exit(-1);
-	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag")) exit(-1);
+	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
+	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
 
-	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v1.vert")) exit(-1);
-	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag")) exit(-1);
+	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v1.vert", "v1")) exit(-1);
+	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
-	if (!opengl_manager.create_program(opengl_manager.vertex_shaders[0],
-																		 opengl_manager.fragment_shaders[0],
+	if (!opengl_manager.create_program("p0",
+																		 "v0",
+																		 "f0",
 																		 uniforms, attributes)) exit(-1);
 
-	if (!opengl_manager.create_program(opengl_manager.vertex_shaders[1],
-																		 opengl_manager.fragment_shaders[1],
+	if (!opengl_manager.create_program("p1",
+																		 "v1",
+																		 "f1",
 																		 uniforms, attributes)) exit(-1);
 
 	auto it = ++opengl_manager.programs.begin();
@@ -175,9 +177,9 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	scene_objects.push_back(cubemesh3);
 
-	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh1);
-	opengl_manager.set_mesh_per_program(opengl_manager.programs.begin()->second.id, cubemesh2);
-	opengl_manager.set_mesh_per_program(it->second.id, cubemesh3);
+	opengl_manager.set_mesh_per_program("p0", cubemesh1);
+	opengl_manager.set_mesh_per_program("p0", cubemesh2);
+	opengl_manager.set_mesh_per_program("p1", cubemesh3);
 
 	glutMainLoop();
 	destroy();
@@ -237,14 +239,14 @@ void renderFunc() {
 
 	std::vector<std::string> texture_names {
 		"colorTex",
-		"emitTex"
+		"emiTex"
 	};
 
 	//Texturas
 	for (const std::string& name : texture_names) {
-		if (opengl_manager.texture_ids.find("colorTex") != opengl_manager.texture_ids.end()) {
+		if (opengl_manager.texture_ids.find(name) != opengl_manager.texture_ids.end()) {
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["colorTex"]);
+			glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids[name]);
 		} else {
 			std::cout << "ERROR cargando textura " << name << "\n";
 		}
