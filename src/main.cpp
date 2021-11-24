@@ -235,30 +235,30 @@ void renderFunc() {
 
 	glViewport(0, 0, w, h);
 
-	//Texturas
-	if (opengl_manager.texture_ids.find("colorTex") != opengl_manager.texture_ids.end()) {
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["colorTex"]);
-	} else {
-		std::cout << "ERROR cargando textura 1\n";
-	}
+	std::vector<std::string> texture_names {
+		"colorTex",
+		"emitTex"
+	};
 
-	if (opengl_manager.texture_ids.find("emiTex") != opengl_manager.texture_ids.end()) {
-		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["emiTex"]);
-	} else {
-		std::cout << "ERROR cargando textura 2\n";
+	//Texturas
+	for (const std::string& name : texture_names) {
+		if (opengl_manager.texture_ids.find("colorTex") != opengl_manager.texture_ids.end()) {
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["colorTex"]);
+		} else {
+			std::cout << "ERROR cargando textura " << name << "\n";
+		}
 	}
 
 	// Meshes
 	const auto view = camera->get_view_matrix();
 	const auto proj = camera->get_projection_matrix();
 
-	const glm::vec3 aux_v {1, 0, 0};
-
 	for (auto p : opengl_manager.programs) {
 		Program program = p.second;
+
 		glUseProgram(program.id);
+		glBindVertexArray(opengl_manager.vao);
 
 		for (MeshInstance* mesh : program.asociated_meshes) {
 			const auto model = mesh->get_model_matrix();
@@ -273,8 +273,6 @@ void renderFunc() {
 				glUniformMatrix4fv(program.uniforms["modelViewProj"], 1, GL_FALSE, &(modelViewProj[0][0]));
 			if (program.uniforms["normal"] != -1)
 				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
-
-			glBindVertexArray(opengl_manager.vao);
 
 			glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
 								   	 GL_UNSIGNED_INT, (void*)0);
