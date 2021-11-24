@@ -10,6 +10,7 @@ unsigned int OpenGLManager::loadTex(const char *fileName) {
   unsigned char *map;
   unsigned int w, h;
   map = loadTexture(fileName, w, h);
+
   if (!map) {
     std::cout << "Error cargando el fichero: " << fileName << std::endl;
     exit(-1);
@@ -220,4 +221,12 @@ GLuint OpenGLManager::loadShader(const char *fileName, GLenum type) {
   }
 
   return shader;
+}
+
+void OpenGLManager::init_context() {
+
+}
+
+void OpenGLManager::init_OGL() {
+
 }

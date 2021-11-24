@@ -28,7 +28,7 @@ vec3 shade();
 
 void main()
 {
-	Ka = texture(colorTex, texCoord).rgb;
+	Ka = texture(colorTex, texCoord).rgb + (color * 0.001);
 	Kd = texture(colorTex, texCoord).rgb;
 	Ke = texture(emiTex, texCoord).rgb;
 	Ks = vec3 (1.0);

@@ -51,12 +51,6 @@ public:
 	unsigned texCoordVBO;
 	unsigned triangleIndexVBO;
 
-/*
-	int inPos;
-	int inColor;
-	int inNormal;
-	int inTexCoord;
-*/
 	// Identificadores de texturas opengl
 	int colorTexId;
 	int emiTexId;
@@ -76,8 +70,6 @@ public:
 
 	//Crea una textura, la configura, la sube a OpenGL,
 	//y devuelve el identificador de la textura
-
-
 	unsigned int loadTex(const char *fileName);
 
 	int instantiateMesh(const unsigned n_vertices,
@@ -93,6 +85,9 @@ public:
 	~OpenGLManager() {
 		destroy ();
 	}
+
+	void init_context ();
+	void init_OGL ();
 
 	void destroy() {
 		glDeleteBuffers(1, &posVBO);

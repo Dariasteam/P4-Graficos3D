@@ -98,6 +98,7 @@ int main(int argc, char** argv) {
 
 	initContext(argc, argv);
 	initOGL();
+	opengl_manager.load_textures();
 
 	std::vector<std::string> uniforms {
 		"normal",
@@ -111,8 +112,8 @@ int main(int argc, char** argv) {
 		"inNormal",
 	};
 
-	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert")) exit(-1);
-	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag")) exit(-1);
+	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v1.vert")) exit(-1);
+	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag")) exit(-1);
 	if (!opengl_manager.create_program(opengl_manager.vertex_shaders[0],
 																		 opengl_manager.fragment_shaders[0],
 																		 uniforms, attributes)) exit(-1);
@@ -196,69 +197,6 @@ void destroy() {
 	opengl_manager.destroy();
 }
 
-void initShader(const std::string& vname, const std::string& fname)
-{
-	/*
-	vshader = loadShader(vname, GL_VERTEX_SHADER);
-	fshader = loadShader(fname, GL_FRAGMENT_SHADER);
-
-	program = glCreateProgram();
-	glAttachShader(program, vshader);
-	glAttachShader(program, fshader);
-	glLinkProgram(program);
-
-
-	int linked;
-	glGetProgramiv(program, GL_LINK_STATUS, &linked);
-	if (!linked)
-	{
-		//Calculamos una cadena de error
-		GLint logLen;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
-		char* logString = new char[logLen];
-		glGetProgramInfoLog(program, logLen, NULL, logString);
-		std::cout << "Error: " << logString << std::endl;
-		delete[] logString;
-		glDeleteProgram(program);
-		program = 0;
-		exit(-1);
-	}
-
-	uNormalMat = glGetUniformLocation(program, "normal");
-	uModelViewMat = glGetUniformLocation(program, "modelView");
-	uModelViewProjMat = glGetUniformLocation(program, "modelViewProj");
-
-	opengl_manager.inPos = glGetAttribLocation(program, "inPos");
-	opengl_manager.inColor = glGetAttribLocation(program, "inColor");
-	opengl_manager.inNormal = glGetAttribLocation(program, "inNormal");
-	opengl_manager.inTexCoord = glGetAttribLocation(program, "inTexCoord");
-	*/
-
-	std::vector<std::string> uniforms {
-		"normal",
-		"modelView",
-		"modelViewProj"
-	};
-
-	std::vector<std::string> attributes {
-		"inPos",
-		"inColor",
-		"inNormal",
-		"inTexCoord",
-	};
-
-	if (!opengl_manager.load_vertex_shader(vname)) exit(-1);
-	if (!opengl_manager.load_fragment_shader(fname)) exit(-1);
-	if (!opengl_manager.create_program(0, 0, uniforms, attributes)) exit(-1);
-
-//	glUseProgram(opengl_manager.programs[0].id);
-
-	if (uColorTex != -1) glUniform1i(uColorTex, 0);
-	if (uEmiTex != -1) glUniform1i(uEmiTex, 1);
-}
-
-
-
 void renderFunc() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -269,14 +207,14 @@ void renderFunc() {
 	//Texturas
 	if (uColorTex != -1) {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, colorTexId);
+		glBindTexture(GL_TEXTURE_2D, opengl_manager.colorTexId);
 	} else {
 		std::cout << "ERROR cargando textura 1\n";
 	}
 
 	if (uEmiTex != -1) {
 		glActiveTexture(GL_TEXTURE0 + 1);
-		glBindTexture(GL_TEXTURE_2D, emiTexId);
+		glBindTexture(GL_TEXTURE_2D, opengl_manager.emiTexId);
 	} else {
 		std::cout << "ERROR cargando textura 2\n";
 	}
