@@ -287,19 +287,13 @@ void renderFunc() {
 			if (program.uniforms["normal"] != -1)
 				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
 
-
-			if (program.uniforms["colorTex"] != -1) {
-				const Texture& t = opengl_manager.texture_ids["colorTex"];
-				glActiveTexture(GL_TEXTURE0 + t.n_texture);
-				glBindTexture(GL_TEXTURE_2D, t.id);
-				glUniform1i(program.uniforms["emiTex"], 0);
-			}
-
-			if (program.uniforms["emiTex"] != -1) {
-				const Texture& t = opengl_manager.texture_ids["emiTex"];
-				glActiveTexture(GL_TEXTURE0 + t.n_texture);
-				glBindTexture(GL_TEXTURE_2D, t.id);
-				glUniform1i(program.uniforms["emiTex"], 1);
+			for (const std::string texture_name : texture_names) {
+				if (program.uniforms[texture_name] != -1) {
+					const Texture& t = opengl_manager.texture_ids[texture_name];
+					glActiveTexture(GL_TEXTURE0 + t.n_texture);
+					glBindTexture(GL_TEXTURE_2D, t.id);
+					glUniform1i(program.uniforms[texture_name], t.n_texture);
+				}
 			}
 
 			glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
