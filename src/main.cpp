@@ -150,8 +150,16 @@ int main(int argc, char** argv) {
 																 cubeVertexTangent,
 																 *opengl_manager.programs["p1"]);
 
-	opengl_manager.boundProgramParameters(*opengl_manager.programs["p0"]);
-	opengl_manager.boundProgramParameters(*opengl_manager.programs["p1"]);
+	const std::map<std::string, unsigned> attribute_name_location {
+    {"inPos", 0},
+    {"inColor", 1},
+    {"inNormal", 2},
+    {"inTexCoord", 3},
+  };
+
+
+	opengl_manager.boundProgramParametersAttributes(*opengl_manager.programs["p0"], attribute_name_location);
+	opengl_manager.boundProgramParametersAttributes(*opengl_manager.programs["p1"], attribute_name_location);
 
 	MeshInstance* cubemesh1 = new MeshInstance;
 	MeshInstance* cubemesh2 = new MeshInstance;
@@ -241,11 +249,6 @@ void renderFunc() {
 		"emiTex"
 	};
 
-	//Texturas
-
-
-
-
 	// Meshes
 	const auto view = camera->get_view_matrix();
 	const auto proj = camera->get_projection_matrix();
@@ -255,23 +258,6 @@ void renderFunc() {
 
 		glUseProgram(program.id);
 		glBindVertexArray(opengl_manager.vao);
-
-
-		/*
-		for (const std::string& name : texture_names) {
-			if (opengl_manager.texture_ids.find(name) != opengl_manager.texture_unit_handler.end()) {
-				unsigned id = opengl_manager.texture_unit_handler[name];
-
-				// FIXME: is this a good idea?
-				glActiveTexture(id);
-				std::cout << name << " " << 1 - id << std::endl;
-
-				glBindTexture(GL_TEXTURE_2D, 1 - id);
-			} else {
-				std::cout << "ERROR cargando textura " << name << "\n";
-			}
-		}
-		*/
 
 		for (MeshInstance* mesh : program.asociated_meshes) {
 			const auto model = mesh->get_model_matrix();
@@ -287,6 +273,7 @@ void renderFunc() {
 			if (program.uniforms["normal"] != -1)
 				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
 
+			// Textures
 			for (const std::string texture_name : texture_names) {
 				if (program.uniforms[texture_name] != -1) {
 					const Texture& t = opengl_manager.texture_ids[texture_name];

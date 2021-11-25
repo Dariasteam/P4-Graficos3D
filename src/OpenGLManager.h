@@ -19,13 +19,9 @@ struct OglObject {
 	unsigned id;
 };
 
-struct FragmentShader : public OglObject {
+struct FragmentShader : public OglObject {};
 
-};
-
-struct VertexShader : public OglObject {
-
-};
+struct VertexShader : public OglObject {};
 
 struct Program : OglObject{
 
@@ -97,7 +93,9 @@ public:
 											const float* tangents,
 											const Program& program);
 
-	int boundProgramParameters (Program& program);
+	int boundProgramParametersAttributes (Program& program,
+																				const std::map<std::string, unsigned>&
+																				attribute_name_location);
 
 	~OpenGLManager() {
 		destroy ();

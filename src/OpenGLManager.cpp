@@ -49,21 +49,16 @@ unsigned int OpenGLManager::loadTex(const char *fileName) {
 }
 
 
-int OpenGLManager::boundProgramParameters (Program& program) {
+int OpenGLManager::boundProgramParametersAttributes (Program& program,
+                                                    const std::map<std::string, unsigned>&
+                                                    attribute_name_location) {
 
   // We are using indexes because the shaders are using layout / location
+  for (const auto& element : attribute_name_location) {
+    if (program.attributes[element.first] != -1)
+      glEnableVertexAttribArray(element.second);
+  }
 
-  if (program.attributes["inPos"] != -1)
-    glEnableVertexAttribArray(0);
-
-  if (program.attributes["inColor"] != -1)
-    glEnableVertexAttribArray(1);
-
-  if (program.attributes["inNormal"] != -1)
-    glEnableVertexAttribArray(2);
-
-  if (program.attributes["inTexCoord"] != -1)
-    glEnableVertexAttribArray(3);
 }
 
 
