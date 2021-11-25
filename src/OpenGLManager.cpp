@@ -4,19 +4,17 @@
 // Guarantees that both texture id and uniform Id are created
 bool OpenGLManager::load_texture(const std::string& path,
                                  const std::string& name) {
-  int tmp_u_tex;
   int tmp_tex_id;
+  //int tmp_uniform_id = GL_TEXTURE0 +  texture_ids.size();
 
   tmp_tex_id = loadTex(path.c_str());
 
   if (tmp_tex_id == -1) return false;
 
-  glUniform1i(tmp_u_tex, tmp_tex_id);
-
-  if (tmp_u_tex == -1) return false;
+  //glUniform1i(tmp_uniform_id, tmp_tex_id);
 
   texture_ids[name] = tmp_tex_id;
-  texture_unit_handler[name] = tmp_u_tex;
+  //texture_unit_handler[name] = tmp_uniform_id;
 
   return true;
 }
@@ -32,6 +30,7 @@ unsigned int OpenGLManager::loadTex(const char *fileName) {
   }
 
   unsigned int texId;
+
   glGenTextures(1, &texId);
   glBindTexture(GL_TEXTURE_2D, texId);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -153,34 +152,34 @@ bool OpenGLManager::create_program(const std::string& program_name,
                                    const std::vector<std::string>& attributes_names,
                                    int pos) {
 
-  const unsigned program = glCreateProgram();
+  const unsigned program_id = glCreateProgram();
 
   unsigned V = vertex_shader.id;
   unsigned F = fragment_shader.id;
 
   Program* aux_program = new Program;
-  aux_program->id = program;
+  aux_program->id = program_id;
 
   aux_program->vertex = &vertex_shader;
   aux_program->fragment = &fragment_shader;
 
-	glAttachShader(program, V);
-	glAttachShader(program, F);
-	glLinkProgram(program);
+	glAttachShader(program_id, V);
+	glAttachShader(program_id, F);
+	glLinkProgram(program_id);
 
   int linked;
 
-	glGetProgramiv(program, GL_LINK_STATUS, &linked);
+	glGetProgramiv(program_id, GL_LINK_STATUS, &linked);
 
 	if (!linked) {
 		//Calculamos una cadena de error
 		GLint logLen;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLen);
+		glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &logLen);
 		char* logString = new char[logLen];
-		glGetProgramInfoLog(program, logLen, NULL, logString);
+		glGetProgramInfoLog(program_id, logLen, NULL, logString);
 		std::cerr << "Error linking program: " << logString << std::endl;
 		delete[] logString;
-		glDeleteProgram(program);
+		glDeleteProgram(program_id);
 
     delete aux_program;
 
@@ -189,18 +188,18 @@ bool OpenGLManager::create_program(const std::string& program_name,
 
   // Uniforms IDs
   for (const std::string& name : uniforms_names) {
-    int aux = glGetUniformLocation(program, name.c_str());
+    int aux = glGetUniformLocation(program_id, name.c_str());
     if (aux < 0) {
-      std::cout << "Error creando el uniform " << name << " " << aux << " para el programa " << program << std::endl;
+      std::cerr << "Error creando el uniform " << name << " " << aux << " para el programa " << program_name << std::endl;
     }
     aux_program->uniforms[name] = aux;
   }
 
   // Attributes IDs
   for (const std::string& name : attributes_names) {
-    int aux = glGetAttribLocation(program, name.c_str());
+    int aux = glGetAttribLocation(program_id, name.c_str());
     if (aux < 0) {
-      std::cout << "Error creando el atributo " << name << " " << aux << " para el programa " << program << std::endl;
+      std::cerr << "Error creando el atributo " << name << " " << aux << " para el programa " << program_name << std::endl;
     }
     aux_program->attributes[name] = aux;
   }
@@ -266,14 +265,29 @@ void OpenGLManager::destroy() {
     glDetachShader(program.id, program.fragment->id);
   }
 
-  for (const auto& s : vertex_shaders)
+  for (auto s : vertex_shaders) {
     glDeleteShader(s.second->id);
+    delete s.second;
+  }
 
-  for (const auto& s : fragment_shaders)
+  for (auto s : fragment_shaders) {
     glDeleteShader(s.second->id);
+    delete s.second;
+  }
 
   for (const auto &p : programs) {
-    const auto program = *p.second;
-    glDeleteProgram(program.id);
+    auto program = p.second;
+    glDeleteProgram(program->id);
+    delete program;
   }
+
+  fragment_shaders.clear();
+  vertex_shaders.clear();
+  programs.clear();
+
+  // FIXME: Release resources for textures
+  for (const auto it : texture_ids) {
+    //glDeleteTextures(1, it.second);
+  }
+
 }

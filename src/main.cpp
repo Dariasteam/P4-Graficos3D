@@ -103,7 +103,9 @@ int main(int argc, char** argv) {
 	std::vector<std::string> uniforms {
 		"normal",
 		"modelView",
-		"modelViewProj"
+		"modelViewProj",
+		"colorTex",
+		"emiTex"
 	};
 
 	std::vector<std::string> attributes {
@@ -150,7 +152,6 @@ int main(int argc, char** argv) {
 
 	opengl_manager.boundProgramParameters(*opengl_manager.programs["p0"]);
 	opengl_manager.boundProgramParameters(*opengl_manager.programs["p1"]);
-
 
 	MeshInstance* cubemesh1 = new MeshInstance;
 	MeshInstance* cubemesh2 = new MeshInstance;
@@ -241,14 +242,9 @@ void renderFunc() {
 	};
 
 	//Texturas
-	for (const std::string& name : texture_names) {
-		if (opengl_manager.texture_ids.find(name) != opengl_manager.texture_ids.end()) {
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids[name]);
-		} else {
-			std::cout << "ERROR cargando textura " << name << "\n";
-		}
-	}
+
+
+
 
 	// Meshes
 	const auto view = camera->get_view_matrix();
@@ -259,6 +255,23 @@ void renderFunc() {
 
 		glUseProgram(program.id);
 		glBindVertexArray(opengl_manager.vao);
+
+
+		/*
+		for (const std::string& name : texture_names) {
+			if (opengl_manager.texture_ids.find(name) != opengl_manager.texture_unit_handler.end()) {
+				unsigned id = opengl_manager.texture_unit_handler[name];
+
+				// FIXME: is this a good idea?
+				glActiveTexture(id);
+				std::cout << name << " " << 1 - id << std::endl;
+
+				glBindTexture(GL_TEXTURE_2D, 1 - id);
+			} else {
+				std::cout << "ERROR cargando textura " << name << "\n";
+			}
+		}
+		*/
 
 		for (MeshInstance* mesh : program.asociated_meshes) {
 			const auto model = mesh->get_model_matrix();
@@ -273,6 +286,19 @@ void renderFunc() {
 				glUniformMatrix4fv(program.uniforms["modelViewProj"], 1, GL_FALSE, &(modelViewProj[0][0]));
 			if (program.uniforms["normal"] != -1)
 				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
+
+
+			if (program.uniforms["colorTex"] != -1) {
+				glActiveTexture(program.uniforms["colorTex"]);
+				glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["colorTex"]);
+				glUniform1i(opengl_manager.texture_unit_handler["colorTex"], 0);
+			}
+
+			if (program.uniforms["emiTex"] != -1) {
+				glActiveTexture(program.uniforms["emiTex"]);
+				glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["emiTex"]);
+				glUniform1i(opengl_manager.texture_unit_handler["emiTex"], 1);
+			}
 
 			glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
 								   	 GL_UNSIGNED_INT, (void*)0);
