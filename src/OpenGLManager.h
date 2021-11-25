@@ -19,9 +19,17 @@ struct OglObject {
 	unsigned id;
 };
 
-struct FragmentShader : public OglObject {};
+struct FragmentShader : public OglObject {
+	~FragmentShader() {
+		glDeleteShader(id);
+	}
+};
 
-struct VertexShader : public OglObject {};
+struct VertexShader : public OglObject {
+	~VertexShader() {
+		glDeleteShader(id);
+	}
+};
 
 struct Program : OglObject{
 
@@ -32,6 +40,16 @@ struct Program : OglObject{
 	std::map<std::string, int> attributes;
 
 	std::unordered_set<MeshInstance*> asociated_meshes;
+
+	void detach () {
+    glDetachShader(id, vertex->id);
+    glDetachShader(id, fragment->id);
+	}
+
+	~Program () {
+		glDeleteProgram(id);
+	}
+
 };
 
 struct Texture : public OglObject {
@@ -70,8 +88,7 @@ public:
 											 const VertexShader& vertex_shader,
 											 const FragmentShader& fragment_shader,
 											 const std::vector<std::string>& uniforms_names,
-											 const std::vector<std::string>& attributes_names,
-											 int pos = -1);
+											 const std::vector<std::string>& attributes_names);
 
 	void set_mesh_per_program (Program& program,
 														 MeshInstance* mesh) const;

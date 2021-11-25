@@ -58,7 +58,6 @@ int OpenGLManager::boundProgramParametersAttributes (Program& program,
     if (program.attributes[element.first] != -1)
       glEnableVertexAttribArray(element.second);
   }
-
 }
 
 
@@ -143,8 +142,7 @@ bool OpenGLManager::create_program(const std::string& program_name,
                                    const VertexShader& vertex_shader,
 											             const FragmentShader& fragment_shader,
                                    const std::vector<std::string>& uniforms_names,
-                                   const std::vector<std::string>& attributes_names,
-                                   int pos) {
+                                   const std::vector<std::string>& attributes_names) {
 
   const unsigned program_id = glCreateProgram();
 
@@ -180,6 +178,7 @@ bool OpenGLManager::create_program(const std::string& program_name,
 		return false;
 	}
 
+
   // Uniforms IDs
   for (const std::string& name : uniforms_names) {
     int aux = glGetUniformLocation(program_id, name.c_str());
@@ -189,6 +188,8 @@ bool OpenGLManager::create_program(const std::string& program_name,
     aux_program->uniforms[name] = aux;
   }
 
+  // Unnecessary since we are using layout / location
+/*
   // Attributes IDs
   for (const std::string& name : attributes_names) {
     int aux = glGetAttribLocation(program_id, name.c_str());
@@ -197,6 +198,7 @@ bool OpenGLManager::create_program(const std::string& program_name,
     }
     aux_program->attributes[name] = aux;
   }
+*/
 
   programs[program_name] = aux_program;
   return true;
@@ -253,27 +255,18 @@ void OpenGLManager::destroy() {
   glDeleteBuffers(1, &triangleIndexVBO);
   glDeleteVertexArrays(1, &vao);
 
-  for (const auto &p : programs) {
-    const auto program = *p.second;
-    glDetachShader(program.id, program.vertex->id);
-    glDetachShader(program.id, program.fragment->id);
-  }
+  for (const auto &p : programs)
+    p.second->detach();
 
-  for (auto s : vertex_shaders) {
-    glDeleteShader(s.second->id);
+  for (auto s : vertex_shaders)
     delete s.second;
-  }
 
-  for (auto s : fragment_shaders) {
-    glDeleteShader(s.second->id);
+  for (auto s : fragment_shaders)
     delete s.second;
-  }
 
-  for (const auto &p : programs) {
-    auto program = p.second;
-    glDeleteProgram(program->id);
-    delete program;
-  }
+  for (const auto &p : programs)
+    delete p.second;
+
 
   fragment_shaders.clear();
   vertex_shaders.clear();

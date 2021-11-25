@@ -112,6 +112,7 @@ int main(int argc, char** argv) {
 		"inPos",
 		"inColor",
 		"inNormal",
+		"inTexCoord"
 	};
 
 	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
@@ -254,7 +255,7 @@ void renderFunc() {
 	const auto proj = camera->get_projection_matrix();
 
 	for (auto p : opengl_manager.programs) {
-		Program program = *p.second;
+		Program& program = *p.second;
 
 		glUseProgram(program.id);
 		glBindVertexArray(opengl_manager.vao);
