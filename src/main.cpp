@@ -289,15 +289,17 @@ void renderFunc() {
 
 
 			if (program.uniforms["colorTex"] != -1) {
-				glActiveTexture(program.uniforms["colorTex"]);
-				glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["colorTex"]);
-				glUniform1i(opengl_manager.texture_unit_handler["colorTex"], 0);
+				const Texture& t = opengl_manager.texture_ids["colorTex"];
+				glActiveTexture(GL_TEXTURE0 + t.n_texture);
+				glBindTexture(GL_TEXTURE_2D, t.id);
+				glUniform1i(program.uniforms["emiTex"], 0);
 			}
 
 			if (program.uniforms["emiTex"] != -1) {
-				glActiveTexture(program.uniforms["emiTex"]);
-				glBindTexture(GL_TEXTURE_2D, opengl_manager.texture_ids["emiTex"]);
-				glUniform1i(opengl_manager.texture_unit_handler["emiTex"], 1);
+				const Texture& t = opengl_manager.texture_ids["emiTex"];
+				glActiveTexture(GL_TEXTURE0 + t.n_texture);
+				glBindTexture(GL_TEXTURE_2D, t.id);
+				glUniform1i(program.uniforms["emiTex"], 1);
 			}
 
 			glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,

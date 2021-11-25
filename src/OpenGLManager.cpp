@@ -4,17 +4,16 @@
 // Guarantees that both texture id and uniform Id are created
 bool OpenGLManager::load_texture(const std::string& path,
                                  const std::string& name) {
-  int tmp_tex_id;
-  //int tmp_uniform_id = GL_TEXTURE0 +  texture_ids.size();
 
-  tmp_tex_id = loadTex(path.c_str());
+  int tmp_tex_id = loadTex(path.c_str());
 
   if (tmp_tex_id == -1) return false;
 
-  //glUniform1i(tmp_uniform_id, tmp_tex_id);
+  Texture aux_tex;
+  aux_tex.id = tmp_tex_id;
+  aux_tex.n_texture = texture_ids.size();
 
-  texture_ids[name] = tmp_tex_id;
-  //texture_unit_handler[name] = tmp_uniform_id;
+  texture_ids[name] = aux_tex;
 
   return true;
 }

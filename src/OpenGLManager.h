@@ -38,6 +38,9 @@ struct Program : OglObject{
 	std::unordered_set<MeshInstance*> asociated_meshes;
 };
 
+struct Texture : public OglObject {
+	unsigned n_texture;
+};
 
 class OpenGLManager {
 private:
@@ -46,9 +49,7 @@ private:
 public:
 	// linked shaders
 	std::map<std::string, Program*> programs;
-
-	std::map<std::string, unsigned> texture_unit_handler; // TU ids for shaders
-	std::map<std::string, unsigned> texture_ids;				  // Texture identifiers
+	std::map<std::string, Texture> texture_ids;				  // Texture identifiers
 
 	std::map<std::string, VertexShader*> vertex_shaders;
 	std::map<std::string, FragmentShader*> fragment_shaders;
