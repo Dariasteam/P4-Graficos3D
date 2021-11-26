@@ -1,8 +1,9 @@
-#include "BOX.h"
+#include "AssimpManager.h"
 #include "Camera.h"
 #include "Spatial.h"
 #include "auxiliar.h"
 #include "OpenGLManager.h"
+#include "MeshManager.hpp"
 
 #include <GL/glew.h>
 #include <glm/fwd.hpp>
@@ -16,9 +17,11 @@
 #include <iostream>
 #include <vector>
 
-OpenGLManager opengl_manager;
+OGLManager opengl_manager;
 AbstractCameraHandler* camera = new FPSCameraHandler;
 std::vector<Spatial*> scene_objects;
+MeshManager mesh_manager;
+MeshLoader loader;
 
 //////////////////////////////////////////////////////////////
 // Datos que se almacenan en la memoria de la CPU
@@ -131,25 +134,21 @@ int main(int argc, char** argv) {
 																		 *opengl_manager.fragment_shaders["f1"],
 																		 uniforms, attributes)) exit(-1);
 
-	opengl_manager.instantiateMesh(cubeNVertex,
-																 cubeNTriangleIndex,
-																 cubeTriangleIndex,
-																 cubeVertexPos,
-																 cubeVertexColor,
-																 cubeVertexNormal,
-																 cubeVertexTexCoord,
-																 cubeVertexTangent,
-																 *opengl_manager.programs["p0"]);
+	loader.import_default_cube();
 
-	opengl_manager.instantiateMesh(cubeNVertex,
-																 cubeNTriangleIndex,
-																 cubeTriangleIndex,
-																 cubeVertexPos,
-																 cubeVertexColor,
-																 cubeVertexNormal,
-																 cubeVertexTexCoord,
-																 cubeVertexTangent,
-																 *opengl_manager.programs["p1"]);
+	mesh_manager.load_temp_meshes_into_memory(loader.get_meshes());
+/*
+	opengl_manager.instantiateMesh(loader.get_meshes()[0]->n_vertices,
+																 loader.get_meshes()[0]->n_triangles,
+																 loader.get_meshes()[0]->facesIndex,
+																 loader.get_meshes()[0]->vertexPos,
+																 loader.get_meshes()[0]->vertexColors,
+																 loader.get_meshes()[0]->normals,
+																 loader.get_meshes()[0]->texCoords,
+																 loader.get_meshes()[0]->tangents);
+
+*/
+
 
 	const std::map<std::string, unsigned> attribute_name_location {
     {"inPos", 0},
@@ -158,13 +157,14 @@ int main(int argc, char** argv) {
     {"inTexCoord", 3},
   };
 
+	opengl_manager.bound_program_attributes(*opengl_manager.programs["p0"], attribute_name_location);
+	opengl_manager.bound_program_attributes(*opengl_manager.programs["p1"], attribute_name_location);
 
-	opengl_manager.boundProgramParametersAttributes(*opengl_manager.programs["p0"], attribute_name_location);
-	opengl_manager.boundProgramParametersAttributes(*opengl_manager.programs["p1"], attribute_name_location);
+	auto ogl_meshes = mesh_manager.get_meshes();
 
-	MeshInstance* cubemesh1 = new MeshInstance;
-	MeshInstance* cubemesh2 = new MeshInstance;
-	MeshInstance* cubemesh3 = new MeshInstance;
+	MeshInstance* cubemesh1 = new MeshInstance (ogl_meshes[0]);
+	MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[0]);
+	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[1]);
 
 	cubemesh1->update_logic = [](Spatial& self, const float dummy_time) {
 		self.rotation().x = dummy_time / 4;
@@ -260,8 +260,9 @@ void renderFunc() {
 		glUseProgram(program.id);
 		glBindVertexArray(opengl_manager.vao);
 
-		for (MeshInstance* mesh : program.asociated_meshes) {
-			const auto model = mesh->get_model_matrix();
+		for (MeshInstance* mesh_instance : program.associated_meshes) {
+			const OglMesh* mesh = mesh_instance->mesh;
+			const auto model = mesh_instance->get_model_matrix();
 
 			glm::mat4 modelView = view * model;
 			glm::mat4 modelViewProj = proj * modelView;
@@ -274,8 +275,10 @@ void renderFunc() {
 			if (program.uniforms["normal"] != -1)
 				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
 
+
+
 			// Textures
-			for (const std::string texture_name : texture_names) {
+			for (const std::string& texture_name : texture_names) {
 				if (program.uniforms[texture_name] != -1) {
 					const Texture& t = opengl_manager.texture_ids[texture_name];
 					glActiveTexture(GL_TEXTURE0 + t.n_texture);
@@ -284,7 +287,9 @@ void renderFunc() {
 				}
 			}
 
-			glDrawElements(GL_TRIANGLES, cubeNTriangleIndex * 3,
+
+			 // FIXME: this value currently is zero!  cubeNTriangleIndex * 3
+			glDrawElements(GL_TRIANGLES, mesh->n_triangles * 3,
 								   	 GL_UNSIGNED_INT, (void*)0);
 		}
 	}

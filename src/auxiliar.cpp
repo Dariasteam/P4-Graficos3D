@@ -1,5 +1,3 @@
-#include "BOX.h"
-
 //#include <windows.h>
 
 #include <fstream>

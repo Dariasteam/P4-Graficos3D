@@ -3,6 +3,9 @@
 
 #include "Spatial.h"
 #include "auxiliar.h"
+#include "Shaders.hpp"
+#include "Program.hpp"
+
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
@@ -15,48 +18,12 @@
 #include <string>
 #include <unordered_set>
 
-struct OglObject {
-	unsigned id;
-};
-
-struct FragmentShader : public OglObject {
-	~FragmentShader() {
-		glDeleteShader(id);
-	}
-};
-
-struct VertexShader : public OglObject {
-	~VertexShader() {
-		glDeleteShader(id);
-	}
-};
-
-struct Program : OglObject{
-
-	const VertexShader* vertex;
-	const FragmentShader* fragment;
-
-	std::map<std::string, int> uniforms;
-	std::map<std::string, int> attributes;
-
-	std::unordered_set<MeshInstance*> asociated_meshes;
-
-	void detach () {
-    glDetachShader(id, vertex->id);
-    glDetachShader(id, fragment->id);
-	}
-
-	~Program () {
-		glDeleteProgram(id);
-	}
-
-};
-
 struct Texture : public OglObject {
 	unsigned n_texture;
 };
 
-class OpenGLManager {
+
+class OGLManager {
 private:
   GLuint loadShader(const char *fileName, GLenum type);
 
@@ -107,14 +74,13 @@ public:
 											const float* vertexColors,
 											const float* normals,
 											const float* texCoords,
-											const float* tangents,
-											const Program& program);
+											const float* tangents);
 
-	int boundProgramParametersAttributes (Program& program,
+	int bound_program_attributes (Program& program,
 																				const std::map<std::string, unsigned>&
 																				attribute_name_location);
 
-	~OpenGLManager() {
+	~OGLManager() {
 		destroy ();
 	}
 
@@ -123,6 +89,5 @@ public:
 
 	void destroy();
 };
-
 
 #endif

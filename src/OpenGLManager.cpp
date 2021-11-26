@@ -2,8 +2,8 @@
 #include <vector>
 
 // Guarantees that both texture id and uniform Id are created
-bool OpenGLManager::load_texture(const std::string& path,
-                                 const std::string& name) {
+bool OGLManager::load_texture(const std::string& path,
+                              const std::string& name) {
 
   int tmp_tex_id = loadTex(path.c_str());
 
@@ -18,7 +18,7 @@ bool OpenGLManager::load_texture(const std::string& path,
   return true;
 }
 
-unsigned int OpenGLManager::loadTex(const char *fileName) {
+unsigned int OGLManager::loadTex(const char *fileName) {
   unsigned char *map;
   unsigned int w, h;
   map = loadTexture(fileName, w, h);
@@ -49,9 +49,9 @@ unsigned int OpenGLManager::loadTex(const char *fileName) {
 }
 
 
-int OpenGLManager::boundProgramParametersAttributes (Program& program,
-                                                    const std::map<std::string, unsigned>&
-                                                    attribute_name_location) {
+int OGLManager::bound_program_attributes (Program& program,
+                                          const std::map<std::string, unsigned>&
+                                          attribute_name_location) {
 
   // We are using indexes because the shaders are using layout / location
   for (const auto& element : attribute_name_location) {
@@ -61,58 +61,61 @@ int OpenGLManager::boundProgramParametersAttributes (Program& program,
 }
 
 
-int OpenGLManager::instantiateMesh(const unsigned n_vertices,
-                                   const unsigned n_faces,
-                                   const unsigned *faceIndices,
-                                   const float *vertexCoord,
-                                   const float *vertexColors,
-                                   const float *normals, const float *texCoords,
-                                   const float *tangents,
-                                   const Program& program) {
+int OGLManager::instantiateMesh(const unsigned n_vertices,
+                                const unsigned n_faces,
+                                const unsigned *faceIndices,
+                                const float *vertexCoord,
+                                const float *vertexColors,
+                                const float *normals,
+                                const float *texCoords,
+                                const float *tangents) {
 
   glGenBuffers(1, &posVBO);
   glGenBuffers(1, &colorVBO);
   glGenBuffers(1, &normalVBO);
   glGenBuffers(1, &texCoordVBO);
+  glGenBuffers(1, &triangleIndexVBO);
 
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-
-  glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 2, texCoords,
-               GL_STATIC_DRAW);
-
+  // POS
   glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, vertexCoord,
+  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, nullptr,
                GL_STATIC_DRAW);
 
+  glBufferSubData(GL_ARRAY_BUFFER, 0,
+											n_vertices * sizeof(float) * 3, vertexCoord);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+  // COLOR
   glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
   glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, vertexColors,
                GL_STATIC_DRAW);
-
-
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+  // NORMAL
   glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
   glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, normals,
                GL_STATIC_DRAW);
-
-
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+  // TEX COORDS
   glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
+  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 2, texCoords,
+               GL_STATIC_DRAW);
   glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-
-  glGenBuffers(1, &triangleIndexVBO);
+  // TRIANGLE INDEX
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, n_faces * sizeof(unsigned int) * 3,
                faceIndices, GL_STATIC_DRAW);
+  return -1;
 }
 
-bool OpenGLManager::load_vertex_shader (const std::string& path,
-                                        const std::string& name) {
+bool OGLManager::load_vertex_shader (const std::string& path,
+                                     const std::string& name) {
+
   int vshader = loadShader(path.c_str(), GL_VERTEX_SHADER);
 
   if (vshader < 0) return false;
@@ -124,8 +127,8 @@ bool OpenGLManager::load_vertex_shader (const std::string& path,
   return true;
 }
 
-bool OpenGLManager::load_fragment_shader (const std::string& path,
-                                          const std::string& name) {
+bool OGLManager::load_fragment_shader (const std::string& path,
+                                       const std::string& name) {
 
   int fshader = loadShader(path.c_str(), GL_FRAGMENT_SHADER_ARB);
 
@@ -138,11 +141,11 @@ bool OpenGLManager::load_fragment_shader (const std::string& path,
   return true;
 }
 
-bool OpenGLManager::create_program(const std::string& program_name,
-                                   const VertexShader& vertex_shader,
-											             const FragmentShader& fragment_shader,
-                                   const std::vector<std::string>& uniforms_names,
-                                   const std::vector<std::string>& attributes_names) {
+bool OGLManager::create_program(const std::string& program_name,
+                                const VertexShader& vertex_shader,
+											          const FragmentShader& fragment_shader,
+                                const std::vector<std::string>& uniforms_names,
+                                const std::vector<std::string>& attributes_names) {
 
   const unsigned program_id = glCreateProgram();
 
@@ -204,13 +207,13 @@ bool OpenGLManager::create_program(const std::string& program_name,
   return true;
 }
 
-void OpenGLManager::set_mesh_per_program (Program& program,
-                                          MeshInstance* mesh) const {
+void OGLManager::set_mesh_per_program (Program& program,
+                                       MeshInstance* mesh) const {
 
-  program.asociated_meshes.insert(mesh);
+  program.associated_meshes.insert(mesh);
 }
 
-GLuint OpenGLManager::loadShader(const char *fileName, GLenum type) {
+GLuint OGLManager::loadShader(const char *fileName, GLenum type) {
   unsigned int fileLen;
   char *source = loadStringFromFile(fileName, fileLen);
 
@@ -233,21 +236,22 @@ GLuint OpenGLManager::loadShader(const char *fileName, GLenum type) {
     std::cout << "Error: " << logString << std::endl;
     delete[] logString;
     glDeleteShader(shader);
-    //exit(-1);
     return -1;
   }
 
   return shader;
 }
 
-void OpenGLManager::init_context() {
+void OGLManager::init_context() {
 
 }
 
-void OpenGLManager::init_OGL() {}
+void OGLManager::init_OGL() {
+
+}
 
 
-void OpenGLManager::destroy() {
+void OGLManager::destroy() {
   glDeleteBuffers(1, &posVBO);
   glDeleteBuffers(1, &colorVBO);
   glDeleteBuffers(1, &normalVBO);
@@ -266,11 +270,6 @@ void OpenGLManager::destroy() {
 
   for (const auto &p : programs)
     delete p.second;
-
-
-  fragment_shaders.clear();
-  vertex_shaders.clear();
-  programs.clear();
 
   // FIXME: Release resources for textures
   for (const auto it : texture_ids) {
