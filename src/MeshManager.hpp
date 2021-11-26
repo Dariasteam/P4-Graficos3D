@@ -5,9 +5,10 @@
 #include "LoadingMesh.hpp"
 
 #include <vector>
+#include <iostream>
 
 class MeshManager {
-private:
+public:
 	unsigned vao;
 
 	unsigned posVBO;
@@ -20,8 +21,8 @@ private:
 public:
   const std::vector<OglMesh>& get_meshes() { return meshes; }
 
-	bool load_temp_meshes_into_memory (const std::vector<LoadingMesh*>& loadable_meshes) {
-		glGenBuffers(1, &posVBO);
+  void generate_VBOs () {
+    glGenBuffers(1, &posVBO);
 		glGenBuffers(1, &colorVBO);
 		glGenBuffers(1, &normalVBO);
 		glGenBuffers(1, &texCoordVBO);
@@ -29,6 +30,19 @@ public:
 
 		glGenVertexArrays(1, &vao);
   	glBindVertexArray(vao);
+  }
+
+  ~MeshManager () {
+    std::cout << "Closing VBOs" << std::endl;
+    glDeleteBuffers(1, &posVBO);
+    glDeleteBuffers(1, &colorVBO);
+    glDeleteBuffers(1, &normalVBO);
+    glDeleteBuffers(1, &texCoordVBO);
+    glDeleteBuffers(1, &triangleIndexVBO);
+    glDeleteVertexArrays(1, &vao);
+  }
+
+	bool populate_VBOs (const std::vector<LoadingMesh*>& loadable_meshes) {
 
 		unsigned n_total_vertices{0};
 		unsigned n_total_triangles{0};

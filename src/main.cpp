@@ -136,18 +136,9 @@ int main(int argc, char** argv) {
 
 	loader.import_default_cube();
 
-	mesh_manager.load_temp_meshes_into_memory(loader.get_meshes());
-/*
-	opengl_manager.instantiateMesh(loader.get_meshes()[0]->n_vertices,
-																 loader.get_meshes()[0]->n_triangles,
-																 loader.get_meshes()[0]->facesIndex,
-																 loader.get_meshes()[0]->vertexPos,
-																 loader.get_meshes()[0]->vertexColors,
-																 loader.get_meshes()[0]->normals,
-																 loader.get_meshes()[0]->texCoords,
-																 loader.get_meshes()[0]->tangents);
+	mesh_manager.generate_VBOs();
+	mesh_manager.populate_VBOs(loader.get_meshes());
 
-*/
 
 
 	const std::map<std::string, unsigned> attribute_name_location {
@@ -258,7 +249,7 @@ void renderFunc() {
 		Program& program = *p.second;
 
 		glUseProgram(program.id);
-		glBindVertexArray(opengl_manager.vao);
+		glBindVertexArray(mesh_manager.vao);
 
 		for (MeshInstance* mesh_instance : program.associated_meshes) {
 			const OglMesh* mesh = mesh_instance->mesh;

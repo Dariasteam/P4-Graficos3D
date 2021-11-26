@@ -61,7 +61,13 @@ int OGLManager::bound_program_attributes (Program& program,
 }
 
 
-int OGLManager::instantiateMesh(const unsigned n_vertices,
+int OGLManager::instantiateMesh(const unsigned posVBO,
+                                const unsigned colorVBO,
+                                const unsigned normalVBO,
+                                const unsigned texCoordVBO,
+                                const unsigned triangleIndexVBO,
+
+                                const unsigned n_vertices,
                                 const unsigned n_faces,
                                 const unsigned *faceIndices,
                                 const float *vertexCoord,
@@ -69,7 +75,7 @@ int OGLManager::instantiateMesh(const unsigned n_vertices,
                                 const float *normals,
                                 const float *texCoords,
                                 const float *tangents) {
-
+/*
   glGenBuffers(1, &posVBO);
   glGenBuffers(1, &colorVBO);
   glGenBuffers(1, &normalVBO);
@@ -78,7 +84,7 @@ int OGLManager::instantiateMesh(const unsigned n_vertices,
 
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
-
+*/
   // POS
   glBindBuffer(GL_ARRAY_BUFFER, posVBO);
   glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, nullptr,
@@ -252,12 +258,6 @@ void OGLManager::init_OGL() {
 
 
 void OGLManager::destroy() {
-  glDeleteBuffers(1, &posVBO);
-  glDeleteBuffers(1, &colorVBO);
-  glDeleteBuffers(1, &normalVBO);
-  glDeleteBuffers(1, &texCoordVBO);
-  glDeleteBuffers(1, &triangleIndexVBO);
-  glDeleteVertexArrays(1, &vao);
 
   for (const auto &p : programs)
     p.second->detach();

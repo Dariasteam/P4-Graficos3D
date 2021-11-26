@@ -36,6 +36,7 @@ public:
 	std::map<std::string, FragmentShader*> fragment_shaders;
 
 	// We use this to preallocate all possible objects of the scene
+	/*
 	unsigned vao;
 
 	unsigned posVBO;
@@ -43,6 +44,7 @@ public:
 	unsigned normalVBO;
 	unsigned texCoordVBO;
 	unsigned triangleIndexVBO;
+	*/
 
 	// Identificadores de texturas opengl
 	int colorTexId;
@@ -67,14 +69,20 @@ public:
 	//y devuelve el identificador de la textura
 	unsigned int loadTex(const char *fileName);
 
-	int instantiateMesh(const unsigned n_vertices,
+	int instantiateMesh(const unsigned posVBO,
+											const unsigned colorVBO,
+											const unsigned normalVBO,
+											const unsigned texCoordVBO,
+											const unsigned triangleIndexVBO,
+
+											const unsigned n_vertices,
 											const unsigned n_faces,
-											const unsigned* faceIndices,
-											const float* vertexCoord,
-											const float* vertexColors,
-											const float* normals,
-											const float* texCoords,
-											const float* tangents);
+											const unsigned *faceIndices,
+											const float *vertexCoord,
+											const float *vertexColors,
+											const float *normals,
+											const float *texCoords,
+											const float *tangents);
 
 	int bound_program_attributes (Program& program,
 																				const std::map<std::string, unsigned>&
