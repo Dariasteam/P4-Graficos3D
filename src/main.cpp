@@ -135,11 +135,10 @@ int main(int argc, char** argv) {
 																		 uniforms, attributes)) exit(-1);
 
 	loader.import_default_cube();
+	loader.import_default_cube();
 
 	mesh_manager.generate_VBOs();
 	mesh_manager.populate_VBOs(loader.get_meshes());
-
-
 
 	const std::map<std::string, unsigned> attribute_name_location {
     {"inPos", 0},
@@ -155,7 +154,7 @@ int main(int argc, char** argv) {
 
 	MeshInstance* cubemesh1 = new MeshInstance (ogl_meshes[0]);
 	MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[0]);
-	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[1]);
+	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[0]);
 
 	cubemesh1->update_logic = [](Spatial& self, const float dummy_time) {
 		self.rotation().x = dummy_time / 4;
@@ -245,11 +244,13 @@ void renderFunc() {
 	const auto view = camera->get_view_matrix();
 	const auto proj = camera->get_projection_matrix();
 
+	unsigned offset_ac {0};
+
 	for (auto p : opengl_manager.programs) {
 		Program& program = *p.second;
 
 		glUseProgram(program.id);
-		glBindVertexArray(mesh_manager.vao);
+		glBindVertexArray(mesh_manager.get_vao());
 
 		for (MeshInstance* mesh_instance : program.associated_meshes) {
 			const OglMesh* mesh = mesh_instance->mesh;
@@ -267,7 +268,6 @@ void renderFunc() {
 				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
 
 
-
 			// Textures
 			for (const std::string& texture_name : texture_names) {
 				if (program.uniforms[texture_name] != -1) {
@@ -278,10 +278,10 @@ void renderFunc() {
 				}
 			}
 
-
-			 // FIXME: this value currently is zero!  cubeNTriangleIndex * 3
+			 // FIXME: This depend of the object
 			glDrawElements(GL_TRIANGLES, mesh->n_triangles * 3,
-								   	 GL_UNSIGNED_INT, (void*)0);
+								   	 GL_UNSIGNED_INT, (GLvoid*)(mesh->gl_draw_offset));
+			offset_ac += mesh->n_triangles * 3;
 		}
 	}
 
