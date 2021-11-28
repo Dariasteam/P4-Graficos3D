@@ -242,14 +242,8 @@ void renderFunc() {
 
 	glViewport(0, 0, w, h);
 
-	std::vector<std::string> texture_names {
-		"colorTex",
-		"emiTex"
-	};
-
-	// Meshes
-	const auto view = camera->get_view_matrix();
-	const auto proj = camera->get_projection_matrix();
+	const auto& view = camera->get_view_matrix();
+	const auto& proj = camera->get_projection_matrix();
 
 	for (auto p : opengl_manager.programs) {
 		Program& program = *p.second;
@@ -264,7 +258,7 @@ void renderFunc() {
 
 			material->calculate_matrices(model,view, proj);
 
-			// UNIFORMS
+			// Upload Uniforms
 			for (const auto& uniform : program.uniforms) {
 				const std::string& name = uniform.first;
 				const int parameter_id = uniform.second;
