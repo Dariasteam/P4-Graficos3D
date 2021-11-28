@@ -101,9 +101,11 @@ int main(int argc, char** argv) {
 	initContext(argc, argv);
 	initOGL();
 
+	// LOAD TEXTURES
 	if (!opengl_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
 	if (!opengl_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
+	// DEFINE SHADERS PARAMETERS
 	std::vector<std::string> uniforms {
 		"normal",
 		"modelView",
@@ -120,12 +122,14 @@ int main(int argc, char** argv) {
 		"inTexCoord"
 	};
 
+	// COMPILING SHADERS
 	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
 	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
 
 	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v1.vert", "v1")) exit(-1);
 	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
+	// COMPILING PROGRAMS
 	if (!opengl_manager.create_program("p0",
 																		 *opengl_manager.vertex_shaders["v0"],
 																		 *opengl_manager.fragment_shaders["f0"],
@@ -136,12 +140,14 @@ int main(int argc, char** argv) {
 																		 *opengl_manager.fragment_shaders["f1"],
 																		 uniforms, attributes)) exit(-1);
 
-	loader.import_from_file("meshes/bitxo_piernas.glb");
+	// LOADING MESHES
 	loader.import_default_cube();
+	loader.import_from_file("meshes/bitxo_piernas.glb");
 
 	mesh_manager.generate_VBOs();
 	mesh_manager.populate_VBOs(loader.get_meshes());
 
+	// TANKING ADVANTAGE OF LAYOUT / LOCATION
 	const std::map<std::string, unsigned> attribute_name_location {
     {"inPos", 0},
     {"inColor", 1},
@@ -149,8 +155,8 @@ int main(int argc, char** argv) {
     {"inTexCoord", 3},
   };
 
-	opengl_manager.bound_program_attributes(*opengl_manager.programs["p1"], attribute_name_location);
 	opengl_manager.bound_program_attributes(*opengl_manager.programs["p0"], attribute_name_location);
+	opengl_manager.bound_program_attributes(*opengl_manager.programs["p1"], attribute_name_location);
 
 	auto ogl_meshes = mesh_manager.get_meshes();
 
@@ -161,13 +167,13 @@ int main(int argc, char** argv) {
 	Material* mat_a = new Material;
 	mat_a->shader_parameters["colorTex"] = new SP_Texture(opengl_manager.texture_ids["colorTex"]);
 	mat_a->shader_parameters["emiTex"] = new SP_Texture(opengl_manager.texture_ids["emiTex"]);
-	mat_a->shader_parameters["color_override"] = new SP_Vec4f({1,0,0,0});
+	mat_a->shader_parameters["color_override"] = new SP_Vec4f({0,0,0,0});
 
+	robotmesh->mat = mat_a;
 	cubemesh2->mat = mat_a;
 	cubemesh3->mat = mat_a;
-	robotmesh->mat = mat_a;
 
-	robotmesh->update_logic = [](Spatial& self, const float dummy_time) {
+	cubemesh3->update_logic = [](Spatial& self, const float dummy_time) {
 		self.rotation().x = dummy_time / 4;
 		self.rotation().y = dummy_time / 4;
 	};
@@ -175,16 +181,16 @@ int main(int argc, char** argv) {
 	cubemesh2->translation().x = -2;
 	cubemesh2->translation().y = 2;
 
-	cubemesh3->translation().x = 2;
-	cubemesh3->translation().y = -2;
+	robotmesh->translation().x = 2;
+	robotmesh->translation().y = -2;
 
 	scene_objects.push_back(robotmesh);
 	scene_objects.push_back(cubemesh2);
-	//scene_objects.push_back(cubemesh3);
+	scene_objects.push_back(cubemesh3);
 
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], cubemesh2);
 	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], robotmesh);
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh2);
-	//opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
 
 	glutMainLoop();
 	destroy();
