@@ -1,9 +1,10 @@
 #include "AssimpManager.h"
 #include "Camera.h"
+#include "Material.hpp"
 #include "Spatial.h"
 #include "auxiliar.h"
 #include "OpenGLManager.h"
-#include "MeshManager.hpp"
+#include "VBOHandler.hpp"
 
 #include <GL/glew.h>
 #include <glm/fwd.hpp>
@@ -20,7 +21,7 @@
 OGLManager opengl_manager;
 AbstractCameraHandler* camera = new FPSCameraHandler;
 std::vector<Spatial*> scene_objects;
-MeshManager mesh_manager;
+VBOHandler mesh_manager;
 MeshLoader loader;
 
 //////////////////////////////////////////////////////////////
@@ -108,7 +109,8 @@ int main(int argc, char** argv) {
 		"modelView",
 		"modelViewProj",
 		"colorTex",
-		"emiTex"
+		"emiTex",
+		"color_override"
 	};
 
 	std::vector<std::string> attributes {
@@ -134,7 +136,7 @@ int main(int argc, char** argv) {
 																		 *opengl_manager.fragment_shaders["f1"],
 																		 uniforms, attributes)) exit(-1);
 
-	loader.import_default_cube();
+	loader.import_from_file("meshes/bitxo_piernas.glb");
 	loader.import_default_cube();
 
 	mesh_manager.generate_VBOs();
@@ -147,16 +149,23 @@ int main(int argc, char** argv) {
     {"inTexCoord", 3},
   };
 
-	opengl_manager.bound_program_attributes(*opengl_manager.programs["p0"], attribute_name_location);
 	opengl_manager.bound_program_attributes(*opengl_manager.programs["p1"], attribute_name_location);
+	opengl_manager.bound_program_attributes(*opengl_manager.programs["p0"], attribute_name_location);
 
 	auto ogl_meshes = mesh_manager.get_meshes();
 
-	MeshInstance* cubemesh1 = new MeshInstance (ogl_meshes[0]);
+	MeshInstance* robotmesh = new MeshInstance (ogl_meshes[1]);
 	MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[0]);
-	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[0]);
+ 	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[0]);
 
-	cubemesh1->update_logic = [](Spatial& self, const float dummy_time) {
+	Material* mat_a = new Material;
+	mat_a->shader_parameters["color_override"] = new SP_Vec4f({1,0,0,0});
+
+	cubemesh2->mat = mat_a;
+	cubemesh3->mat = mat_a;
+	robotmesh->mat = mat_a;
+
+	robotmesh->update_logic = [](Spatial& self, const float dummy_time) {
 		self.rotation().x = dummy_time / 4;
 		self.rotation().y = dummy_time / 4;
 	};
@@ -167,17 +176,13 @@ int main(int argc, char** argv) {
 	cubemesh3->translation().x = 2;
 	cubemesh3->translation().y = -2;
 
-	cubemesh1->set_obj_id(0);
-	cubemesh2->set_obj_id(0);
-	cubemesh3->set_obj_id(1);
-
-	scene_objects.push_back(cubemesh1);
+	scene_objects.push_back(robotmesh);
 	scene_objects.push_back(cubemesh2);
-	scene_objects.push_back(cubemesh3);
+	//scene_objects.push_back(cubemesh3);
 
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], cubemesh1);
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], cubemesh2);
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], robotmesh);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh2);
+	//opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
 
 	glutMainLoop();
 	destroy();
@@ -244,8 +249,6 @@ void renderFunc() {
 	const auto view = camera->get_view_matrix();
 	const auto proj = camera->get_projection_matrix();
 
-	unsigned offset_ac {0};
-
 	for (auto p : opengl_manager.programs) {
 		Program& program = *p.second;
 
@@ -253,20 +256,18 @@ void renderFunc() {
 		glBindVertexArray(mesh_manager.get_vao());
 
 		for (MeshInstance* mesh_instance : program.associated_meshes) {
-			const OglMesh* mesh = mesh_instance->mesh;
+			const OglMesh* ogl_mesh = mesh_instance->mesh;
 			const auto model = mesh_instance->get_model_matrix();
+			Material* material = mesh_instance->mat;
 
-			glm::mat4 modelView = view * model;
-			glm::mat4 modelViewProj = proj * modelView;
-			glm::mat4 normal = glm::transpose(glm::inverse(modelView));
+			material->calculate_matrices(model,view, proj);
 
-			if (program.uniforms["modelView"] != -1)
-				glUniformMatrix4fv(program.uniforms["modelView"], 1, GL_FALSE, &(modelView[0][0]));
-			if (program.uniforms["modelViewProj"] != -1)
-				glUniformMatrix4fv(program.uniforms["modelViewProj"], 1, GL_FALSE, &(modelViewProj[0][0]));
-			if (program.uniforms["normal"] != -1)
-				glUniformMatrix4fv(program.uniforms["normal"], 1, GL_FALSE, &(normal[0][0]));
-
+			// UNIFORMS
+			for (const auto& uniform : program.uniforms) {
+				const std::string& name = uniform.first;
+				const int parameter_id = uniform.second;
+				mesh_instance->mat->get_parameter(name, parameter_id);
+			}
 
 			// Textures
 			for (const std::string& texture_name : texture_names) {
@@ -279,9 +280,8 @@ void renderFunc() {
 			}
 
 			 // FIXME: This depend of the object
-			glDrawElements(GL_TRIANGLES, mesh->n_triangles * 3,
-								   	 GL_UNSIGNED_INT, (GLvoid*)(mesh->gl_draw_offset));
-			offset_ac += mesh->n_triangles * 3;
+			glDrawElements(GL_TRIANGLES, ogl_mesh->n_triangles * 3,
+								   	 GL_UNSIGNED_INT, (GLvoid*)(ogl_mesh->gl_draw_offset));
 		}
 	}
 

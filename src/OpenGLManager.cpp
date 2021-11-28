@@ -60,65 +60,6 @@ int OGLManager::bound_program_attributes (Program& program,
   }
 }
 
-
-int OGLManager::instantiateMesh(const unsigned posVBO,
-                                const unsigned colorVBO,
-                                const unsigned normalVBO,
-                                const unsigned texCoordVBO,
-                                const unsigned triangleIndexVBO,
-
-                                const unsigned n_vertices,
-                                const unsigned n_faces,
-                                const unsigned *faceIndices,
-                                const float *vertexCoord,
-                                const float *vertexColors,
-                                const float *normals,
-                                const float *texCoords,
-                                const float *tangents) {
-/*
-  glGenBuffers(1, &posVBO);
-  glGenBuffers(1, &colorVBO);
-  glGenBuffers(1, &normalVBO);
-  glGenBuffers(1, &texCoordVBO);
-  glGenBuffers(1, &triangleIndexVBO);
-
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-*/
-  // POS
-  glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, nullptr,
-               GL_STATIC_DRAW);
-
-  glBufferSubData(GL_ARRAY_BUFFER, 0,
-											n_vertices * sizeof(float) * 3, vertexCoord);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  // COLOR
-  glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
-  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, vertexColors,
-               GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  // NORMAL
-  glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 3, normals,
-               GL_STATIC_DRAW);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-  // TEX COORDS
-  glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-  glBufferData(GL_ARRAY_BUFFER, n_vertices * sizeof(float) * 2, texCoords,
-               GL_STATIC_DRAW);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
-  // TRIANGLE INDEX
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, n_faces * sizeof(unsigned int) * 3,
-               faceIndices, GL_STATIC_DRAW);
-  return -1;
-}
-
 bool OGLManager::load_vertex_shader (const std::string& path,
                                      const std::string& name) {
 

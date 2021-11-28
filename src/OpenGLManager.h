@@ -69,21 +69,6 @@ public:
 	//y devuelve el identificador de la textura
 	unsigned int loadTex(const char *fileName);
 
-	int instantiateMesh(const unsigned posVBO,
-											const unsigned colorVBO,
-											const unsigned normalVBO,
-											const unsigned texCoordVBO,
-											const unsigned triangleIndexVBO,
-
-											const unsigned n_vertices,
-											const unsigned n_faces,
-											const unsigned *faceIndices,
-											const float *vertexCoord,
-											const float *vertexColors,
-											const float *normals,
-											const float *texCoords,
-											const float *tangents);
-
 	int bound_program_attributes (Program& program,
 																				const std::map<std::string, unsigned>&
 																				attribute_name_location);

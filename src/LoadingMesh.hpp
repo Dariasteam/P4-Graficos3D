@@ -5,17 +5,6 @@
 #include <algorithm>
 
 struct LoadingMesh {
-  LoadingMesh (const unsigned n_t, const unsigned n_v) :
-    n_triangles (n_t),
-    n_vertices (n_v),
-    vertexPos (new float[n_v * 3]),
-    normals (new float[n_v * 3]),
-    tangents (new float[n_v * 3]),
-    vertexColors (new float[n_v * 3]),
-    texCoords (new float[n_v * 2]),
-    facesIndex(new unsigned[n_t * 3])
-  {}
-
 	unsigned n_triangles;
 	unsigned n_vertices;
 
@@ -27,6 +16,17 @@ struct LoadingMesh {
 
 	unsigned* facesIndex;
 
+  LoadingMesh (const unsigned n_t, const unsigned n_v) :
+    n_triangles (n_t),
+    n_vertices (n_v),
+    vertexPos (new float[n_v * 3]),
+    normals (new float[n_v * 3]),
+    tangents (new float[n_v * 3]),
+    vertexColors (new float[n_v * 3]),
+    texCoords (new float[n_v * 2]),
+    facesIndex (new unsigned[n_t * 3])
+  {}
+
 	virtual ~LoadingMesh() {};
 };
 
@@ -34,7 +34,6 @@ struct CubeLoadingMesh : public LoadingMesh {
 	CubeLoadingMesh () :
     LoadingMesh (cubeNTriangleIndex, cubeNVertex)
   {
-
     std::copy(cubeVertexPos, cubeVertexPos + n_vertices * 3, vertexPos);
     std::copy(cubeVertexNormal, cubeVertexNormal + n_vertices * 3, normals);
     std::copy(cubeVertexTangent, cubeVertexTangent + n_vertices * 3, tangents);
@@ -48,8 +47,9 @@ struct CubeLoadingMesh : public LoadingMesh {
 };
 
 struct RegularLoadingMesh : public LoadingMesh {
+
   RegularLoadingMesh (const unsigned n_t, const unsigned n_v) :
-    LoadingMesh (cubeNTriangleIndex, cubeNVertex) {}
+    LoadingMesh (n_t, n_v) {}
 
 	~RegularLoadingMesh () {
 		delete [] vertexPos;

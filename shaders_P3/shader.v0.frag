@@ -6,6 +6,7 @@ in vec3 color;
 in vec3 pos;
 in vec3 norm;
 in vec2 texCoord;
+in vec4 c_override;
 
 uniform sampler2D colorTex;
 uniform sampler2D emiTex;
@@ -35,7 +36,7 @@ void main()
 
 	N = normalize (norm);
 
-	outColor = vec4(shade(), 1.0);
+	outColor = vec4(shade(), 1.0) + c_override;
 }
 
 vec3 shade()

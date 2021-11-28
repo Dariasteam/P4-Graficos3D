@@ -4,15 +4,19 @@
 #include "OGLObject.hpp"
 #include "Spatial.h"
 #include "OGLMesh.hpp"
+#include "Material.hpp"
 
 struct MeshInstance : public Spatial {
 protected:
 	int obj_id = -1;
 public:
+	Material* mat;
 	const OglMesh* mesh;
 
+	// FIXME: memory leak here
+	MeshInstance () : mat(new Material) {}
+
 	int get_obj_id () { return obj_id; }
-	void set_obj_id (int id) { obj_id = id; }
 
 	MeshInstance (const OglMesh& instanced_mesh) {
 		mesh = &instanced_mesh;
