@@ -1,4 +1,4 @@
-#include "AssimpManager.h"
+#include "MeshLoader.h"
 #include "Camera.h"
 #include "Material.hpp"
 #include "Spatial.h"
@@ -24,61 +24,7 @@ std::vector<Spatial*> scene_objects;
 VBOHandler mesh_manager;
 MeshLoader loader;
 
-//////////////////////////////////////////////////////////////
-// Datos que se almacenan en la memoria de la CPU
-//////////////////////////////////////////////////////////////
-
-//Matrices
 int w, h;
-
-//////////////////////////////////////////////////////////////
-// Variables que nos dan acceso a Objetos OpenGL
-//////////////////////////////////////////////////////////////
-/*
-unsigned int vshader;
-unsigned int fshader;
-unsigned int program;
-*/
-
-//Variables Uniform
-/*
-int uModelViewMat;
-int uModelViewProjMat;
-int uNormalMat;
-*/
-
-/*
-//Texturas Uniform
-int uColorTex; // Identificadores de variables del shader (puerto del texture unit)
-int uEmiTex;
-*/
-
-/*
-//Atributos
-int inPos;
-int inColor;
-int inNormal;
-int inTexCoord;
-
-unsigned int vao;
-//VBOs que forman parte del objeto
-unsigned int posVBO;
-unsigned int colorVBO;
-unsigned int normalVBO;
-unsigned int texCoordVBO;
-unsigned int triangleIndexVBO;
-
-*/
-//Textures identificadro de la textura en si
-/*
-unsigned int colorTexId;
-unsigned int emiTexId;
-*/
-
-//////////////////////////////////////////////////////////////
-// Funciones auxiliares
-//////////////////////////////////////////////////////////////
-//!!Por implementar
 
 //Declaraci�n de CB
 void renderFunc();
@@ -143,6 +89,7 @@ int main(int argc, char** argv) {
 	// LOADING MESHES
 	loader.import_default_cube();
 	loader.import_from_file("meshes/bitxo_piernas.glb");
+
 
 	mesh_manager.generate_VBOs();
 	mesh_manager.populate_VBOs(loader.get_meshes());

@@ -1,5 +1,5 @@
-#ifndef _ASSIMP_MANAGER_H_
-#define _ASSIMP_MANAGER_H_
+#ifndef _MESH_LOADER_H_
+#define _MESH_LOADER_H_
 
 #include "LoadingMesh.hpp"
 
@@ -138,4 +138,4 @@ public:
 	}
 };
 
-#endif // _ASSIMP_MANAGER_H_
+#endif // _MESH_LOADER_H_

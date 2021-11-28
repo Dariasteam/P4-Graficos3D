@@ -61,18 +61,22 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, posVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 3, nullptr,
 								 GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 3, nullptr,
 								 GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 3, nullptr,
 									GL_STATIC_DRAW);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 2, nullptr,
 								 GL_STATIC_DRAW);
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, n_total_triangles * sizeof(unsigned) * 3,
@@ -103,42 +107,39 @@ public:
 			glBindBuffer(GL_ARRAY_BUFFER, posVBO);
 			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 3 * sizeof(float),
 											n_vertices * sizeof(float) * 3, vertexCoord);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(offset_vertices * 3 * sizeof(float)));
 
       // COLOR
       glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
 			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 3 * sizeof(float),
 											n_vertices * sizeof(float) * 3, vertexColors);
-      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(offset_vertices * 3 * sizeof(float)));
 
       // NORMAL
 			glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 3 * sizeof(float),
 											n_vertices * sizeof(float) * 3, normals);
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(offset_vertices * 3 * sizeof(float)));
 
       // TEX COORDS
 			glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
 			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 2 * sizeof(float),
 											n_vertices * sizeof(float) * 2, texCoords);
-			glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(offset_vertices * 2 * sizeof(float)));
 
       // TRIANGLE INDEX
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset_triangles * 3 * sizeof(float),
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset_triangles * 3 * sizeof(unsigned),
 											n_triangles * sizeof(unsigned) * 3, facesIndex);
 
 
       OglMesh ogl_mesh;
       ogl_mesh.n_triangles = n_triangles;
       ogl_mesh.n_vertices = n_vertices;
-      ogl_mesh.gl_draw_offset = offset_triangles * 3 * sizeof(float);
+      ogl_mesh.gl_draw_offset = offset_triangles * 3 * sizeof(unsigned);
 
       offset_vertices += n_vertices;
 			offset_triangles += n_triangles;
 
       meshes.push_back(ogl_mesh);
 		}
+
 		return true;
 	}
 };
