@@ -87,9 +87,9 @@ int main(int argc, char** argv) {
 																		 uniforms, attributes)) exit(-1);
 
 	// LOADING MESHES
-	loader.import_default_cube();
 	loader.import_from_file("meshes/bitxo_piernas.glb");
-
+	loader.import_default_cube();
+	loader.import_default_cube();
 
 	mesh_manager.generate_VBOs();
 	mesh_manager.populate_VBOs(loader.get_meshes());
@@ -107,9 +107,9 @@ int main(int argc, char** argv) {
 
 	auto ogl_meshes = mesh_manager.get_meshes();
 
-	MeshInstance* robotmesh = new MeshInstance (ogl_meshes[1]);
-	MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[0]);
- 	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[0]);
+	MeshInstance* robotmesh = new MeshInstance (ogl_meshes[0]);
+	MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[1]);
+ 	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[2]);
 
 	Material* mat_a = new Material;
 	mat_a->shader_parameters["colorTex"] = new SP_Texture(opengl_manager.texture_ids["colorTex"]);
@@ -217,6 +217,18 @@ void renderFunc() {
 				const int parameter_id = uniform.second;
 				mesh_instance->mat->get_parameter(name, parameter_id);
 			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.posVBO);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->pos_offset);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.colorVBO);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->color_offset);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.normalVBO);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->normal_offset);
+
+			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.texCoordVBO);
+			glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->tex_coord_offset);
 
 			 // FIXME: This depend of the object
 			glDrawElements(GL_TRIANGLES, ogl_mesh->n_triangles * 3,

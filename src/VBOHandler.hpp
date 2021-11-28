@@ -8,7 +8,7 @@
 #include <iostream>
 
 class VBOHandler {
-private:
+public:
 	unsigned vao;
 
 	unsigned posVBO;
@@ -61,22 +61,22 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, posVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 3, nullptr,
 								 GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 3, nullptr,
 								 GL_STATIC_DRAW);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 3, nullptr,
 									GL_STATIC_DRAW);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 2, nullptr,
 								 GL_STATIC_DRAW);
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		//glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, n_total_triangles * sizeof(unsigned) * 3,
@@ -132,6 +132,12 @@ public:
       OglMesh ogl_mesh;
       ogl_mesh.n_triangles = n_triangles;
       ogl_mesh.n_vertices = n_vertices;
+
+			ogl_mesh.pos_offset = offset_vertices * 3 * sizeof(float);
+			ogl_mesh.color_offset = offset_vertices * 3 * sizeof(float);
+			ogl_mesh.normal_offset = offset_vertices * 3 * sizeof(float);
+			ogl_mesh.tex_coord_offset = offset_vertices * 2 * sizeof(float);
+
       ogl_mesh.gl_draw_offset = offset_triangles * 3 * sizeof(unsigned);
 
       offset_vertices += n_vertices;

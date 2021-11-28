@@ -8,6 +8,11 @@ struct OglMesh : public OglObject {
 	unsigned n_triangles;
 
   unsigned gl_draw_offset;
+
+  unsigned pos_offset;
+  unsigned color_offset;
+  unsigned normal_offset;
+  unsigned tex_coord_offset;
 };
 
 #endif // _OGL_MEHS_
