@@ -5,6 +5,7 @@
 #include "auxiliar.h"
 #include "Shaders.hpp"
 #include "Program.hpp"
+#include "Texture.hpp"
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -17,10 +18,6 @@
 #include <map>
 #include <string>
 #include <unordered_set>
-
-struct Texture : public OglObject {
-	unsigned n_texture;
-};
 
 
 class OGLManager {

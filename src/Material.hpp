@@ -1,6 +1,8 @@
 #ifndef _MATERTIAL_H_
 #define _MATERTIAL_H_
 
+#include "Texture.hpp"
+
 #include <map>
 #include <string>
 
@@ -71,6 +73,20 @@ struct SP_Valuef : public AbstractShaderParameter {
   float value;
   void upload_data (const unsigned parameter_id) const {
     glUniform1f(parameter_id, value);
+  }
+};
+
+struct SP_Texture : public AbstractShaderParameter {
+  const Texture* texture;
+
+  SP_Texture (const Texture& tex) {
+    texture = &tex;
+  }
+
+  void upload_data (const unsigned parameter_id) const {
+    glActiveTexture(GL_TEXTURE0 + texture->n_texture);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+    glUniform1i(parameter_id, texture->n_texture);
   }
 };
 

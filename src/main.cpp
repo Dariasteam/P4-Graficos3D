@@ -159,6 +159,8 @@ int main(int argc, char** argv) {
  	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[0]);
 
 	Material* mat_a = new Material;
+	mat_a->shader_parameters["colorTex"] = new SP_Texture(opengl_manager.texture_ids["colorTex"]);
+	mat_a->shader_parameters["emiTex"] = new SP_Texture(opengl_manager.texture_ids["emiTex"]);
 	mat_a->shader_parameters["color_override"] = new SP_Vec4f({1,0,0,0});
 
 	cubemesh2->mat = mat_a;
@@ -180,7 +182,7 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	//scene_objects.push_back(cubemesh3);
 
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], robotmesh);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], robotmesh);
 	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh2);
 	//opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
 
@@ -267,16 +269,6 @@ void renderFunc() {
 				const std::string& name = uniform.first;
 				const int parameter_id = uniform.second;
 				mesh_instance->mat->get_parameter(name, parameter_id);
-			}
-
-			// Textures
-			for (const std::string& texture_name : texture_names) {
-				if (program.uniforms[texture_name] != -1) {
-					const Texture& t = opengl_manager.texture_ids[texture_name];
-					glActiveTexture(GL_TEXTURE0 + t.n_texture);
-					glBindTexture(GL_TEXTURE_2D, t.id);
-					glUniform1i(program.uniforms[texture_name], t.n_texture);
-				}
 			}
 
 			 // FIXME: This depend of the object
