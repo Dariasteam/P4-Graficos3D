@@ -157,6 +157,8 @@ public:
 		glDeleteBuffers (1, &triangleIndexVBO);
 
 		glDeleteVertexArrays(1, &vao);
+
+		meshes.clear();
 	}
 };
 

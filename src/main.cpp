@@ -13,8 +13,10 @@ int main(int argc, char** argv) {
 	opengl_manager.init_callbacks();
 
 	Scene* default_scene = Scene::generate_default();
+	Scene* scene_2 = Scene::generate_scene_2();
 
 	opengl_manager.scene_manager.add_scene("main", default_scene);
+	opengl_manager.scene_manager.add_scene("scene_2", scene_2);
 	opengl_manager.scene_manager.set_active_scene("main");
 
 	opengl_manager.start_loop();

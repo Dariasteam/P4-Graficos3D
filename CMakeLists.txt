@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES
     src/auxiliar.cpp
     src/Camera.cpp
-    src/OpenGLManager.cpp
     src/Scene.cpp
     src/ShaderManager.cpp
+    src/OpenGLManager.cpp
     src/SceneManager.cpp
     src/TextureManager.cpp
     src/main.cpp

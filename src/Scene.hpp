@@ -33,6 +33,7 @@ private:
 
 public:
   static Scene* generate_default ();
+  static Scene* generate_scene_2 ();
 
   std::function<void (const std::string& scene_name)> change_scene;
   std::function<void (void)> init;

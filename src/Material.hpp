@@ -91,11 +91,11 @@ struct SP_Texture : public AbstractShaderParameter {
 };
 
 struct Material {
-  std::map<std::string, AbstractShaderParameter*> shader_parameters;
+  std::map<std::string, AbstractShaderParameter*> shader_uniforms;
 
   bool get_parameter (const std::string& parameter_name, const unsigned id) const {
-    const auto& it = shader_parameters.find(parameter_name);
-    if (it != shader_parameters.end()) {
+    const auto& it = shader_uniforms.find(parameter_name);
+    if (it != shader_uniforms.end()) {
       it->second->upload_data(id);
       return true;
     } else {
@@ -107,9 +107,9 @@ struct Material {
                            const glm::mat4& view,
                            const glm::mat4& proj) {
 
-    glm::mat4& modelView = static_cast<SP_Mat4f*>(shader_parameters["modelView"])->mat_4;
-    glm::mat4& modelViewProj = static_cast<SP_Mat4f*>(shader_parameters["modelViewProj"])->mat_4;
-    glm::mat4& normal = static_cast<SP_Mat4f*>(shader_parameters["normal"])->mat_4;
+    glm::mat4& modelView = static_cast<SP_Mat4f*>(shader_uniforms["modelView"])->mat_4;
+    glm::mat4& modelViewProj = static_cast<SP_Mat4f*>(shader_uniforms["modelViewProj"])->mat_4;
+    glm::mat4& normal = static_cast<SP_Mat4f*>(shader_uniforms["normal"])->mat_4;
 
 
     modelView = view * model;
@@ -118,9 +118,16 @@ struct Material {
   }
 
   Material () {
-    shader_parameters["modelView"] = new SP_Mat4f(glm::mat4(1));
-    shader_parameters["modelViewProj"] = new SP_Mat4f(glm::mat4(1));
-    shader_parameters["normal"] = new SP_Mat4f(glm::mat4(1));
+    shader_uniforms["modelView"] = new SP_Mat4f(glm::mat4(1));
+    shader_uniforms["modelViewProj"] = new SP_Mat4f(glm::mat4(1));
+    shader_uniforms["normal"] = new SP_Mat4f(glm::mat4(1));
+  }
+
+  ~Material () {
+    for (auto parameter : shader_uniforms)
+      delete parameter.second;
+
+    shader_uniforms.clear();
   }
 };
 
