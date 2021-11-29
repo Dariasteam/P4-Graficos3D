@@ -1,10 +1,5 @@
 #include "SceneManager.hpp"
 
-ShaderManager Scene::shader_manager;
-TextureManager Scene::texture_manager;
-VBOHandler Scene::vbo_handler;
-MeshLoader Scene::loader;
-
 void SceneManager::add_scene(const std::string &name, Scene *scene) {
   // Gives each scene a lambda to call when it wants to finish
   scene->change_scene = [&](const std::string &scene_name) {
