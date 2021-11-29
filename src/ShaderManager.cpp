@@ -2,8 +2,7 @@
 
 bool ShaderManager::create_program(const std::string& program_name,
                                    const std::string &v_name,
-                                   const std::string &f_name,
-                                   const std::vector<std::string>& uniforms_names) {
+                                   const std::string &f_name) {
 
   const unsigned program_id = glCreateProgram();
 
@@ -43,7 +42,6 @@ bool ShaderManager::create_program(const std::string& program_name,
 	glGetProgramiv(program_id, GL_LINK_STATUS, &linked);
 
 	if (!linked) {
-		//Calculamos una cadena de error
 		GLint logLen;
 		glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &logLen);
 		char* logString = new char[logLen];
@@ -57,13 +55,19 @@ bool ShaderManager::create_program(const std::string& program_name,
 		return false;
 	}
 
-  // Uniforms IDs
-  for (const std::string& name : uniforms_names) {
-    int aux = glGetUniformLocation(program_id, name.c_str());
-    if (aux < 0) {
-      std::cerr << "Error creando el uniform " << name << " " << aux << " para el programa " << program_name << std::endl;
-    }
-    aux_program->uniforms[name] = aux;
+  // Uniforms IDs ( Extracted from the shader itself)
+
+  int count, size;
+  GLenum type; // type of the variable (float, vec3 or mat4, etc)
+
+  const GLsizei bufSize = 16; // maximum name length
+  GLchar name[bufSize]; // variable name in GLSL
+  GLsizei length; // name length
+
+  glGetProgramiv(aux_program->id, GL_ACTIVE_UNIFORMS, &count);
+  for (unsigned i = 0; i < count; i++) {
+    glGetActiveUniform(aux_program->id, (GLuint)i, bufSize, &length, &size, &type, name);
+    aux_program->uniforms[name] = glGetUniformLocation(program_id, name);
   }
 
   programs[program_name] = aux_program;

@@ -84,8 +84,7 @@ public:
 
   bool create_program(const std::string &name,
                       const std::string &v_name,
-                      const std::string &f_name,
-                      const std::vector<std::string> &uniforms_names);
+                      const std::string &f_name);
 
   bool set_mesh_per_program(const std::string& program_name, MeshInstance *mesh) const;
 

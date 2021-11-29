@@ -24,16 +24,6 @@ Scene* Scene::generate_default() {
 		if (!texture_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
 		if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
-		// DEFINE SHADERS PARAMETERS
-		std::vector<std::string> uniforms {
-			"normal",
-			"modelView",
-			"modelViewProj",
-			"colorTex",
-			"emiTex",
-			"color_override"
-		};
-
 		// COMPILING SHADERS
 		if (!shader_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
 		if (!shader_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
@@ -42,8 +32,8 @@ Scene* Scene::generate_default() {
 		if (!shader_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
 		// COMPILING PROGRAMS
-		if (!shader_manager.create_program("p0", "v0", "f0", uniforms)) exit(-1);
-		if (!shader_manager.create_program("p1", "v1", "f1", uniforms)) exit(-1);
+		if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
+		if (!shader_manager.create_program("p1", "v1", "f1")) exit(-1);
 
 		// LOADING MESHES
 		mesh_loader.import_from_file("meshes/bitxo_piernas.glb");
@@ -233,16 +223,6 @@ Scene* Scene::generate_scene_2() {
     if (!texture_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
-    // DEFINE SHADERS PARAMETERS
-    std::vector<std::string> uniforms {
-      "normal",
-      "modelView",
-      "modelViewProj",
-      "colorTex",
-      "emiTex",
-      "color_override"
-    };
-
     // COMPILING SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
@@ -251,8 +231,8 @@ Scene* Scene::generate_scene_2() {
     if (!shader_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
     // COMPILING PROGRAMS
-    if (!shader_manager.create_program("p0", "v0", "f0", uniforms)) exit(-1);
-    if (!shader_manager.create_program("p1", "v1", "f1", uniforms)) exit(-1);
+    if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
+    if (!shader_manager.create_program("p1", "v1", "f1")) exit(-1);
 
     // LOADING MESHES
     mesh_loader.import_default_cube();
