@@ -21,14 +21,14 @@ public:
   bool load_fragment_shader(const std::string &path, const std::string &name);
 
   bool create_program(const std::string &name,
-                      const VertexShader &vertex_shader,
-                      const FragmentShader &fragment_shader,
+                      const std::string &v_name,
+                      const std::string &f_name,
                       const std::vector<std::string> &uniforms_names,
                       const std::vector<std::string> &attributes_names);
 
-  void set_mesh_per_program(Program &program, MeshInstance *mesh) const;
+  bool set_mesh_per_program(const std::string& program_name, MeshInstance *mesh) const;
 
-  int bound_program_attributes(Program &program,
+  bool bound_program_attributes(const std::string& program_name,
                 const std::map<std::string, unsigned> &attribute_name_location);
 };
 

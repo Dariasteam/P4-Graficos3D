@@ -1,12 +1,30 @@
 #include "ShaderManager.hpp"
 
 bool ShaderManager::create_program(const std::string& program_name,
-                                const VertexShader& vertex_shader,
-											          const FragmentShader& fragment_shader,
-                                const std::vector<std::string>& uniforms_names,
-                                const std::vector<std::string>& attributes_names) {
+                                   const std::string &v_name,
+                                   const std::string &f_name,
+                                   const std::vector<std::string>& uniforms_names,
+                                   const std::vector<std::string>& attributes_names) {
 
   const unsigned program_id = glCreateProgram();
+
+  const auto& v_it = vertex_shaders.find(v_name);
+  const auto& f_it = fragment_shaders.find(f_name);
+
+  if (v_it == vertex_shaders.end()) {
+    std::cerr << "Error creando el programa " << program_name
+              << ". No existe el shader de vértices " << v_name << std::endl;
+    return false;
+  }
+
+  if (f_it == fragment_shaders.end()) {
+    std::cerr << "Error creando el programa " << program_name
+              << ". No existe el shader de fragmentos " << f_name << std::endl;
+    return false;
+  }
+
+  const VertexShader& vertex_shader = *v_it->second;
+  const FragmentShader& fragment_shader = *f_it->second;
 
   unsigned V = vertex_shader.id;
   unsigned F = fragment_shader.id;
@@ -111,19 +129,40 @@ bool ShaderManager::load_vertex_shader (const std::string& path,
   return true;
 }
 
-int ShaderManager::bound_program_attributes (Program& program,
-                                          const std::map<std::string, unsigned>&
-                                          attribute_name_location) {
+bool ShaderManager::bound_program_attributes (const std::string& program_name,
+                                             const std::map<std::string, unsigned>&
+                                            attribute_name_location) {
+
+  const auto& it = programs.find(program_name);
+  if (it == programs.end()) {
+    std::cout << "Error bindeando atributos. No existe el programa "
+              << program_name << std::endl;
+    return false;
+  }
+
+  auto& program = *it->second;
 
   // We are using indexes because the shaders are using layout / location
   for (const auto& element : attribute_name_location) {
     if (program.attributes[element.first] != -1)
       glEnableVertexAttribArray(element.second);
   }
+
+  return true;
 }
 
-void ShaderManager::set_mesh_per_program (Program& program,
+bool ShaderManager::set_mesh_per_program (const std::string& program_name,
                                        MeshInstance* mesh) const {
 
+  const auto& it = programs.find(program_name);
+  if (it == programs.end()) {
+    std::cout << "Error enlazando meshInstance con programa. No existe el programa "
+              << program_name << std::endl;
+    return false;
+  }
+
+  auto& program = *it->second;
+
   program.associated_meshes.insert(mesh);
+  return true;
 }

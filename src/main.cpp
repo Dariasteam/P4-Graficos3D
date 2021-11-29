@@ -83,14 +83,10 @@ int main(int argc, char** argv) {
 	if (!shader_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
 	// COMPILING PROGRAMS
-	if (!shader_manager.create_program("p0",
-																		 *shader_manager.vertex_shaders["v0"],
-																		 *shader_manager.fragment_shaders["f0"],
+	if (!shader_manager.create_program("p0", "v0", "f0",
 																		 uniforms, attributes)) exit(-1);
 
-	if (!shader_manager.create_program("p1",
-																		 *shader_manager.vertex_shaders["v1"],
-																		 *shader_manager.fragment_shaders["f1"],
+	if (!shader_manager.create_program("p1", "v1", "f1",
 																		 uniforms, attributes)) exit(-1);
 
 	// LOADING MESHES
@@ -108,8 +104,8 @@ int main(int argc, char** argv) {
     {"inTexCoord", 3},
   };
 
-	shader_manager.bound_program_attributes(*shader_manager.programs["p0"], attribute_name_location);
-	shader_manager.bound_program_attributes(*shader_manager.programs["p1"], attribute_name_location);
+	shader_manager.bound_program_attributes("p0", attribute_name_location);
+	shader_manager.bound_program_attributes("p1", attribute_name_location);
 
 	auto ogl_meshes = vbo_handler.get_meshes();
 
@@ -141,9 +137,9 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	scene_objects.push_back(cubemesh3);
 
-	shader_manager.set_mesh_per_program(*shader_manager.programs["p1"], cubemesh2);
-	shader_manager.set_mesh_per_program(*shader_manager.programs["p1"], robotmesh);
-	shader_manager.set_mesh_per_program(*shader_manager.programs["p1"], cubemesh3);
+	shader_manager.set_mesh_per_program("p0", cubemesh2);
+	shader_manager.set_mesh_per_program("p1", robotmesh);
+	shader_manager.set_mesh_per_program("p1", cubemesh3);
 
 	glutMainLoop();
 	destroy();
