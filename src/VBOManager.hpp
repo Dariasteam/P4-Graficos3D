@@ -1,5 +1,5 @@
-#ifndef _VBO_HANDLER_
-#define _VBO_HANDLER_
+#ifndef _VBO_MANAGER_
+#define _VBO_MANAGER_
 
 #include "OGLMesh.hpp"
 #include "LoadingMesh.hpp"
@@ -7,7 +7,7 @@
 #include <vector>
 #include <iostream>
 
-class VBOHandler {
+class VBOManager {
 public:
 	unsigned vao;
 
@@ -34,7 +34,7 @@ public:
   	glBindVertexArray(vao);
   }
 
-  ~VBOHandler () {
+  ~VBOManager () {
     std::cout << "Closing VBOs" << std::endl;
     glDeleteBuffers(1, &posVBO);
     glDeleteBuffers(1, &colorVBO);
@@ -150,4 +150,4 @@ public:
 	}
 };
 
-#endif // _VBO_HANDLER_
+#endif // _VBO_MANAGER_

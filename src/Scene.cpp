@@ -2,7 +2,7 @@
 
 ShaderManager Scene::shader_manager;
 TextureManager Scene::texture_manager;
-VBOHandler Scene::vbo_handler;
+VBOManager Scene::vbo_manager;
 MeshLoader Scene::loader;
 
 Scene* Scene::generate_default() {
@@ -53,8 +53,8 @@ Scene* Scene::generate_default() {
 		loader.import_from_file("meshes/bitxo_piernas.glb");
 		loader.import_default_cube();
 
-		vbo_handler.generate_VBOs();
-		vbo_handler.populate_VBOs(loader.get_meshes());
+		vbo_manager.generate_VBOs();
+		vbo_manager.populate_VBOs(loader.get_meshes());
 
 		// TANKING ADVANTAGE OF LAYOUT / LOCATION
 		const std::map<std::string, unsigned> attribute_name_location {
@@ -68,7 +68,7 @@ Scene* Scene::generate_default() {
 		shader_manager.bound_program_attributes("p1", attribute_name_location);
 
 		// GENERATE ISNTANCES OF THE MESHES ALREADY LOADED IN THE VBO
-		const auto& ogl_meshes = vbo_handler.get_meshes();
+		const auto& ogl_meshes = vbo_manager.get_meshes();
 
 		MeshInstance* robotmesh = new MeshInstance (ogl_meshes[0]);
 		MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[1]);
@@ -158,7 +158,7 @@ Scene* Scene::generate_default() {
 			Program& program = *p.second;
 
 			glUseProgram(program.id);
-			glBindVertexArray(vbo_handler.get_vao());
+			glBindVertexArray(vbo_manager.get_vao());
 
 			for (MeshInstance* mesh_instance : program.associated_meshes) {
 				const auto model = mesh_instance->get_model_matrix();
@@ -175,16 +175,16 @@ Scene* Scene::generate_default() {
 				}
 
 				// Upload Attributes (Layout / Location)
-				glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.posVBO);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.posVBO);
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->pos_offset);
 
-				glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.colorVBO);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.colorVBO);
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->color_offset);
 
-				glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.normalVBO);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.normalVBO);
 				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->normal_offset);
 
-				glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.texCoordVBO);
+				glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.texCoordVBO);
 				glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->tex_coord_offset);
 
 				// Draw call

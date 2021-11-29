@@ -7,7 +7,7 @@
 #include "Material.hpp"
 #include "Spatial.h"
 #include "auxiliar.h"
-#include "VBOHandler.hpp"
+#include "VBOManager.hpp"
 #include "ShaderManager.hpp"
 #include "MeshLoader.h"
 
@@ -18,7 +18,7 @@
 #include <functional>
 
 struct Scene {
-public:
+private:
   double dummy_time = 0;
 
   AbstractCameraHandler* camera;
@@ -26,7 +26,7 @@ public:
 
   static ShaderManager shader_manager;
   static TextureManager texture_manager;
-  static VBOHandler vbo_handler;
+  static VBOManager vbo_manager;
   static MeshLoader loader;
 
   void end () {
@@ -45,7 +45,6 @@ public:
   std::function<void (int x, int y)> on_mouse_motion;
   std::function<void (void)> on_idle;
   std::function<void (void)> render;
-
 };
 
 #endif //_SCENE_H_

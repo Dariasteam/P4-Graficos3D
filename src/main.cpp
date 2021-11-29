@@ -4,6 +4,7 @@
 #include <vector>
 
 int main(int argc, char** argv) {
+	// No es necesario en Linux ;D
 	std::locale::global(std::locale("es_ES.UTF-8")); // acentos ;)
 
 	OGLManager opengl_manager;
