@@ -34,6 +34,8 @@ public:
   }
 
 public:
+  static Scene* generate_default ();
+
   std::function<void (const std::string& scene_name)> change_scene;
   std::function<void (void)> init;
 
