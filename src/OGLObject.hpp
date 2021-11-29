@@ -7,6 +7,8 @@
 #define SOLVE_FGLUT_WARNING
 #define GLM_FORCE_RADIANS
 
+// An object that holds an opengl id
+
 struct OglObject {
 	unsigned id;
 };

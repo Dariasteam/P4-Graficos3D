@@ -3,8 +3,7 @@
 bool ShaderManager::create_program(const std::string& program_name,
                                    const std::string &v_name,
                                    const std::string &f_name,
-                                   const std::vector<std::string>& uniforms_names,
-                                   const std::vector<std::string>& attributes_names) {
+                                   const std::vector<std::string>& uniforms_names) {
 
   const unsigned program_id = glCreateProgram();
 
@@ -165,4 +164,22 @@ bool ShaderManager::set_mesh_per_program (const std::string& program_name,
 
   program.associated_meshes.insert(mesh);
   return true;
+}
+
+void ShaderManager::clean() {
+  for (auto& program : programs)
+    program.second->detach();
+
+  for (auto& shader : vertex_shaders)
+    delete shader.second;
+
+  for (auto& shader : fragment_shaders)
+    delete shader.second;
+
+  for (auto& program : programs)
+    delete program.second;
+
+  vertex_shaders.clear();
+  fragment_shaders.clear();
+  programs.clear();
 }

@@ -17,14 +17,15 @@ public:
   std::map<std::string, FragmentShader *> fragment_shaders;
   std::map<std::string, Program *> programs;
 
+  void clean();
+
   bool load_vertex_shader(const std::string &path, const std::string &name);
   bool load_fragment_shader(const std::string &path, const std::string &name);
 
   bool create_program(const std::string &name,
                       const std::string &v_name,
                       const std::string &f_name,
-                      const std::vector<std::string> &uniforms_names,
-                      const std::vector<std::string> &attributes_names);
+                      const std::vector<std::string> &uniforms_names);
 
   bool set_mesh_per_program(const std::string& program_name, MeshInstance *mesh) const;
 

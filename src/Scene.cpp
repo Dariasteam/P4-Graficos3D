@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include "SceneManager.hpp"
 
 ShaderManager Scene::shader_manager;
 TextureManager Scene::texture_manager;
@@ -28,13 +29,6 @@ Scene* Scene::generate_default() {
 			"color_override"
 		};
 
-		std::vector<std::string> attributes {
-			"inPos",
-			"inColor",
-			"inNormal",
-			"inTexCoord"
-		};
-
 		// COMPILING SHADERS
 		if (!shader_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
 		if (!shader_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
@@ -43,11 +37,8 @@ Scene* Scene::generate_default() {
 		if (!shader_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
 		// COMPILING PROGRAMS
-		if (!shader_manager.create_program("p0", "v0", "f0",
-																			uniforms, attributes)) exit(-1);
-
-		if (!shader_manager.create_program("p1", "v1", "f1",
-																			uniforms, attributes)) exit(-1);
+		if (!shader_manager.create_program("p0", "v0", "f0", uniforms)) exit(-1);
+		if (!shader_manager.create_program("p1", "v1", "f1", uniforms)) exit(-1);
 
 		// LOADING MESHES
 		loader.import_from_file("meshes/bitxo_piernas.glb");
@@ -55,6 +46,8 @@ Scene* Scene::generate_default() {
 
 		vbo_manager.generate_VBOs();
 		vbo_manager.populate_VBOs(loader.get_meshes());
+
+    loader.clean();
 
 		// TANKING ADVANTAGE OF LAYOUT / LOCATION
 		const std::map<std::string, unsigned> attribute_name_location {
@@ -67,7 +60,7 @@ Scene* Scene::generate_default() {
 		shader_manager.bound_program_attributes("p0", attribute_name_location);
 		shader_manager.bound_program_attributes("p1", attribute_name_location);
 
-		// GENERATE ISNTANCES OF THE MESHES ALREADY LOADED IN THE VBO
+		// GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
 		const auto& ogl_meshes = vbo_manager.get_meshes();
 
 		MeshInstance* robotmesh = new MeshInstance (ogl_meshes[0]);
@@ -102,7 +95,7 @@ Scene* Scene::generate_default() {
 		default_scene.scene_objects.push_back(cubemesh2);
 		default_scene.scene_objects.push_back(cubemesh3);
 
-		// ASSIGN SHADER TO MESHES
+		// ASSIGN PROGRAMS TO MESHES
 		shader_manager.set_mesh_per_program("p0", cubemesh2);
 		shader_manager.set_mesh_per_program("p1", robotmesh);
 		shader_manager.set_mesh_per_program("p1", cubemesh3);
@@ -199,4 +192,10 @@ Scene* Scene::generate_default() {
 
 
 	return &default_scene;
+}
+
+void Scene::clean() {
+  texture_manager.clean();
+  shader_manager.clean();
+  vbo_manager.clean();
 }

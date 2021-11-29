@@ -27,7 +27,17 @@ struct LoadingMesh {
     facesIndex (new unsigned[n_t * 3])
   {}
 
-	virtual ~LoadingMesh() {};
+  // FIXME: This causes segment violation
+	virtual ~LoadingMesh() {
+    /*
+    delete[] vertexPos;
+    delete[] normals;
+    delete[] tangents;
+    delete[] vertexColors;
+    delete[] texCoords;
+    delete[] facesIndex;
+    */
+  };
 };
 
 struct CubeLoadingMesh : public LoadingMesh {

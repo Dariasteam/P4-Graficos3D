@@ -148,6 +148,16 @@ public:
 
 		return true;
 	}
+
+	void clean () {
+		glDeleteBuffers (1, &posVBO);
+		glDeleteBuffers (1, &colorVBO);
+		glDeleteBuffers (1, &normalVBO);
+		glDeleteBuffers (1, &texCoordVBO);
+		glDeleteBuffers (1, &triangleIndexVBO);
+
+		glDeleteVertexArrays(1, &vao);
+	}
 };
 
 #endif // _VBO_MANAGER_

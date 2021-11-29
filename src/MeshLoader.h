@@ -136,6 +136,13 @@ public:
 
 		return -1;
 	}
+
+	void clean () {
+		for (auto* mesh : loadable_meshes)
+			delete mesh;
+
+		loadable_meshes.clear();
+	}
 };
 
 #endif // _MESH_LOADER_H_

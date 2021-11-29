@@ -61,5 +61,9 @@ void TextureManager::prepare() {
   }
 }
 
-TextureManager::TextureManager() {
+void TextureManager::clean() {
+  for (auto& texture : textures)
+    glDeleteTextures (1, &texture.second.id);
+
+  textures.clear();
 }

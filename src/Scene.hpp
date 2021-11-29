@@ -29,9 +29,7 @@ private:
   static VBOManager vbo_manager;
   static MeshLoader loader;
 
-  void end () {
-    // clean all handlers
-  }
+  void clean ();
 
 public:
   static Scene* generate_default ();

@@ -14,6 +14,7 @@ struct Program : OglObject{
 	const VertexShader* vertex;
 	const FragmentShader* fragment;
 
+	// IDs for Uniforms and Attributes
 	std::map<std::string, int> uniforms;
 	std::map<std::string, int> attributes;
 

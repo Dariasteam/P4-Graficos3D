@@ -17,7 +17,7 @@ public:
   const Texture& get_texture (const std::string& name);
   bool load_texture(const std::string& path, const std::string& name);
   void prepare();
-  TextureManager ();
+  void clean();
 };
 
 #endif // _TEXTURE_MANAGER_H_
