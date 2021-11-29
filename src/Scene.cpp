@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include "Material.hpp"
 #include "MaterialManager.hpp"
 #include "SceneManager.hpp"
 #include "ShaderManager.hpp"
@@ -224,15 +225,11 @@ Scene* Scene::generate_scene_2() {
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
     // COMPILING SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
-
-    if (!shader_manager.load_vertex_shader("shaders_P3/shader.v1.vert", "v1")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P3/shader_v1_vert.glsl", "v0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P3/shader_v1_frag.glsl", "f0")) exit(-1);
 
     // COMPILING PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
-    if (!shader_manager.create_program("p1", "v1", "f1")) exit(-1);
 
     // LOADING MESHES
     mesh_loader.import_default_cube();
@@ -252,7 +249,6 @@ Scene* Scene::generate_scene_2() {
     };
 
     shader_manager.bound_program_attributes("p0", attribute_name_location);
-    shader_manager.bound_program_attributes("p1", attribute_name_location);
 
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
@@ -265,7 +261,7 @@ Scene* Scene::generate_scene_2() {
 
     mat_a->shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
     mat_a->shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
-    mat_a->shader_uniforms["color_override"] = new SP_Vec4f({0,-1,0,0});
+    mat_a->shader_uniforms["areaLightColor"] = new SP_Vec3f({1, 0, 0});
 
     // ASSIGN MAERIALS TO MESH INSTANCES
     robotmesh->mat = mat_a;
@@ -299,6 +295,18 @@ Scene* Scene::generate_scene_2() {
       scene_2.clean();
       std::cout << "Cambiando de escena" << std::endl;
       scene_2.change_scene("main");
+    }
+
+    if (key == 'F' || key == 'f') {
+      auto* e = material_manager.materials[0]->shader_uniforms["areaLightColor"];
+      auto& value = static_cast<SP_Vec3f*>(e)->vec_3.x;
+
+      std::cout << value << std::endl;
+
+      if (value > 1)
+        value = 0;
+      else
+        value += .1;
     }
   };
 
