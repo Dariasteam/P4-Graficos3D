@@ -1,10 +1,13 @@
 #include "MeshLoader.h"
+#include "ShaderManager.hpp"
+#include "TextureManager.hpp"
 #include "Camera.h"
 #include "Material.hpp"
 #include "Spatial.h"
 #include "auxiliar.h"
 #include "OpenGLManager.h"
 #include "VBOHandler.hpp"
+#include "ShaderManager.hpp"
 
 #include <GL/glew.h>
 #include <glm/fwd.hpp>
@@ -19,6 +22,8 @@
 #include <vector>
 
 OGLManager opengl_manager;
+ShaderManager shader_manager;
+TextureManager texture_manager;
 AbstractCameraHandler* camera = new FPSCameraHandler;
 std::vector<Spatial*> scene_objects;
 VBOHandler vbo_handler;
@@ -35,8 +40,7 @@ void mouseFunc(int button, int state, int x, int y);
 void mouseMotionFunc (int, int);
 
 //Funciones de inicializaci�n y destrucci�n
-void initContext(int argc, char** argv);
-void initOGL();
+void initCallbacks();
 void initShader(const std::string& vname, const std::string& fname);
 void initObj();
 void destroy();
@@ -44,12 +48,15 @@ void destroy();
 int main(int argc, char** argv) {
 	std::locale::global(std::locale("es_ES.UTF-8")); // acentos ;)
 
-	initContext(argc, argv);
-	initOGL();
+	opengl_manager.initContext(argc, argv);
+	opengl_manager.init_OGL();
+	initCallbacks();
+
+	texture_manager.prepare();
 
 	// LOAD TEXTURES
-	if (!opengl_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
-	if (!opengl_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
+	if (!texture_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
+	if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
 	// DEFINE SHADERS PARAMETERS
 	std::vector<std::string> uniforms {
@@ -69,21 +76,21 @@ int main(int argc, char** argv) {
 	};
 
 	// COMPILING SHADERS
-	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
-	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
+	if (!shader_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
+	if (!shader_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
 
-	if (!opengl_manager.load_vertex_shader("shaders_P3/shader.v1.vert", "v1")) exit(-1);
-	if (!opengl_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
+	if (!shader_manager.load_vertex_shader("shaders_P3/shader.v1.vert", "v1")) exit(-1);
+	if (!shader_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
 
 	// COMPILING PROGRAMS
-	if (!opengl_manager.create_program("p0",
-																		 *opengl_manager.vertex_shaders["v0"],
-																		 *opengl_manager.fragment_shaders["f0"],
+	if (!shader_manager.create_program("p0",
+																		 *shader_manager.vertex_shaders["v0"],
+																		 *shader_manager.fragment_shaders["f0"],
 																		 uniforms, attributes)) exit(-1);
 
-	if (!opengl_manager.create_program("p1",
-																		 *opengl_manager.vertex_shaders["v1"],
-																		 *opengl_manager.fragment_shaders["f1"],
+	if (!shader_manager.create_program("p1",
+																		 *shader_manager.vertex_shaders["v1"],
+																		 *shader_manager.fragment_shaders["f1"],
 																		 uniforms, attributes)) exit(-1);
 
 	// LOADING MESHES
@@ -101,8 +108,8 @@ int main(int argc, char** argv) {
     {"inTexCoord", 3},
   };
 
-	opengl_manager.bound_program_attributes(*opengl_manager.programs["p0"], attribute_name_location);
-	opengl_manager.bound_program_attributes(*opengl_manager.programs["p1"], attribute_name_location);
+	shader_manager.bound_program_attributes(*shader_manager.programs["p0"], attribute_name_location);
+	shader_manager.bound_program_attributes(*shader_manager.programs["p1"], attribute_name_location);
 
 	auto ogl_meshes = vbo_handler.get_meshes();
 
@@ -111,8 +118,8 @@ int main(int argc, char** argv) {
  	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[1]);
 
 	Material* mat_a = new Material;
-	mat_a->shader_parameters["colorTex"] = new SP_Texture(opengl_manager.texture_ids["colorTex"]);
-	mat_a->shader_parameters["emiTex"] = new SP_Texture(opengl_manager.texture_ids["emiTex"]);
+	mat_a->shader_parameters["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
+	mat_a->shader_parameters["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
 	mat_a->shader_parameters["color_override"] = new SP_Vec4f({0,0,0,0});
 
 	robotmesh->mat = mat_a;
@@ -134,9 +141,9 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	scene_objects.push_back(cubemesh3);
 
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh2);
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], robotmesh);
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
+	shader_manager.set_mesh_per_program(*shader_manager.programs["p1"], cubemesh2);
+	shader_manager.set_mesh_per_program(*shader_manager.programs["p1"], robotmesh);
+	shader_manager.set_mesh_per_program(*shader_manager.programs["p1"], cubemesh3);
 
 	glutMainLoop();
 	destroy();
@@ -144,50 +151,14 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-//////////////////////////////////////////
-// Funciones auxiliares
-void initContext(int argc, char** argv)
+
+void initCallbacks()
 {
-	glutInit(&argc, argv);
-	glutInitContextVersion(3, 3);
-	glutInitContextProfile(GLUT_CORE_PROFILE);
-
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(500, 500);
-	glutInitWindowPosition(0, 0);
-	glutCreateWindow("Prácticas OGL");
-
-
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		std::cout << "Error: " << glewGetErrorString(err) << std::endl;
-		exit(-1);
-	}
-	const GLubyte* oglVersion = glGetString(GL_VERSION);
-	std::cout << "This system supports OpenGL Version: " << oglVersion << std::endl;
-
 	glutReshapeFunc(resizeFunc);
 	glutDisplayFunc(renderFunc);
 	glutIdleFunc(idleFunc);
 	glutKeyboardFunc(keyboardFunc);
 	glutMotionFunc(mouseMotionFunc);
-}
-
-void initOGL()
-{
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
-
-	glFrontFace(GL_CCW);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_CULL_FACE);
-
-	if (glutExtensionSupported ("GL_EXT_texture_filter_anisotropic")) {
-		GLfloat fLargest;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
-	}
 }
 
 void destroy() {
@@ -202,7 +173,7 @@ void renderFunc() {
 	const auto& view = camera->get_view_matrix();
 	const auto& proj = camera->get_projection_matrix();
 
-	for (auto p : opengl_manager.programs) {
+	for (auto p : shader_manager.programs) {
 		Program& program = *p.second;
 
 		glUseProgram(program.id);
