@@ -3,6 +3,7 @@
 #include "MaterialManager.hpp"
 #include "SceneManager.hpp"
 #include "ShaderManager.hpp"
+#include <glm/ext/matrix_transform.hpp>
 
 Scene* Scene::generate_default() {
   Scene& default_scene = *new Scene;
@@ -261,14 +262,15 @@ Scene* Scene::generate_scene_2() {
 
     mat_a->shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
     mat_a->shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
-    mat_a->shader_uniforms["areaLightColor"] = new SP_Vec3f({1, 0, 0});
+    mat_a->shader_uniforms["areaLightColor"] = new SP_Vec3f({0, 0, 0});
+    mat_a->shader_uniforms["areaLightPos"] = new SP_Vec4f({1, 0, 0, 1});
 
     // ASSIGN MAERIALS TO MESH INSTANCES
     robotmesh->mat = mat_a;
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh->update_logic = [](Spatial& self, const float dummy_time) {
-      self.rotation().y = dummy_time / 4;
+      //self.rotation().y = dummy_time / 4;
     };
 
     // ADD MESH INSTANCES TO SCENES
@@ -299,11 +301,9 @@ Scene* Scene::generate_scene_2() {
 
     if (key == 'F' || key == 'f') {
       auto* e = material_manager.materials[0]->shader_uniforms["areaLightColor"];
-      auto& value = static_cast<SP_Vec3f*>(e)->vec_3.x;
+      auto& value = static_cast<SP_Vec4f*>(e)->vec_4.z;
 
-      std::cout << value << std::endl;
-
-      if (value > 1)
+      if (value > 10)
         value = 0;
       else
         value += .1;
@@ -355,12 +355,23 @@ Scene* Scene::generate_scene_2() {
 
         material->calculate_matrices(model,view, proj);
 
+        auto* e = material->shader_uniforms["areaLightPos"];
+        auto& value = static_cast<SP_Vec4f*>(e)->vec_4;
+
+        glm::mat4 light_model (1.0);
+        light_model = glm::translate(light_model, glm::vec3{3, 0, 0});
+
+        value = view * light_model * glm::vec4{0, 0, 0, 1};
+        std::cout << value.x << " " << value.y << " " << value.z << "\n";
+
         // Upload Uniforms
         for (const auto& uniform : program.uniforms) {
           const std::string& name = uniform.first;
           const int parameter_id = uniform.second;
           mesh_instance->mat->get_parameter(name, parameter_id);
         }
+
+
 
         // Upload Attributes (Layout / Location)
         glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.posVBO);

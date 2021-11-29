@@ -19,7 +19,9 @@ uniform sampler2D emiTex;
 
 uniform mat4 view;
 uniform mat4 proj;
+
 uniform vec3 areaLightColor;
+uniform vec4 areaLightPos;
 
 ////////////////////////////////////
 //	Objeto
@@ -81,10 +83,10 @@ vec3 shade_point_light() {
 
 	//vec3 global_pos = (vec4(pos.xyz, 0) * view * proj).xyz;
 
-	vec3 light_point = vec3(0, 0, 0);
+	vec3 light_point = areaLightPos.xyz;
 	//vec3 light_point = (view * proj * vec4(1, 0, 0, 0)).xyz;
 
-	vec3 Il = vec3(0, 0, 2);    // light intensity (color)
+	vec3 Il = areaLightColor;
 
 	float d_min = 1.f;
 	float d_max = 100.f;
@@ -105,7 +107,7 @@ vec3 shade_point_light() {
 
 	c += Ks * pow(max(dot(R, V), 0), n);
 
-	c *= areaLightColor;
+	c *= Il;
 	c *= f_dist;
 
 	return c;
@@ -183,7 +185,7 @@ void main() {
 	c += shade_base();
 	c += shade_directional_light();
 	c += shade_point_light();
-	c += shade_focal_light();
+	//c += shade_focal_light();
 
 	c = fog(c);
 
