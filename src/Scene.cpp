@@ -1,10 +1,12 @@
 #include "Scene.hpp"
+#include "MaterialManager.hpp"
 #include "SceneManager.hpp"
 
 ShaderManager Scene::shader_manager;
 TextureManager Scene::texture_manager;
 VBOManager Scene::vbo_manager;
-MeshLoader Scene::loader;
+MeshLoader Scene::mesh_loader;
+MaterialManger Scene::material_manager;
 
 Scene* Scene::generate_default() {
   Scene& default_scene = *new Scene;
@@ -42,13 +44,13 @@ Scene* Scene::generate_default() {
 		if (!shader_manager.create_program("p1", "v1", "f1", uniforms)) exit(-1);
 
 		// LOADING MESHES
-		loader.import_from_file("meshes/bitxo_piernas.glb");
-		loader.import_default_cube();
+		mesh_loader.import_from_file("meshes/bitxo_piernas.glb");
+		mesh_loader.import_default_cube();
 
 		vbo_manager.generate_VBOs();
-		vbo_manager.populate_VBOs(loader.get_meshes());
+		vbo_manager.populate_VBOs(mesh_loader.get_meshes());
 
-    loader.clean();
+    mesh_loader.clean();
 
 		// TANKING ADVANTAGE OF LAYOUT / LOCATION
 		const std::map<std::string, unsigned> attribute_name_location {
@@ -73,6 +75,8 @@ Scene* Scene::generate_default() {
 		mat_a->shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
 		mat_a->shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
 		mat_a->shader_uniforms["color_override"] = new SP_Vec4f({0,0,0,0});
+
+    material_manager.materials.push_back(mat_a);
 
 		// ASSIGN MAERIALS TO MESH INSTANCES
 		robotmesh->mat = mat_a;
@@ -114,6 +118,12 @@ Scene* Scene::generate_default() {
   // ON KEYBOARD
   default_scene.on_keyboard = [&] (unsigned char key) {
     default_scene.camera->handle_keys(key);
+
+    if (key == 'G' || key == 'g') {
+      default_scene.clean();
+      std::cout << "Cambiando de escena" << std::endl;
+      default_scene.change_scene("scene_2");
+    }
   };
 
 
@@ -134,12 +144,6 @@ Scene* Scene::generate_default() {
 		for (auto object : default_scene.scene_objects) {
 			object->update(default_scene.dummy_time);
 		}
-
-    if (default_scene.dummy_time > 10) {
-      default_scene.clean();
-      std::cout << "Cambiando de escena" << std::endl;
-      default_scene.change_scene("scene_2");
-    }
 
 		default_scene.dummy_time += .1;
 		glutPostRedisplay();
@@ -203,6 +207,7 @@ void Scene::clean() {
   texture_manager.clean();
   shader_manager.clean();
   vbo_manager.clean();
+  material_manager.clean();
 
   delete camera;
 
@@ -247,13 +252,13 @@ Scene* Scene::generate_scene_2() {
     if (!shader_manager.create_program("p1", "v1", "f1", uniforms)) exit(-1);
 
     // LOADING MESHES
-    loader.import_default_cube();
-    loader.import_from_file("meshes/suzanne.glb");
+    mesh_loader.import_default_cube();
+    mesh_loader.import_from_file("meshes/suzanne.glb");
 
     vbo_manager.generate_VBOs();
-    vbo_manager.populate_VBOs(loader.get_meshes());
+    vbo_manager.populate_VBOs(mesh_loader.get_meshes());
 
-    loader.clean();
+    mesh_loader.clean();
 
     // TANKING ADVANTAGE OF LAYOUT / LOCATION
     const std::map<std::string, unsigned> attribute_name_location {
@@ -273,9 +278,11 @@ Scene* Scene::generate_scene_2() {
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material* mat_a = new Material;
+    material_manager.materials.push_back(mat_a);
+
     mat_a->shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
     mat_a->shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
-    mat_a->shader_uniforms["color_override"] = new SP_Vec4f({0,1,0,0});
+    mat_a->shader_uniforms["color_override"] = new SP_Vec4f({0,-1,0,0});
 
     // ASSIGN MAERIALS TO MESH INSTANCES
     robotmesh->mat = mat_a;
@@ -289,7 +296,7 @@ Scene* Scene::generate_scene_2() {
     scene_2.scene_objects.push_back(robotmesh);
 
     // ASSIGN PROGRAMS TO MESHES
-    shader_manager.set_mesh_per_program("p1", robotmesh);
+    shader_manager.set_mesh_per_program("p0", robotmesh);
   };
 
 
@@ -304,6 +311,12 @@ Scene* Scene::generate_scene_2() {
   // ON KEYBOARD
   scene_2.on_keyboard = [&] (unsigned char key) {
     scene_2.camera->handle_keys(key);
+
+    if (key == 'G' || key == 'g') {
+      scene_2.clean();
+      std::cout << "Cambiando de escena" << std::endl;
+      scene_2.change_scene("main");
+    }
   };
 
 
@@ -323,12 +336,6 @@ Scene* Scene::generate_scene_2() {
   scene_2.on_idle = [&] () {
     for (auto object : scene_2.scene_objects) {
       object->update(scene_2.dummy_time);
-    }
-
-    if (scene_2.dummy_time > 10) {
-      scene_2.clean();
-      std::cout << "Cambiando de escena" << std::endl;
-      scene_2.change_scene("main");
     }
 
     scene_2.dummy_time += .1;

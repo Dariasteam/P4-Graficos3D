@@ -11,21 +11,9 @@ void OGLManager::init_OGL () {
 }
 
 void OGLManager::destroy() {
-  /*
-
-  for (const auto &p : programs)
-    p.second->detach();
-
-  for (auto s : vertex_shaders)
-    delete s.second;
-
-  for (auto s : fragment_shaders)
-    delete s.second;
-
-  for (const auto &p : programs)
-    delete p.second;
-  */
+  scene_manager.get_current_scene()->clean();
 }
+
 void OGLManager::init_context(int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitContextVersion(3, 3);

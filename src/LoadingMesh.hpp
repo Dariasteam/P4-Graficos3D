@@ -27,16 +27,13 @@ struct LoadingMesh {
     facesIndex (new unsigned[n_t * 3])
   {}
 
-  // FIXME: This causes segment violation
 	virtual ~LoadingMesh() {
-    /*
     delete[] vertexPos;
     delete[] normals;
     delete[] tangents;
     delete[] vertexColors;
     delete[] texCoords;
     delete[] facesIndex;
-    */
   };
 };
 
@@ -60,15 +57,6 @@ struct RegularLoadingMesh : public LoadingMesh {
 
   RegularLoadingMesh (const unsigned n_t, const unsigned n_v) :
     LoadingMesh (n_t, n_v) {}
-
-	~RegularLoadingMesh () {
-		delete [] vertexPos;
-		delete [] normals;
-		delete [] tangents;
-		delete [] vertexColors;
-		delete [] texCoords;
-		delete [] facesIndex;
-	}
 };
 
 #endif

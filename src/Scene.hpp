@@ -10,6 +10,7 @@
 #include "VBOManager.hpp"
 #include "ShaderManager.hpp"
 #include "MeshLoader.h"
+#include "MaterialManager.hpp"
 
 #include <vector>
 #include <map>
@@ -27,11 +28,12 @@ private:
   static ShaderManager shader_manager;
   static TextureManager texture_manager;
   static VBOManager vbo_manager;
-  static MeshLoader loader;
+  static MaterialManger material_manager;
+  static MeshLoader mesh_loader;
 
-  void clean ();
 
 public:
+  void clean ();
   static Scene* generate_default ();
   static Scene* generate_scene_2 ();
 

@@ -18,6 +18,7 @@
 
 struct AbstractShaderParameter {
   virtual void upload_data (const unsigned parameter_id) const = 0;
+  virtual ~AbstractShaderParameter () {}
 };
 
 struct SP_Mat4f : public AbstractShaderParameter {
