@@ -23,7 +23,6 @@
 class OGLManager {
 private:
   GLuint loadShader(const char *fileName, GLenum type);
-
 public:
 	// linked shaders
 	std::map<std::string, Program*> programs;
@@ -31,21 +30,6 @@ public:
 
 	std::map<std::string, VertexShader*> vertex_shaders;
 	std::map<std::string, FragmentShader*> fragment_shaders;
-
-	// We use this to preallocate all possible objects of the scene
-	/*
-	unsigned vao;
-
-	unsigned posVBO;
-	unsigned colorVBO;
-	unsigned normalVBO;
-	unsigned texCoordVBO;
-	unsigned triangleIndexVBO;
-	*/
-
-	// Identificadores de texturas opengl
-	int colorTexId;
-	int emiTexId;
 
 	bool load_vertex_shader (const std::string& path, const std::string& name);
 	bool load_fragment_shader (const std::string& path, const std::string& name);
@@ -72,6 +56,10 @@ public:
 
 	~OGLManager() {
 		destroy ();
+	}
+
+	OGLManager () {
+
 	}
 
 	void init_context ();

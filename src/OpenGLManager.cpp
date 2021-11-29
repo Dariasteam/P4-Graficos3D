@@ -45,6 +45,7 @@ unsigned int OGLManager::loadTex(const char *fileName) {
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, fLargest);
   return texId;
 }
 
@@ -128,7 +129,6 @@ bool OGLManager::create_program(const std::string& program_name,
 		return false;
 	}
 
-
   // Uniforms IDs
   for (const std::string& name : uniforms_names) {
     int aux = glGetUniformLocation(program_id, name.c_str());
@@ -137,18 +137,6 @@ bool OGLManager::create_program(const std::string& program_name,
     }
     aux_program->uniforms[name] = aux;
   }
-
-  // Unnecessary since we are using layout / location
-/*
-  // Attributes IDs
-  for (const std::string& name : attributes_names) {
-    int aux = glGetAttribLocation(program_id, name.c_str());
-    if (aux < 0) {
-      std::cerr << "Error creando el atributo " << name << " " << aux << " para el programa " << program_name << std::endl;
-    }
-    aux_program->attributes[name] = aux;
-  }
-*/
 
   programs[program_name] = aux_program;
   return true;

@@ -21,7 +21,7 @@
 OGLManager opengl_manager;
 AbstractCameraHandler* camera = new FPSCameraHandler;
 std::vector<Spatial*> scene_objects;
-VBOHandler mesh_manager;
+VBOHandler vbo_handler;
 MeshLoader loader;
 
 int w, h;
@@ -89,10 +89,9 @@ int main(int argc, char** argv) {
 	// LOADING MESHES
 	loader.import_from_file("meshes/bitxo_piernas.glb");
 	loader.import_default_cube();
-	loader.import_default_cube();
 
-	mesh_manager.generate_VBOs();
-	mesh_manager.populate_VBOs(loader.get_meshes());
+	vbo_handler.generate_VBOs();
+	vbo_handler.populate_VBOs(loader.get_meshes());
 
 	// TANKING ADVANTAGE OF LAYOUT / LOCATION
 	const std::map<std::string, unsigned> attribute_name_location {
@@ -105,11 +104,11 @@ int main(int argc, char** argv) {
 	opengl_manager.bound_program_attributes(*opengl_manager.programs["p0"], attribute_name_location);
 	opengl_manager.bound_program_attributes(*opengl_manager.programs["p1"], attribute_name_location);
 
-	auto ogl_meshes = mesh_manager.get_meshes();
+	auto ogl_meshes = vbo_handler.get_meshes();
 
 	MeshInstance* robotmesh = new MeshInstance (ogl_meshes[0]);
 	MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[1]);
- 	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[2]);
+ 	MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[1]);
 
 	Material* mat_a = new Material;
 	mat_a->shader_parameters["colorTex"] = new SP_Texture(opengl_manager.texture_ids["colorTex"]);
@@ -135,7 +134,7 @@ int main(int argc, char** argv) {
 	scene_objects.push_back(cubemesh2);
 	scene_objects.push_back(cubemesh3);
 
-	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p0"], cubemesh2);
+	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh2);
 	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], robotmesh);
 	opengl_manager.set_mesh_per_program(*opengl_manager.programs["p1"], cubemesh3);
 
@@ -184,6 +183,11 @@ void initOGL()
 	glFrontFace(GL_CCW);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_CULL_FACE);
+
+	if (glutExtensionSupported ("GL_EXT_texture_filter_anisotropic")) {
+		GLfloat fLargest;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
+	}
 }
 
 void destroy() {
@@ -202,7 +206,7 @@ void renderFunc() {
 		Program& program = *p.second;
 
 		glUseProgram(program.id);
-		glBindVertexArray(mesh_manager.get_vao());
+		glBindVertexArray(vbo_handler.get_vao());
 
 		for (MeshInstance* mesh_instance : program.associated_meshes) {
 			const OglMesh* ogl_mesh = mesh_instance->mesh;
@@ -218,19 +222,20 @@ void renderFunc() {
 				mesh_instance->mat->get_parameter(name, parameter_id);
 			}
 
-			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.posVBO);
+			// Upload Attributes (Layout / Location)
+			glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.posVBO);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->pos_offset);
 
-			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.colorVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.colorVBO);
 			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->color_offset);
 
-			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.normalVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.normalVBO);
 			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->normal_offset);
 
-			glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.texCoordVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, vbo_handler.texCoordVBO);
 			glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->tex_coord_offset);
 
-			 // FIXME: This depend of the object
+			// Draw call
 			glDrawElements(GL_TRIANGLES, ogl_mesh->n_triangles * 3,
 								   	 GL_UNSIGNED_INT, (GLvoid*)(ogl_mesh->gl_draw_offset));
 		}
