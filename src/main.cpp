@@ -22,32 +22,6 @@
 #include <iostream>
 #include <vector>
 
-/*
-ShaderManager shader_manager;
-TextureManager texture_manager;
-AbstractCameraHandler* camera = new FPSCameraHandler;
-std::vector<Spatial*> scene_objects;
-VBOHandler vbo_handler;
-MeshLoader loader;
-SceneManager scene_manager;
-*/
-
-/*
-//Declaraci�n de CB
-void renderFunc();
-void resizeFunc(int width, int height);
-void idleFunc();
-void keyboardFunc(unsigned char key, int x, int y);
-void mouseFunc(int button, int state, int x, int y);
-void mouseMotionFunc (int, int);
-
-//Funciones de inicializaci�n y destrucci�n
-void initCallbacks();
-void initShader(const std::string& vname, const std::string& fname);
-void initObj();
-void destroy();
-*/
-
 int main(int argc, char** argv) {
 	std::locale::global(std::locale("es_ES.UTF-8")); // acentos ;)
 
@@ -55,8 +29,6 @@ int main(int argc, char** argv) {
 	opengl_manager.init_context(argc, argv);
 	opengl_manager.init_OGL();
 	opengl_manager.init_callbacks();
-
-	std::cout << "ÑAME" << std::endl;
 
 	Scene sample_scene;
 
@@ -118,7 +90,7 @@ int main(int argc, char** argv) {
 		sample_scene.shader_manager.bound_program_attributes("p0", attribute_name_location);
 		sample_scene.shader_manager.bound_program_attributes("p1", attribute_name_location);
 
-		auto ogl_meshes = sample_scene.vbo_handler.get_meshes();
+		const auto& ogl_meshes = sample_scene.vbo_handler.get_meshes();
 
 		MeshInstance* robotmesh = new MeshInstance (ogl_meshes[0]);
 		MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[1]);
