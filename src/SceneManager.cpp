@@ -1,4 +1,9 @@
 #include "SceneManager.hpp"
+#include "MaterialManager.hpp"
+#include "MeshLoader.h"
+#include "ShaderManager.hpp"
+#include "TextureManager.hpp"
+#include "VBOManager.hpp"
 
 void SceneManager::add_scene(const std::string &name, Scene *scene) {
   // Gives each scene a lambda to call when it wants to finish
@@ -18,6 +23,12 @@ bool SceneManager::set_active_scene(const std::string &scene_name) {
   }
 
   end_scene();
+
+  TextureManager::get().clean();
+  ShaderManager::get().clean();
+  VBOManager::get().clean();
+  MaterialManger::get().clean();
+  MeshLoader::get().clean(); // NOTE: We are doing this in the init lambdas of the scenes
 
   Scene &scene = *it->second;
 

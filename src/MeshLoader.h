@@ -22,7 +22,17 @@ private:
 		return loadable_meshes.size() - 1;
 	}
 
+	MeshLoader () {}
 public:
+
+	inline static MeshLoader& get () {
+    static MeshLoader instance;
+    return instance;
+  }
+
+  MeshLoader (const MeshLoader&) = delete;
+  void operator= (const MeshLoader&) = delete;
+
 	const std::vector<LoadingMesh*>& get_meshes() { return loadable_meshes; }
 
 	int import_default_cube () {

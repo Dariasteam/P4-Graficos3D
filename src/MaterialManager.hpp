@@ -6,8 +6,18 @@
 #include <vector>
 
 class MaterialManger {
+private:
+  MaterialManger () {}
 public:
   std::vector<Material*> materials;
+
+  inline static MaterialManger& get () {
+    static MaterialManger instance;
+    return instance;
+  }
+
+  MaterialManger (const MaterialManger&) = delete;
+  void operator= (const MaterialManger&) = delete;
 
   void clean () {
     for (auto* material : materials)

@@ -18,7 +18,18 @@ public:
 	unsigned triangleIndexVBO;
 
 	std::vector<OglMesh> meshes;
+
+	VBOManager () {}
 public:
+
+	inline static VBOManager& get () {
+    static VBOManager instance;
+    return instance;
+  }
+
+  VBOManager (const VBOManager&) = delete;
+  void operator= (const VBOManager&) = delete;
+
   const std::vector<OglMesh>& get_meshes() { return meshes; }
 
   const unsigned get_vao () { return vao; }

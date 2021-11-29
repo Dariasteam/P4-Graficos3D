@@ -25,9 +25,6 @@ private:
   AbstractCameraHandler* camera;
   std::vector<Spatial*> scene_objects;
 
-  static ShaderManager shader_manager;
-  static TextureManager texture_manager;
-  static VBOManager vbo_manager;
   static MaterialManger material_manager;
   static MeshLoader mesh_loader;
 

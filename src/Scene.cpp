@@ -1,18 +1,20 @@
 #include "Scene.hpp"
 #include "MaterialManager.hpp"
 #include "SceneManager.hpp"
-
-ShaderManager Scene::shader_manager;
-TextureManager Scene::texture_manager;
-VBOManager Scene::vbo_manager;
-MeshLoader Scene::mesh_loader;
-MaterialManger Scene::material_manager;
+#include "ShaderManager.hpp"
 
 Scene* Scene::generate_default() {
   Scene& default_scene = *new Scene;
 
+  ShaderManager& shader_manager = ShaderManager::get();
+  TextureManager& texture_manager = TextureManager::get();
+  VBOManager& vbo_manager = VBOManager::get();
+  MaterialManger& material_manager = MaterialManger::get();
+  MeshLoader& mesh_loader = MeshLoader::get();
+
   // INIT
 	default_scene.init = [&] () {
+
     default_scene.dummy_time = 0;
 		default_scene.camera = new FPSCameraHandler;
 
@@ -204,11 +206,6 @@ Scene* Scene::generate_default() {
 }
 
 void Scene::clean() {
-  texture_manager.clean();
-  shader_manager.clean();
-  vbo_manager.clean();
-  material_manager.clean();
-
   delete camera;
 
   for (auto* object : scene_objects)
@@ -219,6 +216,12 @@ void Scene::clean() {
 
 Scene* Scene::generate_scene_2() {
   Scene& scene_2 = *new Scene;
+
+  ShaderManager& shader_manager = ShaderManager::get();
+  TextureManager& texture_manager = TextureManager::get();
+  VBOManager& vbo_manager = VBOManager::get();
+  MaterialManger& material_manager = MaterialManger::get();
+  MeshLoader& mesh_loader = MeshLoader::get();
 
   scene_2.init = [&] () {
     scene_2.dummy_time = 0;

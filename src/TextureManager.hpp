@@ -13,7 +13,17 @@ private:
   GLfloat fLargest;
   std::map<std::string, Texture> textures;				  // Texture identifiers
   unsigned int loadTex(const char *fileName);
+  TextureManager () {}
 public:
+
+  inline static TextureManager& get () {
+    static TextureManager instance;
+    return instance;
+  }
+
+  TextureManager (const TextureManager&) = delete;
+  void operator= (const TextureManager&) = delete;
+
   const Texture& get_texture (const std::string& name);
   bool load_texture(const std::string& path, const std::string& name);
   void prepare();
