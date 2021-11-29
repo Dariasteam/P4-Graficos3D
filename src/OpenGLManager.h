@@ -37,39 +37,16 @@ public:
   void init_OGL();
 	void start_loop ();
 
-	static void resizeFunc(int width, int height) {
-		scene_manager.get_current_scene ()->on_resize(width, height);
-	}
+	// Callbacks
+	static void resizeFunc(int width, int height);
+	static void idleFunc();
+	static void keyboardFunc(unsigned char key, int x, int y);
+	static void mouseFunc(int button, int state, int x, int y);
+	static void mouseMotionFunc(int x, int y);
+	static void renderFunc();
 
-	static void idleFunc() {
-		scene_manager.get_current_scene ()->on_idle();
-	}
-
-	static void keyboardFunc(unsigned char key, int x, int y) {
-		scene_manager.get_current_scene()->on_keyboard(key);
-	}
-
-	static void mouseFunc(int button, int state, int x, int y) {
-		scene_manager.get_current_scene()->on_mouse_button(button, state, x, y);
-	}
-
-	static void mouseMotionFunc(int x, int y) {
-		scene_manager.get_current_scene()->on_mouse_motion(x, y);
-	}
-
-  void destroy();
-
-	static void renderFunc() {
-		scene_manager.get_current_scene()->render();
-	}
-
-	void init_callbacks() {
-		glutReshapeFunc(resizeFunc);
-		glutDisplayFunc(renderFunc);
-		glutIdleFunc(idleFunc);
-		glutKeyboardFunc(keyboardFunc);
-		glutMotionFunc(mouseMotionFunc);
-	}
+	void destroy();
+	void init_callbacks();
 };
 
 #endif

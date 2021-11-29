@@ -52,3 +52,24 @@ void OGLManager::start_loop() {
 }
 
 SceneManager OGLManager::scene_manager;
+void OGLManager::init_callbacks() {
+  glutReshapeFunc(resizeFunc);
+  glutDisplayFunc(renderFunc);
+  glutIdleFunc(idleFunc);
+  glutKeyboardFunc(keyboardFunc);
+  glutMotionFunc(mouseMotionFunc);
+}
+void OGLManager::renderFunc() { scene_manager.get_current_scene()->render(); }
+void OGLManager::mouseMotionFunc(int x, int y) {
+  scene_manager.get_current_scene()->on_mouse_motion(x, y);
+}
+void OGLManager::mouseFunc(int button, int state, int x, int y) {
+  scene_manager.get_current_scene()->on_mouse_button(button, state, x, y);
+}
+void OGLManager::keyboardFunc(unsigned char key, int x, int y) {
+  scene_manager.get_current_scene()->on_keyboard(key);
+}
+void OGLManager::idleFunc() { scene_manager.get_current_scene()->on_idle(); }
+void OGLManager::resizeFunc(int width, int height) {
+  scene_manager.get_current_scene()->on_resize(width, height);
+}
