@@ -11,6 +11,7 @@ Scene* Scene::generate_default() {
 
   // INIT
 	default_scene.init = [&] () {
+    default_scene.dummy_time = 0;
 		default_scene.camera = new FPSCameraHandler;
 
 		texture_manager.prepare();
@@ -133,6 +134,13 @@ Scene* Scene::generate_default() {
 		for (auto object : default_scene.scene_objects) {
 			object->update(default_scene.dummy_time);
 		}
+
+    if (default_scene.dummy_time > 10) {
+      default_scene.clean();
+      std::cout << "Cambiando de escena" << std::endl;
+      default_scene.change_scene("main");
+    }
+
 		default_scene.dummy_time += .1;
 		glutPostRedisplay();
   };
@@ -142,7 +150,6 @@ Scene* Scene::generate_default() {
   default_scene.render = [&]() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 		const auto& view = default_scene.camera->get_view_matrix();
 		const auto& proj = default_scene.camera->get_projection_matrix();
@@ -198,4 +205,12 @@ void Scene::clean() {
   texture_manager.clean();
   shader_manager.clean();
   vbo_manager.clean();
+
+  delete camera;
+
+  for (auto* object : scene_objects)
+    delete object;
+
+  scene_objects.clear();
+
 }

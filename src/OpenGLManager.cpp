@@ -60,6 +60,7 @@ void OGLManager::init_callbacks() {
   glutMotionFunc(mouseMotionFunc);
 }
 void OGLManager::renderFunc() { scene_manager.get_current_scene()->render(); }
+
 void OGLManager::mouseMotionFunc(int x, int y) {
   scene_manager.get_current_scene()->on_mouse_motion(x, y);
 }

@@ -26,8 +26,6 @@ class OGLManager {
 private:
 	static unsigned w;
 	static unsigned h;
-	static float dummy_time;
-
 public:
 	static SceneManager scene_manager;
 
