@@ -9,6 +9,7 @@ set(SOURCES
     src/Camera.cpp
     src/OpenGLManager.cpp
     src/ShaderManager.cpp
+    src/SceneManager.cpp
     src/TextureManager.cpp
     src/main.cpp
 )

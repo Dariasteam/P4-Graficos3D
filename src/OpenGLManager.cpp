@@ -1,5 +1,5 @@
 #include "OpenGLManager.h"
-
+#include "SceneManager.hpp"
 
 void OGLManager::init_OGL () {
   glEnable(GL_DEPTH_TEST);
@@ -26,7 +26,7 @@ void OGLManager::destroy() {
     delete p.second;
   */
 }
-void OGLManager::initContext(int argc, char **argv) {
+void OGLManager::init_context(int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitContextVersion(3, 3);
   glutInitContextProfile(GLUT_CORE_PROFILE);
@@ -46,3 +46,9 @@ void OGLManager::initContext(int argc, char **argv) {
   std::cout << "This system supports OpenGL Version: " << oglVersion
             << std::endl;
 }
+
+void OGLManager::start_loop() {
+  glutMainLoop();
+}
+
+SceneManager OGLManager::scene_manager;
