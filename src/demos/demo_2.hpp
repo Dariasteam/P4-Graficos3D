@@ -1,14 +1,8 @@
-namespace demo_2 {
-  #include "../aux/demo.hpp"
+#include "../aux/demo.hpp"
 
-  WorldManager& world_manager = WorldManager::get();
-  ShaderManager& shader_manager = ShaderManager::get();
-  TextureManager& texture_manager = TextureManager::get();
-  VBOManager& vbo_manager = VBOManager::get();
-  MaterialManager& material_manager = MaterialManager::get();
-  MeshLoader& mesh_loader = MeshLoader::get();
-  LightManager& light_manager = LightManager::get();
-  SceneManager& scene_manager = SceneManager::get();
+using namespace demo_default_objs;
+
+namespace demo_2 {
 
   // INIT
   const std::function<void (void)> init = [] () {

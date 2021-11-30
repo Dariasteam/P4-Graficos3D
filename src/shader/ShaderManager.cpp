@@ -88,13 +88,14 @@ GLuint ShaderManager::loadShader(const char *fileName, GLenum type) {
 
   GLint compiled;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+
   if (!compiled) {
     // Calculamos una cadena de error
     GLint logLen;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLen);
     char *logString = new char[logLen];
     glGetShaderInfoLog(shader, logLen, NULL, logString);
-    std::cout << "Error: " << logString << std::endl;
+    std::cout << "Error compilando el shader " << fileName << " " << logString << std::endl;
     delete[] logString;
     glDeleteShader(shader);
     return -1;

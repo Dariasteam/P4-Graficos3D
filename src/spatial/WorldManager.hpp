@@ -75,8 +75,6 @@ public:
     world_objects.clear();
     dummy_time = 0;
   }
-
-
 };
 
 #endif // _WORLD_MANAGER_H_

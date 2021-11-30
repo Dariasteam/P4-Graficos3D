@@ -9,11 +9,16 @@
 #include "../material/MaterialManager.hpp"
 #include "../ogl/VBOManager.hpp"
 
-const WorldManager& world_manager = WorldManager::get();
-const ShaderManager& shader_manager = ShaderManager::get();
-const TextureManager& texture_manager = TextureManager::get();
-const VBOManager& vbo_manager = VBOManager::get();
-const MaterialManager& material_manager = MaterialManager::get();
-const MeshLoader& mesh_loader = MeshLoader::get();
+namespace demo_default_objs {
+  WorldManager& world_manager = WorldManager::get();
+  ShaderManager& shader_manager = ShaderManager::get();
+  TextureManager& texture_manager = TextureManager::get();
+  VBOManager& vbo_manager = VBOManager::get();
+  MaterialManager& material_manager = MaterialManager::get();
+  LightManager& light_manager = LightManager::get();
+  SceneManager& scene_manager = SceneManager::get();
+  MeshLoader& mesh_loader = MeshLoader::get();
+}
+
 
 #endif // _DEMO_H_
