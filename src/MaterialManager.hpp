@@ -19,6 +19,14 @@ public:
   MaterialManger (const MaterialManger&) = delete;
   void operator= (const MaterialManger&) = delete;
 
+  // FIXME: We could receibve the shader and prebind here
+  inline Material& create_material () {
+    Material* mat = new Material;
+    materials.push_back(mat);
+    return *mat;
+  }
+
+
   void clean () {
     for (auto* material : materials)
       delete material;

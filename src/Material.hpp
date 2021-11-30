@@ -20,7 +20,16 @@
 
 
 struct Material {
+public:
   std::map<std::string, AbstractShaderParameter*> shader_uniforms;
+
+public:
+  Material () {
+    shader_uniforms["modelView"] = new SP_Mat4f(glm::mat4(1));
+    shader_uniforms["modelViewProj"] = new SP_Mat4f(glm::mat4(1));
+    shader_uniforms["normal"] = new SP_Mat4f(glm::mat4(1));
+  }
+
 
   // FIXME: We could have this pre binded
   bool upload_uniform (const std::string& parameter_name, const unsigned id) const {
@@ -45,12 +54,6 @@ struct Material {
     modelView = view * model;
     modelViewProj = proj * modelView;
     normal = glm::transpose(glm::inverse(modelView));
-  }
-
-  Material () {
-    shader_uniforms["modelView"] = new SP_Mat4f(glm::mat4(1));
-    shader_uniforms["modelViewProj"] = new SP_Mat4f(glm::mat4(1));
-    shader_uniforms["normal"] = new SP_Mat4f(glm::mat4(1));
   }
 
   ~Material () {

@@ -5,11 +5,13 @@
 #include "MaterialManager.hpp"
 #include "SceneManager.hpp"
 #include "ShaderManager.hpp"
+#include "WorldManager.hpp"
 #include <glm/ext/matrix_transform.hpp>
 
 Scene* Scene::generate_default() {
   Scene& default_scene = *new Scene;
 
+  WorldManager& wordl_manager = WorldManager::get();
   ShaderManager& shader_manager = ShaderManager::get();
   TextureManager& texture_manager = TextureManager::get();
   VBOManager& vbo_manager = VBOManager::get();
@@ -67,17 +69,15 @@ Scene* Scene::generate_default() {
 		MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[1]);
 
 		// GENERATE MATERIAL (INPUTS FOR SHADERS)
-		Material* mat_a = new Material;
-		mat_a->shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
-		mat_a->shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
-		mat_a->shader_uniforms["color_override"] = new SP_Vec4f({0,0,0,0});
-
-    material_manager.materials.push_back(mat_a);
+		Material& mat_a = material_manager.create_material();
+		mat_a.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
+		mat_a.shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
+		mat_a.shader_uniforms["color_override"] = new SP_Vec4f({0,0,0,0});
 
 		// ASSIGN MAERIALS TO MESH INSTANCES
-		robotmesh->mat = mat_a;
-		cubemesh2->mat = mat_a;
-		cubemesh3->mat = mat_a;
+		robotmesh->mat = &mat_a;
+		cubemesh2->mat = &mat_a;
+		cubemesh3->mat = &mat_a;
 
 		// CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
 		cubemesh3->update_logic = [](Spatial& self, const float dummy_time) {
@@ -211,6 +211,7 @@ void Scene::clean() {
 Scene* Scene::generate_scene_2() {
   Scene& scene_2 = *new Scene;
 
+  WorldManager& world_manager = WorldManager::get();
   ShaderManager& shader_manager = ShaderManager::get();
   TextureManager& texture_manager = TextureManager::get();
   VBOManager& vbo_manager = VBOManager::get();
@@ -260,22 +261,21 @@ Scene* Scene::generate_scene_2() {
     MeshInstance* robotmesh = new MeshInstance (ogl_meshes[1]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
-    Material* mat_a = new Material;
-    material_manager.materials.push_back(mat_a);
 
-    mat_a->shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
-    mat_a->shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
+    Material& mat_a = material_manager.create_material();
+
+    mat_a.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
+    mat_a.shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
 
     // ASSIGN MATERIALS TO MESH INSTANCES
-    robotmesh->mat = mat_a;
+    robotmesh->mat = &mat_a;
 
     // BIND LIGHT IDS IN PROGRAM TO LIGHTS
     light_manager.bind_program_ids("p0");
 
     // INSTANTIATE LIGHTS
-    DirectionalLight* dir_light = new DirectionalLight;
-    dir_light->color.vec_3 = {.1, 0, 0};
-    light_manager.dir_lights.push_back(dir_light);
+    DirectionalLight& dir_light = world_manager.create_directional_light();
+    dir_light.color.vec_3 = {.1, 0, 0};
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh->update_logic = [](Spatial& self, const float dummy_time) {
@@ -311,7 +311,7 @@ Scene* Scene::generate_scene_2() {
     if (key == 'F' || key == 'f') {
       auto& value = light_manager.dir_lights[0]->color.vec_3.z;
 
-      if (value > 10)
+      if (value > 1)
         value = 0;
       else
         value += .1;
@@ -361,20 +361,11 @@ Scene* Scene::generate_scene_2() {
         const OglMesh* ogl_mesh = mesh_instance->mesh;
         Material* material = mesh_instance->mat;
 
-        while (light_manager.calculate_next_light_pass());
+        // FIXME: This loop has only sense when using a deferred shading
+        while (light_manager.upload_next_light_pass());
 
         material->calculate_matrices(model, view, proj);
 
-        /*
-        auto* e = material->shader_uniforms["areaLightPos"];
-        auto& value = static_cast<SP_Vec4f*>(e)->vec_4;
-
-        glm::mat4 light_model (1.0);
-        light_model = glm::translate(light_model, glm::vec3{3, 0, 0});
-
-        value = view * light_model * glm::vec4{0, 0, 0, 1};
-        std::cout << value.x << " " << value.y << " " << value.z << "\n";
-        */
         // Upload Uniforms
         for (const auto& uniform : program.uniforms) {
           const std::string& name = uniform.first;

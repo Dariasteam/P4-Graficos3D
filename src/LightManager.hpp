@@ -59,7 +59,7 @@ public:
     return true;
   };
 
-  bool calculate_next_light_pass () {
+  bool upload_next_light_pass () {
     bool end = true;
 
     if (i_dir < dir_lights.size()) {

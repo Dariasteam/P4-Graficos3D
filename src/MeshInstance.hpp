@@ -32,13 +32,11 @@ public:
 
 		// NOTE: This is an ordered rotation (gymball lock?)
 		if (modified)
-    	prev_transform.mat_4 = t * r_x * r_y * r_z * _local_transform.mat_4;
+    	prev_transform.mat_4 = t * r_y * r_x * r_z * _local_transform.mat_4;
 
 		modified = false;
 		return prev_transform.mat_4;
   }
-
-
 
 	void update (float dummy_time) {
     update_logic (*this, dummy_time);
