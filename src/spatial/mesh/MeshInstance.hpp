@@ -1,11 +1,11 @@
 #ifndef _MESH_INSTANCE_H_
 #define _MESH_INSTANCE_H_
 
-#include "OGLObject.hpp"
-#include "Spatial.h"
+#include "../../ogl/OGLObject.hpp"
+#include "../Spatial.h"
 #include "OGLMesh.hpp"
-#include "Material.hpp"
-#include "Shaders.hpp"
+#include "../../material/Material.hpp"
+#include "../../shader/Shaders.hpp"
 
 struct MeshInstance : public Spatial {
 protected:

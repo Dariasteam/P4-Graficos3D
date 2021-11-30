@@ -1,9 +1,8 @@
 #ifndef _LIGHT_H_
 #define _LIGHT_H_
 
-#include "Spatial.h"
-#include "Shaders.hpp"
-#include <glm/fwd.hpp>
+#include "../Spatial.h"
+#include "../../shader/Shaders.hpp"
 
 #include <map>
 

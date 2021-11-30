@@ -1,8 +1,8 @@
 #ifndef _VBO_MANAGER_
 #define _VBO_MANAGER_
 
-#include "OGLMesh.hpp"
-#include "LoadingMesh.hpp"
+#include "../spatial/mesh/OGLMesh.hpp"
+#include "../spatial/mesh/LoadingMesh.hpp"
 
 #include <vector>
 #include <iostream>

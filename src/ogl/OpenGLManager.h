@@ -1,13 +1,12 @@
 #ifndef _OPENGL_MANAGER_H_
 #define _OPENGL_MANAGER_H_
 
-#include "Spatial.h"
-#include "auxiliar.h"
-#include "Shaders.hpp"
-#include "Program.hpp"
-#include "Texture.hpp"
-
-#include "SceneManager.hpp"
+#include "../spatial/Spatial.h"
+#include "../aux/auxiliar.h"
+#include "../shader/Shaders.hpp"
+#include "../shader/Program.hpp"
+#include "../texture/Texture.hpp"
+#include "../scene/SceneManager.hpp"
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -27,8 +26,6 @@ private:
 	static unsigned w;
 	static unsigned h;
 public:
-	static SceneManager scene_manager;
-
   ~OGLManager() { destroy(); }
 
   void init_context(int argc, char **argv);

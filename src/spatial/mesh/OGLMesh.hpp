@@ -1,7 +1,7 @@
 #ifndef _OGL_MEHS_
 #define _OGL_MEHS_
 
-#include "OGLObject.hpp"
+#include "../../ogl/OGLObject.hpp"
 
 struct OglMesh : public OglObject {
   unsigned n_vertices;

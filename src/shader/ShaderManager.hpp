@@ -3,7 +3,7 @@
 
 #include "Shaders.hpp"
 #include "Program.hpp"
-#include "auxiliar.h"
+#include "../aux/auxiliar.h"
 
 #include <map>
 #include <string>

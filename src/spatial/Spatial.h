@@ -1,7 +1,8 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
-#include "Shaders.hpp"
+#include "../shader/Shaders.hpp"
+
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
 #include <iostream>

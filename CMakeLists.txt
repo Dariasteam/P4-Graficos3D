@@ -5,14 +5,14 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
-    src/auxiliar.cpp
-    src/Light.cpp
-    src/Camera.cpp
-    src/Scene.cpp
-    src/ShaderManager.cpp
-    src/OpenGLManager.cpp
-    src/SceneManager.cpp
-    src/TextureManager.cpp
+    src/aux/auxiliar.cpp
+    src/spatial/light/Light.cpp
+    src/spatial/camera/Camera.cpp
+    src/scene/Scene.cpp
+    src/shader/ShaderManager.cpp
+    src/ogl/OpenGLManager.cpp
+    src/scene/SceneManager.cpp
+    src/texture/TextureManager.cpp
     src/main.cpp
 )
 

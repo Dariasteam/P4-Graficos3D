@@ -5,19 +5,19 @@
 
 #include <vector>
 
-class MaterialManger {
+class MaterialManager {
 private:
-  MaterialManger () {}
+  MaterialManager () {}
 public:
   std::vector<Material*> materials;
 
-  inline static MaterialManger& get () {
-    static MaterialManger instance;
+  inline static MaterialManager& get () {
+    static MaterialManager instance;
     return instance;
   }
 
-  MaterialManger (const MaterialManger&) = delete;
-  void operator= (const MaterialManger&) = delete;
+  MaterialManager (const MaterialManager&) = delete;
+  void operator= (const MaterialManager&) = delete;
 
   // FIXME: We could receibve the shader and prebind here
   inline Material& create_material () {

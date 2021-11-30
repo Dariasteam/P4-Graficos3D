@@ -1,9 +1,9 @@
 #ifndef _MATERTIAL_H_
 #define _MATERTIAL_H_
 
-#include "Texture.hpp"
-#include "Light.hpp"
-#include "Shaders.hpp"
+#include "../texture/Texture.hpp"
+#include "../spatial/light/Light.hpp"
+#include "../shader/Shaders.hpp"
 
 #include <map>
 #include <string>

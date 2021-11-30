@@ -2,8 +2,7 @@
 #define _LGIHT_MANAGER_H_
 
 #include "Light.hpp"
-#include "Program.hpp"
-#include "ShaderManager.hpp"
+#include "../../shader/ShaderManager.hpp"
 
 #include <vector>
 #include <map>

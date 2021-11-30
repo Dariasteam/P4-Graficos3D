@@ -2,7 +2,7 @@
 #define _PROGRAM_H_
 
 #include "Shaders.hpp"
-#include "MeshInstance.hpp"
+#include "../spatial/mesh/MeshInstance.hpp"
 
 #include <map>
 #include <vector>

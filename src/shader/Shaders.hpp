@@ -1,8 +1,8 @@
 #ifndef _SHADERS_H_
 #define _SHADERS_H_
 
-#include "OGLObject.hpp"
-#include "Texture.hpp"
+#include "../ogl/OGLObject.hpp"
+#include "../texture/Texture.hpp"
 
 struct FragmentShader : public OglObject {
 	~FragmentShader() {

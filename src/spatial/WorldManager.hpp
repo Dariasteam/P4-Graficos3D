@@ -1,11 +1,10 @@
 #ifndef _WORLD_MANAGER_H_
 #define _WORLD_MANAGER_H_
 
-#include "Camera.h"
-#include "Light.hpp"
-#include "MeshInstance.hpp"
-#include "OGLMesh.hpp"
-#include "LightManager.hpp"
+#include "camera/Camera.h"
+#include "light/LightManager.hpp"
+#include "mesh/MeshInstance.hpp"
+#include "mesh/OGLMesh.hpp"
 
 #include <vector>
 
@@ -70,6 +69,8 @@ public:
   void clear () {
     for (auto* object : world_objects)
       delete object;
+
+    delete camera;
 
     world_objects.clear();
     dummy_time = 0;

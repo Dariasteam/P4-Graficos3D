@@ -1,7 +1,8 @@
 #ifndef _LOADING_MESH_
 #define _LOADING_MESH_
 
-#include "BOX.h"
+#include "../../aux/BOX.h"
+
 #include <algorithm>
 
 struct LoadingMesh {

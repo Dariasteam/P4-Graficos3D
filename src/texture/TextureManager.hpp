@@ -2,7 +2,7 @@
 #define _TEXTURE_MANAGER_H_
 
 #include "Texture.hpp"
-#include "auxiliar.h"
+#include "../aux/auxiliar.h"
 
 #include <map>
 #include <string>

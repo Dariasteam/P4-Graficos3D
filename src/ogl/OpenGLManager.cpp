@@ -1,5 +1,4 @@
 #include "OpenGLManager.h"
-#include "SceneManager.hpp"
 
 void OGLManager::init_OGL () {
   glEnable(GL_DEPTH_TEST);
@@ -11,7 +10,7 @@ void OGLManager::init_OGL () {
 }
 
 void OGLManager::destroy() {
-  scene_manager.get_current_scene()->clean();
+  SceneManager::get().get_current_scene()->clean();
 }
 
 void OGLManager::init_context(int argc, char **argv) {
@@ -39,7 +38,6 @@ void OGLManager::start_loop() {
   glutMainLoop();
 }
 
-SceneManager OGLManager::scene_manager;
 void OGLManager::init_callbacks() {
   glutReshapeFunc(resizeFunc);
   glutDisplayFunc(renderFunc);
@@ -47,18 +45,26 @@ void OGLManager::init_callbacks() {
   glutKeyboardFunc(keyboardFunc);
   glutMotionFunc(mouseMotionFunc);
 }
-void OGLManager::renderFunc() { scene_manager.get_current_scene()->render(); }
+void OGLManager::renderFunc() {
+  SceneManager::get().get_current_scene()->render();
+}
 
 void OGLManager::mouseMotionFunc(int x, int y) {
-  scene_manager.get_current_scene()->on_mouse_motion(x, y);
+  SceneManager::get().get_current_scene()->on_mouse_motion(x, y);
 }
+
 void OGLManager::mouseFunc(int button, int state, int x, int y) {
-  scene_manager.get_current_scene()->on_mouse_button(button, state, x, y);
+  SceneManager::get().get_current_scene()->on_mouse_button(button, state, x, y);
 }
+
 void OGLManager::keyboardFunc(unsigned char key, int x, int y) {
-  scene_manager.get_current_scene()->on_keyboard(key);
+  SceneManager::get().get_current_scene()->on_keyboard(key);
 }
-void OGLManager::idleFunc() { scene_manager.get_current_scene()->on_idle(); }
+
+void OGLManager::idleFunc() {
+  SceneManager::get().get_current_scene()->on_idle();
+}
+
 void OGLManager::resizeFunc(int width, int height) {
-  scene_manager.get_current_scene()->on_resize(width, height);
+  SceneManager::get().get_current_scene()->on_resize(width, height);
 }
