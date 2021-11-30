@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
     src/auxiliar.cpp
+    src/Light.cpp
     src/Camera.cpp
     src/Scene.cpp
     src/ShaderManager.cpp

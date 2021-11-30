@@ -1,6 +1,7 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
+#include "Shaders.hpp"
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
 #include <iostream>
@@ -17,9 +18,9 @@ protected:
 	glm::vec3 _rotation_angle {0, 0, 0};
 	glm::vec3 _scale {0, 0, 0};
 
-	glm::mat4 _local_transform = glm::mat4(1.0f);; // Transform / View
+	SP_Mat4f _local_transform {glm::mat4(1.0f)}; // Transform / View
 
-	glm::mat4 prev_transform = _local_transform;
+	SP_Mat4f prev_transform = _local_transform.mat_4;
 public:
 
   glm::vec3& translation() {

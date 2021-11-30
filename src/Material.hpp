@@ -22,6 +22,7 @@
 struct Material {
   std::map<std::string, AbstractShaderParameter*> shader_uniforms;
 
+  // FIXME: We could have this pre binded
   bool upload_uniform (const std::string& parameter_name, const unsigned id) const {
     const auto& it = shader_uniforms.find(parameter_name);
     if (it != shader_uniforms.end()) {

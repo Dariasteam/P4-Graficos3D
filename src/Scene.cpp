@@ -1,4 +1,6 @@
 #include "Scene.hpp"
+#include "Light.hpp"
+#include "LightManager.hpp"
 #include "Material.hpp"
 #include "MaterialManager.hpp"
 #include "SceneManager.hpp"
@@ -214,6 +216,7 @@ Scene* Scene::generate_scene_2() {
   VBOManager& vbo_manager = VBOManager::get();
   MaterialManger& material_manager = MaterialManger::get();
   MeshLoader& mesh_loader = MeshLoader::get();
+  LightManager& light_manager = LightManager::get();
 
   scene_2.init = [&] () {
     scene_2.dummy_time = 0;
@@ -262,11 +265,18 @@ Scene* Scene::generate_scene_2() {
 
     mat_a->shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
     mat_a->shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
-    mat_a->shader_uniforms["areaLightColor"] = new SP_Vec3f({0, 0, 0});
-    mat_a->shader_uniforms["areaLightPos"] = new SP_Vec4f({1, 0, 0, 1});
 
-    // ASSIGN MAERIALS TO MESH INSTANCES
+    // ASSIGN MATERIALS TO MESH INSTANCES
     robotmesh->mat = mat_a;
+
+    // BIND LIGHT IDS IN PROGRAM TO LIGHTS
+    light_manager.bind_program_ids("p0");
+
+    // INSTANTIATE LIGHTS
+    DirectionalLight* dir_light = new DirectionalLight;
+    dir_light->color.vec_3 = {.1, 0, 0};
+
+    light_manager.dir_lights.push_back(dir_light);
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh->update_logic = [](Spatial& self, const float dummy_time) {
@@ -353,8 +363,11 @@ Scene* Scene::generate_scene_2() {
         const OglMesh* ogl_mesh = mesh_instance->mesh;
         Material* material = mesh_instance->mat;
 
+        while (light_manager.calculate_next_light_pass());
+
         material->calculate_matrices(model, view, proj);
 
+        /*
         auto* e = material->shader_uniforms["areaLightPos"];
         auto& value = static_cast<SP_Vec4f*>(e)->vec_4;
 
@@ -363,7 +376,7 @@ Scene* Scene::generate_scene_2() {
 
         value = view * light_model * glm::vec4{0, 0, 0, 1};
         std::cout << value.x << " " << value.y << " " << value.z << "\n";
-
+        */
         // Upload Uniforms
         for (const auto& uniform : program.uniforms) {
           const std::string& name = uniform.first;

@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 
 	opengl_manager.scene_manager.add_scene("main", default_scene);
 	opengl_manager.scene_manager.add_scene("scene_2", scene_2);
-	opengl_manager.scene_manager.set_active_scene("main");
+	opengl_manager.scene_manager.set_active_scene("scene_2");
 
 	opengl_manager.start_loop();
 

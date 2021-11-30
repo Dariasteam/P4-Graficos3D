@@ -11,7 +11,7 @@
 #include "ShaderManager.hpp"
 #include "MeshLoader.h"
 #include "MaterialManager.hpp"
-#include "Light.hpp"
+#include "LightManager.hpp"
 
 #include <vector>
 #include <map>
