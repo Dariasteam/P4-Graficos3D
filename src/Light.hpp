@@ -44,7 +44,6 @@ struct DirectionalLight : public AbstractLight {
   SP_Vec3f direction;
 
   void upload_data() {
-    std::cout << "LLEGUE" << std::endl;
     color.upload_data(uniform_ids["DirLightC"]);
     direction.upload_data(uniform_ids["DirLightD"]);
   }

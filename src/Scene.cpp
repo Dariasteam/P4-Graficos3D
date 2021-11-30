@@ -275,7 +275,6 @@ Scene* Scene::generate_scene_2() {
     // INSTANTIATE LIGHTS
     DirectionalLight* dir_light = new DirectionalLight;
     dir_light->color.vec_3 = {.1, 0, 0};
-
     light_manager.dir_lights.push_back(dir_light);
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
@@ -310,8 +309,7 @@ Scene* Scene::generate_scene_2() {
     }
 
     if (key == 'F' || key == 'f') {
-      auto* e = material_manager.materials[0]->shader_uniforms["areaLightColor"];
-      auto& value = static_cast<SP_Vec4f*>(e)->vec_4.z;
+      auto& value = light_manager.dir_lights[0]->color.vec_3.z;
 
       if (value > 10)
         value = 0;

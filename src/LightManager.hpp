@@ -61,7 +61,6 @@ public:
 
   bool calculate_next_light_pass () {
     bool end = true;
-    std::cout << "LLEGUE " <<  dir_lights.size() << std::endl;
 
     if (i_dir < dir_lights.size()) {
       dir_lights[i_dir]->upload_data();
