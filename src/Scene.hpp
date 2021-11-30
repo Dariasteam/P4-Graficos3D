@@ -11,6 +11,7 @@
 #include "ShaderManager.hpp"
 #include "MeshLoader.h"
 #include "MaterialManager.hpp"
+#include "Light.hpp"
 
 #include <vector>
 #include <map>
@@ -24,6 +25,7 @@ private:
 
   AbstractCameraHandler* camera;
   std::vector<Spatial*> scene_objects;
+  std::vector<AbstractLight*> scene_lights;
 
   static MaterialManger material_manager;
   static MeshLoader mesh_loader;

@@ -169,7 +169,7 @@ Scene* Scene::generate_default() {
 				for (const auto& uniform : program.uniforms) {
 					const std::string& name = uniform.first;
 					const int parameter_id = uniform.second;
-					mesh_instance->mat->get_parameter(name, parameter_id);
+					mesh_instance->mat->upload_uniform(name, parameter_id);
 				}
 
 				// Upload Attributes (Layout / Location)
@@ -353,7 +353,7 @@ Scene* Scene::generate_scene_2() {
         const OglMesh* ogl_mesh = mesh_instance->mesh;
         Material* material = mesh_instance->mat;
 
-        material->calculate_matrices(model,view, proj);
+        material->calculate_matrices(model, view, proj);
 
         auto* e = material->shader_uniforms["areaLightPos"];
         auto& value = static_cast<SP_Vec4f*>(e)->vec_4;
@@ -368,10 +368,8 @@ Scene* Scene::generate_scene_2() {
         for (const auto& uniform : program.uniforms) {
           const std::string& name = uniform.first;
           const int parameter_id = uniform.second;
-          mesh_instance->mat->get_parameter(name, parameter_id);
+          mesh_instance->mat->upload_uniform(name, parameter_id);
         }
-
-
 
         // Upload Attributes (Layout / Location)
         glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.posVBO);
