@@ -15,7 +15,6 @@ public:
 	Material* mat;
 	const OglMesh* mesh;
 
-	// FIXME: memory leak here
 	MeshInstance () : mat(new Material) {}
 
 	int get_obj_id () { return obj_id; }

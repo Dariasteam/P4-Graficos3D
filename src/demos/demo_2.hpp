@@ -59,12 +59,13 @@ namespace demo_2 {
     light_manager.bind_program_ids("p0");
 
     // INSTANTIATE LIGHTS
-    DirectionalLight& dir_light = world_manager.create_directional_light();
-    dir_light.color.vec_3 = {.1, 0, 0};
+    PointLight& point_light = world_manager.create_point_light();
+    point_light.color.vec_3 = {0, 0, 0};
+    point_light.position.vec_4 = {2, 0, 0, 0};
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      self.rotation().y = dummy_time / 4;
+      //self.rotation().y = dummy_time / 4;
     };
 
     // ASSIGN PROGRAMS TO MESHES
@@ -91,9 +92,9 @@ namespace demo_2 {
     }
 
     if (key == 'F' || key == 'f') {
-      auto& value = light_manager.dir_lights[0]->color.vec_3.z;
+      auto& value = light_manager.point_lights[0]->color.vec_3.z;
 
-      if (value > 1)
+      if (value > 10)
         value = 0;
       else
         value += .1;
@@ -140,7 +141,7 @@ namespace demo_2 {
         Material* material = mesh_instance->mat;
 
         // FIXME: This loop has only sense when using a deferred shading
-        while (light_manager.upload_next_light_pass());
+        while (light_manager.upload_next_light_pass(view));
 
         material->calculate_matrices(model, view, proj);
 

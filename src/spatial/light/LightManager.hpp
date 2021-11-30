@@ -4,6 +4,7 @@
 #include "Light.hpp"
 #include "../../shader/ShaderManager.hpp"
 
+#include <glm/fwd.hpp>
 #include <vector>
 #include <map>
 
@@ -58,23 +59,23 @@ public:
     return true;
   };
 
-  bool upload_next_light_pass () {
+  bool upload_next_light_pass (const glm::mat4& view) {
     bool end = true;
 
     if (i_dir < dir_lights.size()) {
-      dir_lights[i_dir]->upload_data();
+      dir_lights[i_dir]->upload_data(view);
       i_dir++;
       end = false;
     }
 
     if (i_point < point_lights.size()) {
-      point_lights[i_point]->upload_data();
+      point_lights[i_point]->upload_data(view);
       i_point++;
       end = false;
     }
 
     if (i_focal < focal_lights.size()) {
-      point_lights[i_focal]->upload_data();
+      point_lights[i_focal]->upload_data(view);
       i_focal++;
       end = false;
     }
