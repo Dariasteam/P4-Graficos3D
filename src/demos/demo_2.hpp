@@ -61,7 +61,8 @@ namespace demo_2 {
     // INSTANTIATE LIGHTS
     PointLight& point_light = world_manager.create_point_light();
     point_light.color.vec_3 = {0, 0, 0};
-    point_light.position.vec_4 = {2, 0, 0, 0};
+
+    point_light.translation() = {2, 0, 0};
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {

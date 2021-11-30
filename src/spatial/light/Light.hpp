@@ -15,10 +15,13 @@ public:
 
 protected:
   AbstractLight () {}
-  virtual void upload_data(const glm::mat4& view) = 0;
+  virtual void upload_data() = 0;
 
 public:
-  glm::mat4 get_model_matrix () {}
+  glm::mat4 get_model_matrix () {
+    auto t = glm::translate(glm::mat4(1), _translation);
+    return t;
+  }
   void update(float dummy_time) {}
 
   void adjust_to_view(const glm::mat4& view) {
@@ -29,17 +32,9 @@ public:
 struct PointLight : public AbstractLight {
   static std::map<std::string, int> uniform_ids;
 
-  void upload_data(const glm::mat4& view) {
-    auto aux_pos = position.vec_4;
-
-    // FIXME: Use translation here
-    auto model = glm::translate(glm::mat4(1), glm::vec3(position.vec_4.x, position.vec_4.y, position.vec_4.z));
-
-    position.vec_4 = view * model * glm::vec4(0, 0, 0, 1);
+  void upload_data() {
     color.upload_data(uniform_ids["PointLightC"]);
     position.upload_data(uniform_ids["PointLightP"]);
-
-    position.vec_4 = aux_pos;
   }
 };
 
@@ -48,7 +43,7 @@ struct DirectionalLight : public AbstractLight {
 
   SP_Vec3f direction;
 
-  void upload_data(const glm::mat4& view) {
+  void upload_data() {
     color.upload_data(uniform_ids["DirLightC"]);
     direction.upload_data(uniform_ids["DirLightD"]);
   }
@@ -60,7 +55,7 @@ struct FocalLight : public AbstractLight {
   SP_Vec3f direction;
   SP_Valuef aperture;
 
-  void upload_data(const glm::mat4& view) {
+  void upload_data() {
     color.upload_data(uniform_ids["FocalLightC"]);
     position.upload_data(uniform_ids["FocalLightP"]);
     aperture.upload_data(uniform_ids["FocalLightA"]);

@@ -63,19 +63,22 @@ public:
     bool end = true;
 
     if (i_dir < dir_lights.size()) {
-      dir_lights[i_dir]->upload_data(view);
+      dir_lights[i_dir]->adjust_to_view (view);
+      dir_lights[i_dir]->upload_data();
       i_dir++;
       end = false;
     }
 
     if (i_point < point_lights.size()) {
-      point_lights[i_point]->upload_data(view);
+      point_lights[i_point]->adjust_to_view (view);
+      point_lights[i_point]->upload_data();
       i_point++;
       end = false;
     }
 
     if (i_focal < focal_lights.size()) {
-      point_lights[i_focal]->upload_data(view);
+      point_lights[i_focal]->adjust_to_view (view);
+      point_lights[i_focal]->upload_data();
       i_focal++;
       end = false;
     }
