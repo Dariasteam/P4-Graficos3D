@@ -90,15 +90,7 @@ public:
   }
 
   void clean () {
-    for (auto* light : dir_lights)
-      delete light;
-
-    for (auto* light : point_lights)
-      delete light;
-
-    for (auto* light : focal_lights)
-      delete light;
-
+    // We do not delete the lights since they are managed by the world
     dir_lights.clear();
     point_lights.clear();
     focal_lights.clear();

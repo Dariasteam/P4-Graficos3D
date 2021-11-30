@@ -11,7 +11,7 @@
 Scene* Scene::generate_default() {
   Scene& default_scene = *new Scene;
 
-  WorldManager& wordl_manager = WorldManager::get();
+  WorldManager& world_manager = WorldManager::get();
   ShaderManager& shader_manager = ShaderManager::get();
   TextureManager& texture_manager = TextureManager::get();
   VBOManager& vbo_manager = VBOManager::get();
@@ -21,8 +21,7 @@ Scene* Scene::generate_default() {
   // INIT
 	default_scene.init = [&] () {
 
-    default_scene.dummy_time = 0;
-		default_scene.camera = new FPSCameraHandler;
+		world_manager.camera = new FPSCameraHandler;
 
 		texture_manager.prepare();
 
@@ -64,9 +63,9 @@ Scene* Scene::generate_default() {
 		// GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
 		const auto& ogl_meshes = vbo_manager.get_meshes();
 
-		MeshInstance* robotmesh = new MeshInstance (ogl_meshes[0]);
-		MeshInstance* cubemesh2 = new MeshInstance (ogl_meshes[1]);
-		MeshInstance* cubemesh3 = new MeshInstance (ogl_meshes[1]);
+		MeshInstance& robotmesh = world_manager.create_mesh_instance (ogl_meshes[0]);
+		MeshInstance& cubemesh2 = world_manager.create_mesh_instance (ogl_meshes[1]);
+		MeshInstance& cubemesh3 = world_manager.create_mesh_instance (ogl_meshes[1]);
 
 		// GENERATE MATERIAL (INPUTS FOR SHADERS)
 		Material& mat_a = material_manager.create_material();
@@ -75,26 +74,21 @@ Scene* Scene::generate_default() {
 		mat_a.shader_uniforms["color_override"] = new SP_Vec4f({0,0,0,0});
 
 		// ASSIGN MAERIALS TO MESH INSTANCES
-		robotmesh->mat = &mat_a;
-		cubemesh2->mat = &mat_a;
-		cubemesh3->mat = &mat_a;
+		robotmesh.mat = &mat_a;
+		cubemesh2.mat = &mat_a;
+		cubemesh3.mat = &mat_a;
 
 		// CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
-		cubemesh3->update_logic = [](Spatial& self, const float dummy_time) {
+		cubemesh3.update_logic = [](Spatial& self, const float dummy_time) {
 			self.rotation().x = dummy_time / 4;
 			self.rotation().y = dummy_time / 4;
 		};
 
-		cubemesh2->translation().x = -2;
-		cubemesh2->translation().y = 2;
+		cubemesh2.translation().x = -2;
+		cubemesh2.translation().y = 2;
 
-		robotmesh->translation().x = 2;
-		robotmesh->translation().y = -2;
-
-		// ADD MESH INSTANCES TO SCENES
-		default_scene.scene_objects.push_back(robotmesh);
-		default_scene.scene_objects.push_back(cubemesh2);
-		default_scene.scene_objects.push_back(cubemesh3);
+		robotmesh.translation().x = 2;
+		robotmesh.translation().y = -2;
 
 		// ASSIGN PROGRAMS TO MESHES
 		shader_manager.set_mesh_per_program("p0", cubemesh2);
@@ -105,7 +99,7 @@ Scene* Scene::generate_default() {
 
   // ON_RESIZE
   default_scene.on_resize = [&](int W, int H) {
-		default_scene.camera->update_aspect_ratio(W, H);
+		world_manager.camera->update_aspect_ratio(W, H);
     glViewport(0, 0, W, H);
 		glutPostRedisplay();
   };
@@ -113,7 +107,7 @@ Scene* Scene::generate_default() {
 
   // ON KEYBOARD
   default_scene.on_keyboard = [&] (unsigned char key) {
-    default_scene.camera->handle_keys(key);
+    world_manager.camera->handle_keys(key);
 
     if (key == 'G' || key == 'g') {
       default_scene.clean();
@@ -125,23 +119,19 @@ Scene* Scene::generate_default() {
 
   // ON MOUSE BUTTON
   default_scene.on_mouse_button = [&](int button, int state, int x, int y) {
-    default_scene.camera->handle_mouse_buttons(button, state, x, y);
+    world_manager.camera->handle_mouse_buttons(button, state, x, y);
   };
 
 
   // ON MOUSE MOTION
   default_scene.on_mouse_motion = [&](int x, int y) {
-    default_scene.camera->handle_mouse_motion(x, y);
+    world_manager.camera->handle_mouse_motion(x, y);
   };
 
 
   // ON IDLE
   default_scene.on_idle = [&] () {
-		for (auto object : default_scene.scene_objects) {
-			object->update(default_scene.dummy_time);
-		}
-
-		default_scene.dummy_time += .1;
+		world_manager.update();
 		glutPostRedisplay();
   };
 
@@ -151,8 +141,8 @@ Scene* Scene::generate_default() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		const auto& view = default_scene.camera->get_view_matrix();
-		const auto& proj = default_scene.camera->get_projection_matrix();
+		const auto& view = world_manager.camera->get_view_matrix();
+		const auto& proj = world_manager.camera->get_projection_matrix();
 
 		for (auto p : shader_manager.programs) {
 			Program& program = *p.second;
@@ -199,14 +189,6 @@ Scene* Scene::generate_default() {
 	return &default_scene;
 }
 
-void Scene::clean() {
-  delete camera;
-
-  for (auto* object : scene_objects)
-    delete object;
-
-  scene_objects.clear();
-}
 
 Scene* Scene::generate_scene_2() {
   Scene& scene_2 = *new Scene;
@@ -220,8 +202,7 @@ Scene* Scene::generate_scene_2() {
   LightManager& light_manager = LightManager::get();
 
   scene_2.init = [&] () {
-    scene_2.dummy_time = 0;
-    scene_2.camera = new FPSCameraHandler;
+    world_manager.camera = new FPSCameraHandler;
 
     texture_manager.prepare();
 
@@ -258,7 +239,7 @@ Scene* Scene::generate_scene_2() {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    MeshInstance* robotmesh = new MeshInstance (ogl_meshes[1]);
+    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
 
@@ -268,7 +249,7 @@ Scene* Scene::generate_scene_2() {
     mat_a.shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
 
     // ASSIGN MATERIALS TO MESH INSTANCES
-    robotmesh->mat = &mat_a;
+    robotmesh.mat = &mat_a;
 
     // BIND LIGHT IDS IN PROGRAM TO LIGHTS
     light_manager.bind_program_ids("p0");
@@ -278,12 +259,9 @@ Scene* Scene::generate_scene_2() {
     dir_light.color.vec_3 = {.1, 0, 0};
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
-    robotmesh->update_logic = [](Spatial& self, const float dummy_time) {
-      //self.rotation().y = dummy_time / 4;
+    robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
+      self.rotation().y = dummy_time / 4;
     };
-
-    // ADD MESH INSTANCES TO SCENES
-    scene_2.scene_objects.push_back(robotmesh);
 
     // ASSIGN PROGRAMS TO MESHES
     shader_manager.set_mesh_per_program("p0", robotmesh);
@@ -292,7 +270,7 @@ Scene* Scene::generate_scene_2() {
 
   // ON_RESIZE
   scene_2.on_resize = [&](int W, int H) {
-    scene_2.camera->update_aspect_ratio(W, H);
+    world_manager.camera->update_aspect_ratio(W, H);
     glViewport(0, 0, W, H);
     glutPostRedisplay();
   };
@@ -300,7 +278,7 @@ Scene* Scene::generate_scene_2() {
 
   // ON KEYBOARD
   scene_2.on_keyboard = [&] (unsigned char key) {
-    scene_2.camera->handle_keys(key);
+    world_manager.camera->handle_keys(key);
 
     if (key == 'G' || key == 'g') {
       scene_2.clean();
@@ -321,23 +299,19 @@ Scene* Scene::generate_scene_2() {
 
   // ON MOUSE BUTTON
   scene_2.on_mouse_button = [&](int button, int state, int x, int y) {
-    scene_2.camera->handle_mouse_buttons(button, state, x, y);
+    world_manager.camera->handle_mouse_buttons(button, state, x, y);
   };
 
 
   // ON MOUSE MOTION
   scene_2.on_mouse_motion = [&](int x, int y) {
-    scene_2.camera->handle_mouse_motion(x, y);
+    world_manager.camera->handle_mouse_motion(x, y);
   };
 
 
   // ON IDLE
   scene_2.on_idle = [&] () {
-    for (auto object : scene_2.scene_objects) {
-      object->update(scene_2.dummy_time);
-    }
-
-    scene_2.dummy_time += .1;
+    world_manager.update();
     glutPostRedisplay();
   };
 
@@ -347,8 +321,8 @@ Scene* Scene::generate_scene_2() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const auto& view = scene_2.camera->get_view_matrix();
-    const auto& proj = scene_2.camera->get_projection_matrix();
+    const auto& view = world_manager.camera->get_view_matrix();
+    const auto& proj = world_manager.camera->get_projection_matrix();
 
     for (auto p : shader_manager.programs) {
       Program& program = *p.second;

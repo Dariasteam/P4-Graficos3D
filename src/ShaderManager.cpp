@@ -155,7 +155,7 @@ bool ShaderManager::bound_program_attributes (const std::string& program_name,
 }
 
 bool ShaderManager::set_mesh_per_program (const std::string& program_name,
-                                       MeshInstance* mesh) const {
+                                          MeshInstance& mesh) const {
 
   const auto& it = programs.find(program_name);
   if (it == programs.end()) {
@@ -166,7 +166,7 @@ bool ShaderManager::set_mesh_per_program (const std::string& program_name,
 
   auto& program = *it->second;
 
-  program.associated_meshes.insert(mesh);
+  program.associated_meshes.insert(&mesh);
   return true;
 }
 

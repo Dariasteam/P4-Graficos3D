@@ -21,6 +21,8 @@ protected:
 	SP_Mat4f _local_transform {glm::mat4(1.0f)}; // Transform / View
 
 	SP_Mat4f prev_transform = _local_transform.mat_4;
+
+	bool modified = false;
 public:
 
   glm::vec3& translation() {
@@ -33,7 +35,6 @@ public:
     return _rotation_angle;
   }
 
-	bool modified = false;
 
 	virtual glm::mat4 get_model_matrix () = 0;
 	virtual void update (float dummy_time) = 0;

@@ -86,7 +86,7 @@ public:
                       const std::string &v_name,
                       const std::string &f_name);
 
-  bool set_mesh_per_program(const std::string& program_name, MeshInstance *mesh) const;
+  bool set_mesh_per_program(const std::string& program_name, MeshInstance& mesh) const;
 
   bool bound_program_attributes(const std::string& program_name,
                 const std::map<std::string, unsigned> &attribute_name_location);

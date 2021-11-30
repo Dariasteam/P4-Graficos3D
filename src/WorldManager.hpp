@@ -1,6 +1,7 @@
 #ifndef _WORLD_MANAGER_H_
 #define _WORLD_MANAGER_H_
 
+#include "Camera.h"
 #include "Light.hpp"
 #include "MeshInstance.hpp"
 #include "OGLMesh.hpp"
@@ -12,8 +13,12 @@ class WorldManager {
 private:
   WorldManager () {}
 
+  float dummy_time = 0;
+
   std::vector<Spatial*> world_objects;
 public:
+  AbstractCameraHandler* camera;
+
   inline static WorldManager& get () {
     static WorldManager instance;
     return instance;
@@ -53,6 +58,21 @@ public:
 
     world_objects.push_back(light);
     return *light;
+  }
+
+  void update () {
+    for (auto* object : world_objects) {
+      object->update(dummy_time);
+    }
+    dummy_time += .1;
+  }
+
+  void clear () {
+    for (auto* object : world_objects)
+      delete object;
+
+    world_objects.clear();
+    dummy_time = 0;
   }
 
 

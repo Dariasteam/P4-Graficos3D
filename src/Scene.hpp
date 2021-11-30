@@ -21,19 +21,8 @@
 #include <functional>
 
 struct Scene {
-private:
-  double dummy_time = 0;
-
-  AbstractCameraHandler* camera;
-  std::vector<Spatial*> scene_objects;
-  std::vector<AbstractLight*> scene_lights;
-
-  static MaterialManger material_manager;
-  static MeshLoader mesh_loader;
-
-
 public:
-  void clean ();
+  void clean () {}
   static Scene* generate_default ();
   static Scene* generate_scene_2 ();
 
