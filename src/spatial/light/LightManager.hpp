@@ -77,8 +77,8 @@ public:
     }
 
     if (i_focal < focal_lights.size()) {
-      point_lights[i_focal]->adjust_to_view (view);
-      point_lights[i_focal]->upload_data();
+      focal_lights[i_focal]->adjust_to_view (view);
+      focal_lights[i_focal]->upload_data();
       i_focal++;
       end = false;
     }

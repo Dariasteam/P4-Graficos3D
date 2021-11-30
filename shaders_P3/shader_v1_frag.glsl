@@ -91,6 +91,57 @@ vec3 shade_point_light() {
 
 
 
+vec3 shade_focal_light() {
+	vec3 c = vec3(0);
+
+	vec3 light_point = FocalLightP.xyz;
+	vec3 light_vector = normalize(FocalLightD);
+
+	vec3 Il = FocalLightC;
+
+	float angle = FocalLightA;
+
+	float d_min = 1.f;
+	float d_max = 100.f;
+	float d0 = 1.f;
+
+	float d = distance(light_point, pos);
+
+	float f_win = pow(max(pow(1 - (d / d_max), 4), 0), 2);
+	float f_dist = pow((d0 / max(d, d_min) ), 2) * f_win;
+
+	//Diffuse
+	vec3 L = normalize((light_point - pos) / d);
+	N = normalize(N);
+	c += Kd * max(dot(N, L), 0);
+
+	/*
+	//Specular
+	vec3 V = normalize(-pos);
+	vec3 R = reflect(-L, N);
+
+	c += Ks * pow(max(dot(R, V), 0), n);
+
+	*/
+
+	// FIXME: Precalculate this in the client
+	float cos_angle = cos(angle);
+	float dot_L_lv = dot(-L, light_vector);
+
+	bool condition = cos_angle < dot_L_lv;
+	float attenuation = pow(max((dot_L_lv - cos_angle) / (1 - cos_angle), 0), 1);
+
+	float f_dir = condition ? attenuation : 0.0;
+
+	c *= Il;
+	c *= f_dist;
+	c *= f_dir;
+
+
+	return c;
+}
+
+
 void main() {
 
 	Kd = texture(colorTex, tc).rgb;
@@ -109,11 +160,11 @@ void main() {
 
 	/*
 	c += shade_directional_light();
-	c += shade_focal_light();
 	*/
 
 	c += shade_base();
 	c += shade_point_light();
+	c += shade_focal_light();
 
 
 	outColor = vec4(c, 1.0);
