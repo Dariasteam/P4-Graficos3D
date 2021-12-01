@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(p3)
+project(p4)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,7 +17,7 @@ set(SOURCES
 )
 
 #Copy aux files to build directory
-foreach(file meshes img shaders_P3)
+foreach(file meshes img shaders_P4)
   if(NOT EXISTS ${CMAKE_BINARY_DIR}/${file} )
     message("copy " ${CMAKE_SOURCE_DIR}/${file}  " to " ${CMAKE_BINARY_DIR} )
     file(COPY ${CMAKE_SOURCE_DIR}/${file} DESTINATION ${CMAKE_BINARY_DIR} )
@@ -39,10 +39,10 @@ include_directories( ${OPENGL_INCLUDE_DIRS}
                      ${FREEIMAGE_INCLUDE_DIRS}
                      ${ASSIMP_INCLUDE_DIRS})
 
-add_executable(p3 ${SOURCES})
+add_executable(p4 ${SOURCES})
 
 
-target_link_libraries(p3 ${OPENGL_LIBRARIES}
+target_link_libraries(p4 ${OPENGL_LIBRARIES}
                          ${GLUT_LIBRARY}
                          ${GLEW_LIBRARIES}
                          ${FREEIMAGE_INCLUDE_DIRS}

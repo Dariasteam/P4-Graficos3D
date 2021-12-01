@@ -17,8 +17,8 @@ namespace demo_2 {
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
     // COMPILING SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P3/shader_v1_vert.glsl", "v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P3/shader_v1_frag.glsl", "f0")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/shader_v1_vert.glsl", "v0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/shader_v1_frag.glsl", "f0")) exit(-1);
 
     // COMPILING PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);

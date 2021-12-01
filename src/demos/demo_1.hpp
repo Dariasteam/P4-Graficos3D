@@ -16,11 +16,11 @@ namespace demo_1 {
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
     // COMPILING SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P3/shader.v0.vert", "v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P3/shader.v0.frag", "f0")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/shader.v0.vert", "v0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/shader.v0.frag", "f0")) exit(-1);
 
-    if (!shader_manager.load_vertex_shader("shaders_P3/shader.v1.vert", "v1")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P3/shader.v1.frag", "f1")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/shader.v1.vert", "v1")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/shader.v1.frag", "f1")) exit(-1);
 
     // COMPILING PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
