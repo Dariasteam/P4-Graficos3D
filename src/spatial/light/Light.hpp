@@ -34,7 +34,7 @@ struct AmbientLight : public AbstractLight {
   }
 
   void upload_data() {
-    color.upload_data(uniform_ids["AmbientLightC"]);
+    color.upload_data(uniform_ids["_ambientLightC"]);
   }
 };
 
@@ -44,8 +44,8 @@ struct PointLight : public AbstractLight {
   static std::map<std::string, int> uniform_ids;
 
   void upload_data() {
-    color.upload_data(uniform_ids["PointLightC"]);
-    position.upload_data(uniform_ids["PointLightP"]);
+    color.upload_data(uniform_ids["_pointLightC"]);
+    position.upload_data(uniform_ids["_pointLightP"]);
   }
 
   void adjust_to_view(const glm::mat4& view) {
@@ -60,8 +60,8 @@ struct DirectionalLight : public AbstractLight {
   SP_Vec3f direction;
 
   void upload_data() {
-    color.upload_data(uniform_ids["DirLightC"]);
-    direction.upload_data(uniform_ids["DirLightD"]);
+    color.upload_data(uniform_ids["_dirLightC"]);
+    direction.upload_data(uniform_ids["_dirLightD"]);
   }
 
   void adjust_to_view(const glm::mat4& view) {
@@ -81,10 +81,10 @@ struct FocalLight : public AbstractLight {
   SP_Valuef aperture;
 
   void upload_data() {
-    color.upload_data(uniform_ids["FocalLightC"]);
-    position.upload_data(uniform_ids["FocalLightP"]);
-    aperture.upload_data(uniform_ids["FocalLightA"]);
-    direction.upload_data(uniform_ids["FocalLightD"]);
+    color.upload_data(uniform_ids["_focalLightC"]);
+    position.upload_data(uniform_ids["_focalLightP"]);
+    aperture.upload_data(uniform_ids["_focalLightA"]);
+    direction.upload_data(uniform_ids["_focalLightD"]);
   }
 
   // FIXME: This is a mess, we shouldn't be modifying and restoring light properties

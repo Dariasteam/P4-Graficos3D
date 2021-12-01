@@ -20,19 +20,20 @@ uniform sampler2D emiTex;
 uniform mat4 view;
 uniform mat4 proj;
 
+// Lights
 
-uniform vec3 DirLightC;
-uniform vec3 DirLightD;
+uniform vec3 _dirLightC;
+uniform vec3 _dirLightD;
 
-uniform vec3 PointLightC;
-uniform vec4 PointLightP;
+uniform vec3 _pointLightC;
+uniform vec4 _pointLightP;
 
-uniform vec3 FocalLightC;
-uniform vec4 FocalLightP;
-uniform float FocalLightA;
-uniform vec3 FocalLightD;
+uniform vec3 _focalLightC;
+uniform vec4 _focalLightP;
+uniform float _focalLightA;
+uniform vec3 _focalLightD;
 
-uniform vec3 AmbientLightC;
+uniform vec3 _ambientLightC;
 
 ////////////////////////////////////
 //	Objeto
@@ -46,7 +47,7 @@ vec3 Ke;
 
 vec3 shade_base() {
 	vec3 c = vec3(0);
-	vec3 Ia = AmbientLightC;
+	vec3 Ia = _ambientLightC;
 
 	//Ambiental
 	c += Ia * Ka;
@@ -60,8 +61,8 @@ vec3 shade_base() {
 vec3 shade_point_light() {
 	vec3 c = vec3(0);
 
-	vec3 light_point = PointLightP.xyz;
-	vec3 Il = PointLightC;
+	vec3 light_point = _pointLightP.xyz;
+	vec3 Il = _pointLightC;
 
 	float d_min = 1.f;
 	float d_max = 100.f;
@@ -93,12 +94,12 @@ vec3 shade_point_light() {
 vec3 shade_focal_light() {
 	vec3 c = vec3(0);
 
-	vec3 light_point = FocalLightP.xyz;
-	vec3 light_vector = normalize(FocalLightD);
+	vec3 light_point = _focalLightP.xyz;
+	vec3 light_vector = normalize(_focalLightD);
 
-	vec3 Il = FocalLightC;
+	vec3 Il = _focalLightC;
 
-	float angle = FocalLightA;
+	float angle = _focalLightA;
 
 	float d_min = 1.f;
 	float d_max = 100.f;
@@ -141,10 +142,10 @@ vec3 shade_focal_light() {
 vec3 shade_directional_light() {
 	vec3 c = vec3(0);
 
-	vec3 light_dir = DirLightD;
+	vec3 light_dir = _dirLightD;
 
   vec3 L = -light_dir;
-  vec3 Il = DirLightC;                  // light intensity (color)
+  vec3 Il = _dirLightC;                  // light intensity (color)
   vec3 P = pos;                         // Positions of the fragment
 
 	//Diffuse
@@ -157,6 +158,17 @@ vec3 shade_directional_light() {
 
 	c *= Il;
 	return c;
+}
+
+vec3 fog(vec3 color_s) {
+
+	vec3 fog_color = vec3(.2f, 0, 0);
+
+	float e = 2.7182818;
+	float fog_density = 0.1;
+	float f = pow(e, -pow(fog_density * pos.z, 2));
+
+	return f * color_s + (1 - f) * fog_color;
 }
 
 
@@ -179,6 +191,8 @@ void main() {
 	c += shade_point_light();
 	c += shade_focal_light();
 	c += shade_directional_light();
+
+	//c += fog(c);
 
 	outColor = vec4(c, 1.0);
 }
