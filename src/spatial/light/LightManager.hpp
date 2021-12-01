@@ -15,6 +15,8 @@ public:
   std::vector<PointLight*> point_lights;
   std::vector<FocalLight*> focal_lights;
 
+  AmbientLight ambient_light;
+
   unsigned i_dir = 0;
   unsigned i_point = 0;
   unsigned i_focal = 0;
@@ -28,6 +30,10 @@ public:
   inline static LightManager& get () {
     static LightManager instance;
     return instance;
+  }
+
+  inline AmbientLight& get_ambient_light () {
+    return ambient_light;
   }
 
   inline DirectionalLight& create_directional_light() {
@@ -69,6 +75,7 @@ public:
     auto& dir_uniforms = DirectionalLight::uniform_ids;
     auto& point_uniforms = PointLight::uniform_ids;
     auto& focal_uniforms = FocalLight::uniform_ids;
+    auto& ambient_uniforms = AmbientLight::uniform_ids;
 
     for (const auto uniform : program->uniforms) {
       const auto& name = uniform.first;
@@ -82,10 +89,17 @@ public:
 
       if (focal_uniforms.find(name) != focal_uniforms.end())
         focal_uniforms[name] = value;
+
+      if (ambient_uniforms.find(name) != ambient_uniforms.end())
+        ambient_uniforms[name] = value;
     }
 
     return true;
   };
+
+  bool upload_ambient_light () {
+    ambient_light.upload_data();
+  }
 
   bool upload_next_light_pass (const glm::mat4& view) {
     bool end = true;

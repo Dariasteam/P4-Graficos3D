@@ -32,6 +32,8 @@ uniform vec4 FocalLightP;
 uniform float FocalLightA;
 uniform vec3 FocalLightD;
 
+uniform vec3 AmbientLightC;
+
 ////////////////////////////////////
 //	Objeto
 vec3 pos;
@@ -44,7 +46,7 @@ vec3 Ke;
 
 vec3 shade_base() {
 	vec3 c = vec3(0);
-	vec3 Ia = vec3(0.1);
+	vec3 Ia = AmbientLightC;
 
 	//Ambiental
 	c += Ia * Ka;
@@ -55,11 +57,8 @@ vec3 shade_base() {
 	return c;
 }
 
-
-
 vec3 shade_point_light() {
 	vec3 c = vec3(0);
-
 
 	vec3 light_point = PointLightP.xyz;
 	vec3 Il = PointLightC;
@@ -134,7 +133,6 @@ vec3 shade_focal_light() {
 	c *= f_dist;
 	c *= f_dir;
 
-
 	return c;
 }
 
@@ -145,10 +143,7 @@ vec3 shade_directional_light() {
 
 	vec3 light_dir = DirLightD;
 
-  vec3 L = - light_dir;
-
-	vec3 normal = normalize(N);
-
+  vec3 L = -light_dir;
   vec3 Il = DirLightC;                  // light intensity (color)
   vec3 P = pos;                         // Positions of the fragment
 
@@ -156,10 +151,8 @@ vec3 shade_directional_light() {
 	c += Kd * max(dot(N, L), 0);
 
 	//Specular
-
 	vec3 V = normalize(-P);
 	vec3 R = reflect(-L, N);
-
 	c += Ks * pow(max(dot(R, V), 0), n);
 
 	c *= Il;
@@ -171,13 +164,12 @@ void main() {
 
 	Kd = texture(colorTex, tc).rgb;
 	Ka = Kd;
-	Ks = texture(specularTex, tc).rgb;
+	Ks = vec3(1); //texture(specularTex, tc).rgb;
 	Ke = texture(emiTex, tc).rgb;
 
-	n = 5.0;
+	n = 50.0;
 
 	N = normalize(vnormal);
-//	bumpMap();
 
 	pos = vpos;
 

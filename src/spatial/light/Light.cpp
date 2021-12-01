@@ -16,3 +16,7 @@ std::map<std::string, int> FocalLight::uniform_ids = {
       {"FocalLightA", -1},
       {"FocalLightP", -1},
     };
+
+std::map<std::string, int> AmbientLight::uniform_ids = {
+      {"AmbientLightC", -1},
+    };

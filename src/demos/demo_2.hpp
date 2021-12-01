@@ -1,4 +1,6 @@
 #include "../aux/demo.hpp"
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
 
 using namespace demo_default_objs;
 
@@ -23,7 +25,7 @@ namespace demo_2 {
 
     // LOADING MESHES
     mesh_loader.import_default_cube();
-    mesh_loader.import_from_file("meshes/suzanne.glb");
+    mesh_loader.import_from_file("meshes/suzanne_smooth.glb");
 
     vbo_manager.generate_VBOs();
     vbo_manager.populate_VBOs(mesh_loader.get_meshes());
@@ -66,12 +68,15 @@ namespace demo_2 {
     FocalLight& focal_light = light_manager.create_focal_light();
     focal_light.color.vec_3 = {10, 10, 0};
     focal_light.translation() = {0, 0, 3};
-    focal_light.direction.vec_3 = {0, .2, -1};
+    focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, .2, -1});
     focal_light.aperture.value = .1;
 
     DirectionalLight& dir_light = light_manager.create_directional_light();
-    dir_light.color.vec_3 = {.9, 0, .1};
-    dir_light.direction.vec_3 = {1, -1, 0};
+    dir_light.color.vec_3 = {1, 1, 1};
+    dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
+
+    AmbientLight& ambient_light = light_manager.get_ambient_light();
+    ambient_light.color.vec_3 = {.1, .2, .2};
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
@@ -111,12 +116,14 @@ namespace demo_2 {
     }
 
     if (key == 'V' || key == 'v') {
-      auto& value = light_manager.dir_lights[0]->direction.vec_3.x;
+      auto& value = light_manager.dir_lights[0]->direction.vec_3;
 
-      if (value > 1)
-        value = -1;
+      if (value.x > .5)
+        value.x = -1;
       else
-        value += .1;
+        value.x += .1;
+
+      value = glm::normalize(value);
     }
   };
 
@@ -159,6 +166,7 @@ namespace demo_2 {
         const OglMesh* ogl_mesh = mesh_instance->mesh;
         Material* material = mesh_instance->mat;
 
+        light_manager.upload_ambient_light();
         // FIXME: This loop has only sense when using a deferred shading
         while (light_manager.upload_next_light_pass(view));
 

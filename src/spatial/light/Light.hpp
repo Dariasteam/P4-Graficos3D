@@ -11,10 +11,6 @@
 struct AbstractLight : public Spatial {
 public:
   SP_Vec3f color;
-
-  // FIXME: This should be a vector 3
-  SP_Vec4f position;
-
 protected:
   AbstractLight () {}
   virtual void upload_data() = 0;
@@ -29,7 +25,22 @@ public:
   virtual void adjust_to_view(const glm::mat4& view) = 0;
 };
 
+
+struct AmbientLight : public AbstractLight {
+  static std::map<std::string, int> uniform_ids;
+
+  void adjust_to_view(const glm::mat4& view) {
+    upload_data();
+  }
+
+  void upload_data() {
+    color.upload_data(uniform_ids["AmbientLightC"]);
+  }
+};
+
 struct PointLight : public AbstractLight {
+  SP_Vec4f position;
+
   static std::map<std::string, int> uniform_ids;
 
   void upload_data() {
@@ -65,6 +76,7 @@ struct DirectionalLight : public AbstractLight {
 struct FocalLight : public AbstractLight {
   static std::map<std::string, int> uniform_ids;
 
+  SP_Vec4f position;
   SP_Vec3f direction;
   SP_Valuef aperture;
 

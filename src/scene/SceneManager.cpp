@@ -45,6 +45,5 @@ bool SceneManager::change_scene (const std::string &scene_name) {
   current_scene = &scene;
   scene.init();
 
-  WorldManager::get().camera->set_w(w);
-  WorldManager::get().camera->set_h(h);
+  WorldManager::get().camera->update_aspect_ratio(w, h);
 }
