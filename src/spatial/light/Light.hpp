@@ -53,8 +53,9 @@ struct DirectionalLight : public AbstractLight {
   }
 
   void adjust_to_view(const glm::mat4& view) {
-    position.vec_4 = view * get_model_matrix() * glm::vec4{0, 0, 0, 1};
-    direction.vec_3 = view * get_model_matrix() * glm::vec4{0, 0, 0, 1};
+    auto v = direction.vec_3;
+    direction.vec_3 = view * get_model_matrix() * glm::vec4{v.x, v.y, v.z, 0};
+    direction.vec_3 = v;
   }
 };
 
@@ -71,9 +72,13 @@ struct FocalLight : public AbstractLight {
     direction.upload_data(uniform_ids["FocalLightD"]);
   }
 
+  // FIXME: This is a mess, we shouldn't be modifying and restoring light properties
   void adjust_to_view(const glm::mat4& view) {
     position.vec_4 = view * get_model_matrix() * glm::vec4{0, 0, 0, 1};
-    direction.vec_3 = view * get_model_matrix() * glm::vec4{0, 0, -1, 0};
+
+    const auto v = direction.vec_3;
+    direction.vec_3 = view * get_model_matrix() * glm::vec4{v.x, v.y, v.z, 0};
+    direction.vec_3 = v;
   }
 };
 

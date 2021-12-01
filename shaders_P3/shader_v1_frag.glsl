@@ -115,14 +115,11 @@ vec3 shade_focal_light() {
 	N = normalize(N);
 	c += Kd * max(dot(N, L), 0);
 
-	/*
 	//Specular
 	vec3 V = normalize(-pos);
 	vec3 R = reflect(-L, N);
 
 	c += Ks * pow(max(dot(R, V), 0), n);
-
-	*/
 
 	// FIXME: Precalculate this in the client
 	float cos_angle = cos(angle);
@@ -142,6 +139,34 @@ vec3 shade_focal_light() {
 }
 
 
+
+vec3 shade_directional_light() {
+	vec3 c = vec3(0);
+
+	vec3 light_dir = DirLightD;
+
+  vec3 L = - light_dir;
+
+	vec3 normal = N;
+	vec3 N2 = normalize(normal * 2.0 - 1.0);
+
+  vec3 Il = DirLightC;                  // light intensity (color)
+  vec3 P = pos;                         // Positions of the fragment
+
+	//Diffuse
+	c += Kd * max(dot(N2, L), 0);
+
+	//Specular
+	vec3 V = normalize(-P);
+	vec3 R = reflect(-L, N);
+
+	c += Ks * pow(max(dot(R, V), 0), n);
+
+	c *= Il;
+	return c;
+}
+
+
 void main() {
 
 	Kd = texture(colorTex, tc).rgb;
@@ -149,7 +174,7 @@ void main() {
 	Ks = texture(specularTex, tc).rgb;
 	Ke = texture(emiTex, tc).rgb;
 
-	n = 50.0;
+	n = 5.0;
 
 	N = normalize(vnormal);
 //	bumpMap();
@@ -158,14 +183,10 @@ void main() {
 
 	vec3 c = vec3(0.f);
 
-	/*
-	c += shade_directional_light();
-	*/
-
 	c += shade_base();
 	c += shade_point_light();
 	c += shade_focal_light();
-
+	c += shade_directional_light();
 
 	outColor = vec4(c, 1.0);
 }

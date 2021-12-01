@@ -66,8 +66,12 @@ namespace demo_2 {
     FocalLight& focal_light = world_manager.create_focal_light();
     focal_light.color.vec_3 = {10, 10, 0};
     focal_light.translation() = {0, 0, 3};
-    //focal_light.direction.vec_3 = {0, 0, -1};
+    focal_light.direction.vec_3 = {0, .2, -1};
     focal_light.aperture.value = .1;
+
+    DirectionalLight& dir_light = world_manager.create_directional_light();
+    dir_light.color.vec_3 = {.9, 0, .1};
+    dir_light.direction.vec_3 = {1, -1, 0};
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
