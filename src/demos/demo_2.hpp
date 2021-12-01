@@ -59,17 +59,17 @@ namespace demo_2 {
     light_manager.bind_program_ids("p0");
 
     // INSTANTIATE LIGHTS
-    PointLight& point_light = world_manager.create_point_light();
+    PointLight& point_light = light_manager.create_point_light();
     point_light.color.vec_3 = {0, 0, 0};
     point_light.translation() = {2, 0, 0};
 
-    FocalLight& focal_light = world_manager.create_focal_light();
+    FocalLight& focal_light = light_manager.create_focal_light();
     focal_light.color.vec_3 = {10, 10, 0};
     focal_light.translation() = {0, 0, 3};
     focal_light.direction.vec_3 = {0, .2, -1};
     focal_light.aperture.value = .1;
 
-    DirectionalLight& dir_light = world_manager.create_directional_light();
+    DirectionalLight& dir_light = light_manager.create_directional_light();
     dir_light.color.vec_3 = {.9, 0, .1};
     dir_light.direction.vec_3 = {1, -1, 0};
 

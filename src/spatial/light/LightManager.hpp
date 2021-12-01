@@ -2,6 +2,7 @@
 #define _LGIHT_MANAGER_H_
 
 #include "Light.hpp"
+#include "../WorldManager.hpp"
 #include "../../shader/ShaderManager.hpp"
 
 #include <glm/fwd.hpp>
@@ -27,6 +28,33 @@ public:
   inline static LightManager& get () {
     static LightManager instance;
     return instance;
+  }
+
+  inline DirectionalLight& create_directional_light() {
+    DirectionalLight* light = new DirectionalLight;
+
+    dir_lights.push_back(light);
+
+    WorldManager::get().add(light);
+    return *light;
+  }
+
+  inline PointLight& create_point_light() {
+    PointLight* light = new PointLight;
+
+    point_lights.push_back(light);
+
+    WorldManager::get().add(light);
+    return *light;
+  }
+
+  inline FocalLight& create_focal_light() {
+    FocalLight* light = new FocalLight;
+
+    focal_lights.push_back(light);
+
+    WorldManager::get().add(light);
+    return *light;
   }
 
   bool bind_program_ids(const std::string& program_name) {
@@ -64,21 +92,18 @@ public:
 
     if (i_dir < dir_lights.size()) {
       dir_lights[i_dir]->adjust_to_view (view);
-      dir_lights[i_dir]->upload_data();
       i_dir++;
       end = false;
     }
 
     if (i_point < point_lights.size()) {
       point_lights[i_point]->adjust_to_view (view);
-      point_lights[i_point]->upload_data();
       i_point++;
       end = false;
     }
 
     if (i_focal < focal_lights.size()) {
       focal_lights[i_focal]->adjust_to_view (view);
-      focal_lights[i_focal]->upload_data();
       i_focal++;
       end = false;
     }

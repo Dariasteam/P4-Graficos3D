@@ -36,7 +36,6 @@ public:
     return _rotation_angle;
   }
 
-
 	virtual glm::mat4 get_model_matrix () = 0;
 	virtual void update (float dummy_time) = 0;
 

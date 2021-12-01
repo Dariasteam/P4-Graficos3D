@@ -39,6 +39,7 @@ struct PointLight : public AbstractLight {
 
   void adjust_to_view(const glm::mat4& view) {
     position.vec_4 = view * get_model_matrix() * glm::vec4{0, 0, 0, 1};
+    upload_data();
   }
 };
 
@@ -55,6 +56,7 @@ struct DirectionalLight : public AbstractLight {
   void adjust_to_view(const glm::mat4& view) {
     auto v = direction.vec_3;
     direction.vec_3 = view * get_model_matrix() * glm::vec4{v.x, v.y, v.z, 0};
+    upload_data();
     direction.vec_3 = v;
   }
 };
@@ -78,6 +80,7 @@ struct FocalLight : public AbstractLight {
 
     const auto v = direction.vec_3;
     direction.vec_3 = view * get_model_matrix() * glm::vec4{v.x, v.y, v.z, 0};
+    upload_data();
     direction.vec_3 = v;
   }
 };

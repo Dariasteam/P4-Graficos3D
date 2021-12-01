@@ -1,6 +1,7 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
+#include "../spatial/light/LightManager.hpp"
 #include "../spatial/mesh/MeshLoader.h"
 #include "../spatial/WorldManager.hpp"
 #include "../shader/ShaderManager.hpp"

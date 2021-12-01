@@ -2,7 +2,7 @@
 #define _WORLD_MANAGER_H_
 
 #include "camera/Camera.h"
-#include "light/LightManager.hpp"
+#include "light/Light.hpp"
 #include "mesh/MeshInstance.hpp"
 #include "mesh/OGLMesh.hpp"
 
@@ -18,6 +18,8 @@ private:
 public:
   AbstractCameraHandler* camera;
 
+  void add (Spatial* sp) { world_objects.push_back(sp); }
+
   inline static WorldManager& get () {
     static WorldManager instance;
     return instance;
@@ -30,33 +32,6 @@ public:
     MeshInstance* mesh = new MeshInstance (ogl_mesh);
     world_objects.push_back(mesh);
     return *mesh;
-  }
-
-  inline DirectionalLight& create_directional_light() {
-    DirectionalLight* light = new DirectionalLight;
-
-    LightManager::get().dir_lights.push_back(light);
-
-    world_objects.push_back(light);
-    return *light;
-  }
-
-  inline PointLight& create_point_light() {
-    PointLight* light = new PointLight;
-
-    LightManager::get().point_lights.push_back(light);
-
-    world_objects.push_back(light);
-    return *light;
-  }
-
-  inline FocalLight& create_focal_light() {
-    FocalLight* light = new FocalLight;
-
-    LightManager::get().focal_lights.push_back(light);
-
-    world_objects.push_back(light);
-    return *light;
   }
 
   void update () {
