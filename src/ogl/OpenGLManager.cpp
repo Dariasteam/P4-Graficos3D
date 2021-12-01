@@ -1,4 +1,5 @@
 #include "OpenGLManager.h"
+#include <GL/freeglut_std.h>
 
 void OGLManager::init_OGL () {
   glEnable(GL_DEPTH_TEST);
@@ -44,6 +45,7 @@ void OGLManager::init_callbacks() {
   glutIdleFunc(idleFunc);
   glutKeyboardFunc(keyboardFunc);
   glutMotionFunc(mouseMotionFunc);
+  glutMouseFunc(mouseFunc);
 }
 void OGLManager::renderFunc() {
   SceneManager::get().get_current_scene()->render();

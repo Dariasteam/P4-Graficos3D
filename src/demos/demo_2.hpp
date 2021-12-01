@@ -109,6 +109,15 @@ namespace demo_2 {
       else
         value += .1;
     }
+
+    if (key == 'V' || key == 'v') {
+      auto& value = light_manager.dir_lights[0]->direction.vec_3.x;
+
+      if (value > 1)
+        value = -1;
+      else
+        value += .1;
+    }
   };
 
 

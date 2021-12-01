@@ -13,10 +13,10 @@
 
 class AbstractCameraHandler {
 protected:
-	glm::vec4 t {0.0f};
-	glm::vec2 r {0.0f};
-	glm::vec2 last_mouse_pos {0.0f};
-	glm::vec2 last_rot {0.0f};
+	glm::vec4 t {0, 0, 0, 0};
+	glm::vec2 r {0, 0};
+	glm::vec2 last_mouse_pos {0, 0};
+	glm::vec2 last_rot {0, 0};
 
 	glm::mat4 proj = glm::mat4(0.0f);
 	glm::mat4 view_2 = glm::mat4(1.0f); //Identity matrix

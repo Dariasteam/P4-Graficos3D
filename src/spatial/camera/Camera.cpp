@@ -78,6 +78,7 @@ void FPSCameraHandler::handle_mouse_buttons(int button, int state, int x,
     std::cout << "Se ha pulsado el botón ";
     last_mouse_pos.x = x;
     last_mouse_pos.y = y;
+    std::cout << last_mouse_pos.x << " " << last_mouse_pos.y << std::endl;
   } else {
     last_rot = r;
     std::cout << "Se ha soltado el botón ";
