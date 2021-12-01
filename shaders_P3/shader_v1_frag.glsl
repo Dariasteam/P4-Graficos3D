@@ -147,16 +147,16 @@ vec3 shade_directional_light() {
 
   vec3 L = - light_dir;
 
-	vec3 normal = N;
-	vec3 N2 = normalize(normal * 2.0 - 1.0);
+	vec3 normal = normalize(N);
 
   vec3 Il = DirLightC;                  // light intensity (color)
   vec3 P = pos;                         // Positions of the fragment
 
 	//Diffuse
-	c += Kd * max(dot(N2, L), 0);
+	c += Kd * max(dot(N, L), 0);
 
 	//Specular
+
 	vec3 V = normalize(-P);
 	vec3 R = reflect(-L, N);
 

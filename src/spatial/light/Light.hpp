@@ -54,7 +54,8 @@ struct DirectionalLight : public AbstractLight {
   }
 
   void adjust_to_view(const glm::mat4& view) {
-    auto v = direction.vec_3;
+
+    const auto v = direction.vec_3;
     direction.vec_3 = view * get_model_matrix() * glm::vec4{v.x, v.y, v.z, 0};
     upload_data();
     direction.vec_3 = v;

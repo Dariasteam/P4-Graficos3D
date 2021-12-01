@@ -6,7 +6,7 @@ namespace demo_2 {
 
   // INIT
   const std::function<void (void)> init = [] () {
-    world_manager.camera = new FPSCameraHandler;
+    world_manager.camera = new OrbitalCameraHandler;
 
     texture_manager.prepare();
 
