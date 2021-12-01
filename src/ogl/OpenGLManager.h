@@ -1,7 +1,6 @@
 #ifndef _OPENGL_MANAGER_H_
 #define _OPENGL_MANAGER_H_
 
-#include "../spatial/Spatial.h"
 #include "../aux/auxiliar.h"
 #include "../shader/Shaders.hpp"
 #include "../shader/Program.hpp"
@@ -22,9 +21,6 @@
 #include <vector>
 
 class OGLManager {
-private:
-	static unsigned w;
-	static unsigned h;
 public:
   ~OGLManager() { destroy(); }
 

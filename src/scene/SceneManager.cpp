@@ -1,4 +1,5 @@
 #include "SceneManager.hpp"
+#include "Scene.hpp"
 
 void SceneManager::add_scene(const std::string &name, Scene *scene) {
   scenes[name] = scene;
@@ -43,4 +44,7 @@ bool SceneManager::change_scene (const std::string &scene_name) {
 
   current_scene = &scene;
   scene.init();
+
+  WorldManager::get().camera->set_w(w);
+  WorldManager::get().camera->set_h(h);
 }

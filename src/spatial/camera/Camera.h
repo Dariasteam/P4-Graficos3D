@@ -1,8 +1,6 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
-//#include "IGlib.h"
-
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

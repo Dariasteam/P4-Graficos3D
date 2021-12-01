@@ -14,6 +14,9 @@ private:
   SceneManager () {}
 public:
 
+  unsigned w;
+  unsigned h;
+
   inline static SceneManager& get () {
     static SceneManager instance;
     return instance;

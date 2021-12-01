@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 	SceneManager::get().add_scene("scene_1", &scene_1);
 	SceneManager::get().add_scene("scene_2", &scene_2);
 
-	SceneManager::get().set_init_scene("scene_1");
+	SceneManager::get().set_init_scene("scene_2");
 
 	OGLManager opengl_manager;
 	opengl_manager.init_context(argc, argv);
