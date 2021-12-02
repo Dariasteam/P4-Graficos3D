@@ -215,14 +215,14 @@ namespace demo_3 {
 
 
 		glActiveTexture(GL_TEXTURE0);		// Activación del texture unit 0
-		glBindTexture(GL_TEXTURE_2D, FboManager::get().colorBuffTexId);
+		glBindTexture(GL_TEXTURE_2D, FboManager::get().color_fbo_tex.id);
 
     int uColorTexPP = glGetUniformLocation(shader_manager.programs2["p_p0"]->id, "colorTex");
 		glUniform1i(uColorTexPP, 0);
 
 
 		glActiveTexture(GL_TEXTURE0 +1 ); // Activación del texture unit 1
-		glBindTexture(GL_TEXTURE_2D,  FboManager::get().zBuffTexId);
+		glBindTexture(GL_TEXTURE_2D,  FboManager::get().z_fbo_tex.id);
 
 
 
