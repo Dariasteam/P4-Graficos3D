@@ -1,7 +1,7 @@
 #ifndef FBO_MANAGER_H_
 #define FBO_MANAGER_H_
 
-#include "../texture/Texture.hpp"
+#include "../texture/TextureManager.hpp"
 #include "../shader/ShaderManager.hpp"
 #include "../aux/PLANE.h"
 
@@ -43,7 +43,7 @@ public:
     if (!shader_manager.load_fragment_shader("shaders_P4/post_processing.frag", "p_f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
-    if (!shader_manager.create_program("p_p0", "p_v0", "p_f0", false)) exit(-1);
+    if (!shader_manager.create_program("p_p0", "p_v0", "p_f0", ShaderManager::P_PROJECTION)) exit(-1);
 
     glGenVertexArrays(1, &planeVAO);
     glBindVertexArray(planeVAO);
@@ -61,6 +61,8 @@ public:
     glGenTextures(1, &color_fbo_tex.id);
     glGenTextures(1, &depth_fbo_tex.id);
     glGenTextures(1, &z_fbo_tex.id);
+
+    TextureManager::get().min_index_uniform_tex = 3;
   }
 
   void generate_color_tex (unsigned w, unsigned h) {

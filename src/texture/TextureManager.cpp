@@ -10,7 +10,7 @@ bool TextureManager::load_texture(const std::string& path,
 
   Texture aux_tex;
   aux_tex.id = tmp_tex_id;
-  aux_tex.n_texture = textures.size();
+  aux_tex.n_texture = textures.size() + min_index_uniform_tex;
 
   textures[name] = aux_tex;
 

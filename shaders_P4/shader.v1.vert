@@ -12,12 +12,12 @@ uniform mat4 normal;
 out vec3 color;
 out vec3 vpos;
 out vec3 vnormal;
-out vec2 texCoord;
+out vec2 tc;
 
 void main()
 {
 	color = inColor;
-	texCoord = inTexCoord;
+	tc = inTexCoord;
 	vnormal = (normal * vec4(inNormal, 0.0)).xyz;
 	vpos = (modelView * vec4(inPos, 1.0)).xyz;
 

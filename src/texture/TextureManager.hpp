@@ -16,6 +16,8 @@ private:
   TextureManager () {}
 public:
 
+  unsigned min_index_uniform_tex {0};
+
   inline static TextureManager& get () {
     static TextureManager instance;
     return instance;
