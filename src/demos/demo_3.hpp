@@ -20,7 +20,7 @@ namespace demo_3 {
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
 
     // COMPILING SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P4/fwRendering.v0.vert", "v0")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/shader.v1.vert", "v0")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P4/fwRendering.v0.frag", "f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
@@ -146,7 +146,7 @@ namespace demo_3 {
   // ON IDLE
   const std::function<void (void)> on_idle = [] () {
     world_manager.update();
-    //glutPostRedisplay();
+    glutPostRedisplay();
   };
 
 
@@ -204,6 +204,7 @@ namespace demo_3 {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     glUseProgram(shader_manager.programs2["p_p0"]->id);
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
@@ -211,12 +212,25 @@ namespace demo_3 {
     glBindVertexArray(FboManager::get().planeVAO);
 
 
+
+
 		glActiveTexture(GL_TEXTURE0);		// Activación del texture unit 0
 		glBindTexture(GL_TEXTURE_2D, FboManager::get().colorBuffTexId);
 
-    unsigned uColorTexPP = glGetUniformLocation(shader_manager.programs2["p_p0"]->id, "colorTex");
+    int uColorTexPP = glGetUniformLocation(shader_manager.programs2["p_p0"]->id, "colorTex");
 		glUniform1i(uColorTexPP, 0);
 
+
+		glActiveTexture(GL_TEXTURE0 +1 ); // Activación del texture unit 1
+		glBindTexture(GL_TEXTURE_2D,  FboManager::get().zBuffTexId);
+
+
+
+
+    int uZTexPP = glGetUniformLocation(shader_manager.programs2["p_p0"]->id, "zTex");
+    glUniform1i(uZTexPP, 1);
+
+    std::cout << uZTexPP << std::endl;
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

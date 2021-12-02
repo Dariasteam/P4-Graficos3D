@@ -26,20 +26,6 @@ vec3 Id = vec3 (1.0);
 vec3 Is = vec3 (0.7);
 vec3 lpos = vec3 (0.0);
 
-vec3 shade();
-
-void main() {
-	Ka = texture(colorTex, texCoord).rgb;
-	Kd = texture(colorTex, texCoord).rgb;
-	Ke = texture(emiTex, texCoord).rgb;
-	Ks = vec3 (1.0);
-
-	N = normalize (norm);
-
-	outColor = vec4(shade(), 1.0);
-	outZ = pos.z;
-}
-
 vec3 shade()
 {
 	vec3 c = vec3(0.0);
@@ -58,4 +44,16 @@ vec3 shade()
 	c+=Ke;
 
 	return c;
+}
+
+void main() {
+	Ka = texture(colorTex, texCoord).rgb;
+	Kd = texture(colorTex, texCoord).rgb;
+	Ke = texture(emiTex, texCoord).rgb;
+	Ks = vec3 (1.0);
+
+	N = normalize (norm);
+
+	outColor = vec4(shade(), 1.0);
+	outZ = pos.z;
 }

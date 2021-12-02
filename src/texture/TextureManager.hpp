@@ -26,6 +26,7 @@ public:
 
   const Texture& get_texture (const std::string& name);
   bool load_texture(const std::string& path, const std::string& name);
+
   void prepare();
   void clean();
 };

@@ -1,6 +1,7 @@
 #version 330 core
 
-out vec4 outColor;
+layout (location = 1) out vec4 outColor;
+layout (location = 0) out float outZ;	// Estos location estarían invertidos
 
 in vec3 color;
 in vec3 vpos;
@@ -195,4 +196,5 @@ void main() {
 	//c += fog(c);
 
 	outColor = vec4(c, 1.0);
+	outZ = pos.z;
 }
