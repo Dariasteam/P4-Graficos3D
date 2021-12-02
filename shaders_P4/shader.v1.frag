@@ -18,9 +18,6 @@ uniform sampler2D specularTex;
 uniform sampler2D normalTex;
 uniform sampler2D emiTex;
 
-uniform mat4 view;
-uniform mat4 proj;
-
 // Lights
 
 uniform vec3 _dirLightC;
@@ -113,7 +110,6 @@ vec3 shade_focal_light() {
 
 	//Diffuse
 	vec3 L = normalize((light_point - pos) / d);
-	N = normalize(N);
 	c += Kd * max(dot(N, L), 0);
 
 	//Specular
@@ -188,10 +184,10 @@ void main() {
 
 	vec3 c = vec3(0.f);
 
-	c += shade_base();
 	c += shade_point_light();
-	c += shade_focal_light();
+	c += shade_base();
 	c += shade_directional_light();
+	c += shade_focal_light();
 
 	//c += fog(c);
 

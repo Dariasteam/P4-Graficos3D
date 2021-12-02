@@ -21,7 +21,7 @@ namespace demo_3 {
 
     // COMPILING SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/shader.v1.vert", "v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P4/fwRendering.v0.frag", "f0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/shader.v1.frag", "f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
@@ -229,8 +229,6 @@ namespace demo_3 {
 
     int uZTexPP = glGetUniformLocation(shader_manager.programs2["p_p0"]->id, "zTex");
     glUniform1i(uZTexPP, 1);
-
-    std::cout << uZTexPP << std::endl;
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
