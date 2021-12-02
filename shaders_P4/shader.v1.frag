@@ -21,7 +21,6 @@ uniform sampler2D normalTex;
 uniform sampler2D emiTex;
 
 // Lights
-
 uniform vec3 _dirLightC;
 uniform vec3 _dirLightD;
 
@@ -88,7 +87,6 @@ vec3 shade_point_light() {
 
 	return c;
 }
-
 
 
 vec3 shade_focal_light() {

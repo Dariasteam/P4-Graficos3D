@@ -16,6 +16,8 @@ uniform sampler2D specularTex;
 uniform sampler2D normalTex;
 uniform sampler2D emiTex;
 
+uniform vec3 _ambientLightC;
+
 void main() {
 
 	vec3 diffuse = texture(colorTex, tc).rgb;
@@ -23,7 +25,7 @@ void main() {
 	vec3 specular = texture(specularTex, tc).rgb;
 	vec3 normal = normalize(vnormal);
 
-	outColor = vec4(diffuse + emissive, 1.0);
+	outColor = vec4(diffuse + emissive + _ambientLightC, 1.0);
 	outNormal = normal;
 	outSpecular = specular;
 	outZ = vpos.z;

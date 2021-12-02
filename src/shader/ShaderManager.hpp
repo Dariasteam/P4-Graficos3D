@@ -86,8 +86,11 @@ public:
     return uniforms;
   }
 
-  inline bool check_program_exist (const std::string& program) {
-    return (programs_shading.find(program) != programs_shading.end());
+  inline bool check_program_exist (const std::string& program,
+                                   const unsigned prog_type = P_SHADING) {
+
+    auto& programs = get_container(prog_type);
+    return (programs.find(program) != programs.end());
   }
 
   inline bool check_v_shader_exist (const std::string& v_shader) {
@@ -106,8 +109,9 @@ public:
     return fragment_shaders[f_shader];
   }
 
-  inline Program* get_program (const std::string& program) {
-    return programs_shading[program];
+  inline Program* get_program (const std::string& program,
+                               const unsigned prog_type = P_SHADING) {
+    return get_container(prog_type)[program];
   }
 
   void clean();

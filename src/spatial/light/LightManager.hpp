@@ -63,14 +63,16 @@ public:
     return *light;
   }
 
-  bool bind_program_ids(const std::string& program_name) {
-    if (!ShaderManager::get().check_program_exist(program_name)) {
+  bool bind_program_ids(const std::string& program_name,
+                        const unsigned prog_type) {
+
+    if (!ShaderManager::get().check_program_exist(program_name, prog_type)) {
       std::cout << "Error. No se pueden bindear las luces. "
                 << "No existe el programa " << program_name << "\n";
       return false;
     }
 
-    const auto* program = ShaderManager::get().get_program(program_name);
+    const auto* program = ShaderManager::get().get_program(program_name, prog_type);
 
     auto& dir_uniforms = DirectionalLight::uniform_ids;
     auto& point_uniforms = PointLight::uniform_ids;
