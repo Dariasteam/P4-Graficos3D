@@ -25,7 +25,9 @@ public:
 
   std::map<std::string, VertexShader *> vertex_shaders;
   std::map<std::string, FragmentShader *> fragment_shaders;
+
   std::map<std::string, Program *> programs;
+  std::map<std::string, Program *> programs2;
 
   std::map<std::string, int> get_uniforms_in_program (const std::string& program_name) {
     std::map<std::string, int> uniforms;
@@ -84,7 +86,8 @@ public:
 
   bool create_program(const std::string &name,
                       const std::string &v_name,
-                      const std::string &f_name);
+                      const std::string &f_name,
+                      bool b = true);
 
   bool set_mesh_per_program(const std::string& program_name, MeshInstance& mesh) const;
 

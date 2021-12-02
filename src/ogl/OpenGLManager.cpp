@@ -70,5 +70,6 @@ void OGLManager::idleFunc() {
 void OGLManager::resizeFunc(int width, int height) {
   SceneManager::get().w = width;
   SceneManager::get().h = height;
+  FboManager::get().resizeFBO(width, height);
   SceneManager::get().get_current_scene()->on_resize(width, height);
 }

@@ -2,7 +2,8 @@
 
 bool ShaderManager::create_program(const std::string& program_name,
                                    const std::string &v_name,
-                                   const std::string &f_name) {
+                                   const std::string &f_name,
+                                   bool b) {
 
   const unsigned program_id = glCreateProgram();
 
@@ -70,7 +71,10 @@ bool ShaderManager::create_program(const std::string& program_name,
     aux_program->uniforms[name] = glGetUniformLocation(program_id, name);
   }
 
-  programs[program_name] = aux_program;
+  if (b)
+    programs[program_name] = aux_program;
+  else
+    programs2[program_name] = aux_program;
   return true;
 }
 
