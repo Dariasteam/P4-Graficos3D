@@ -1,6 +1,7 @@
 #ifndef FBO_MANAGER_H_
 #define FBO_MANAGER_H_
 
+#include "../material/MaterialManager.hpp"
 #include "../texture/TextureManager.hpp"
 #include "../shader/ShaderManager.hpp"
 #include "../aux/PLANE.h"
@@ -20,6 +21,8 @@ public:
   unsigned planeVAO;
   unsigned planeVertexVBO;
 
+  Material mat;
+
   inline static FboManager& get () {
     static FboManager instance;
     return instance;
@@ -34,7 +37,7 @@ public:
 
     // COMPILING POST PROCESS SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/post_processing.vert", "p_v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P4/post_processing.frag", "p_f0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/draw_normals.frag", "p_f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
     if (!shader_manager.create_program("p_p0", "p_v0", "p_f0", ShaderManager::P_PROJECTION)) exit(-1);
@@ -152,8 +155,20 @@ public:
     generate_depth_tex(w, h);
     generate_z_tex(w, h);
 
-	  const GLenum buffs[2] = {GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT0};
-	  glDrawBuffers(2, buffs);
+	  const GLenum buffs[4] = {GL_COLOR_ATTACHMENT1,
+                             GL_COLOR_ATTACHMENT0,
+                             GL_COLOR_ATTACHMENT2,
+                             GL_COLOR_ATTACHMENT3};
+	  glDrawBuffers(4, buffs);
+
+    auto& texture_manager = TextureManager::get();
+    mat = MaterialManager::get().create_material();
+
+    mat.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
+    mat.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
+    mat.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+
 
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))

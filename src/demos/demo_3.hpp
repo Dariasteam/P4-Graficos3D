@@ -42,7 +42,7 @@ namespace demo_3 {
       {"inTexCoord", 3},
     };
 
-    shader_manager.bound_program_attributes("p0", attribute_name_location);
+    shader_manager.bind_program_attributes("p0", attribute_name_location);
 
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
@@ -203,13 +203,21 @@ namespace demo_3 {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glUseProgram(shader_manager.programs_projection["p_p0"]->id);
+    auto& program = shader_manager.programs_projection["p_p0"];
+    glUseProgram(program->id);
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
 
     glBindVertexArray(FboManager::get().planeVAO);
 
+    for (const auto& uniform : program->uniforms) {
+      const std::string& name = uniform.first;
+      const int parameter_id = uniform.second;
+      FboManager::get().mat.upload_uniform(name, parameter_id);
+    }
+
+
+    /*
     Texture color_fbo_tex = TextureManager::get().get_texture("color_fbo");
     Texture z_fbo_tex = TextureManager::get().get_texture("z_fbo");
 
@@ -228,6 +236,7 @@ namespace demo_3 {
 
     int uZTexPP = glGetUniformLocation(shader_manager.programs_projection["p_p0"]->id, "zTex");
     glUniform1i(uZTexPP, 1);
+    */
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

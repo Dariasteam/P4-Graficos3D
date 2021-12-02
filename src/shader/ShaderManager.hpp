@@ -123,7 +123,7 @@ public:
   bool set_mesh_per_program(const std::string& program_name, MeshInstance& mesh,
                             const unsigned program_type = P_SHADING);
 
-  bool bound_program_attributes(const std::string& program_name,
+  bool bind_program_attributes(const std::string& program_name,
                 const std::map<std::string, unsigned> &attribute_name_location,
                 const unsigned program_type = P_SHADING);
 

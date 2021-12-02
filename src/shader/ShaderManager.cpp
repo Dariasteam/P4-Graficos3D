@@ -135,7 +135,7 @@ bool ShaderManager::load_vertex_shader (const std::string& path,
   return true;
 }
 
-bool ShaderManager::bound_program_attributes (const std::string& program_name,
+bool ShaderManager::bind_program_attributes (const std::string& program_name,
                                               const std::map<std::string, unsigned>&
                                                      attribute_name_location,
                                               const unsigned program_type) {

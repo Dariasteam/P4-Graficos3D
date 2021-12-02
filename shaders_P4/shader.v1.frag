@@ -2,6 +2,8 @@
 
 layout (location = 1) out vec4 outColor;
 layout (location = 0) out float outZ;	// Estos location estarían invertidos
+layout (location = 2) out vec3 outNormal;
+layout (location = 3) out vec3 outSpecular;	// Estos location estarían invertidos
 
 in vec3 color;
 in vec3 vpos;
@@ -192,5 +194,7 @@ void main() {
 	//c += fog(c);
 
 	outColor = vec4(c, 1.0);
+	outNormal = N;
+	outSpecular = texture(specularTex, tc).xyz;
 	outZ = pos.z;
 }
