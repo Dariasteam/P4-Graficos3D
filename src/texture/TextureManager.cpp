@@ -1,5 +1,17 @@
 #include "TextureManager.hpp"
 
+void TextureManager::generate_empty(const std::string& name) {
+
+  unsigned tmp_tex_id;
+  glGenTextures(1, &tmp_tex_id);
+
+  Texture aux_tex;
+  aux_tex.id = tmp_tex_id;
+  aux_tex.n_texture = textures.size();
+
+  textures[name] = aux_tex;
+}
+
 // Guarantees that both texture id and uniform id are created
 bool TextureManager::load_texture(const std::string& path,
                                   const std::string& name) {
@@ -10,7 +22,7 @@ bool TextureManager::load_texture(const std::string& path,
 
   Texture aux_tex;
   aux_tex.id = tmp_tex_id;
-  aux_tex.n_texture = textures.size() + min_index_uniform_tex;
+  aux_tex.n_texture = textures.size();
 
   textures[name] = aux_tex;
 

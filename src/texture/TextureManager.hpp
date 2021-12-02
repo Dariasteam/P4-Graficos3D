@@ -16,8 +16,6 @@ private:
   TextureManager () {}
 public:
 
-  unsigned min_index_uniform_tex {0};
-
   inline static TextureManager& get () {
     static TextureManager instance;
     return instance;
@@ -28,6 +26,8 @@ public:
 
   const Texture& get_texture (const std::string& name);
   bool load_texture(const std::string& path, const std::string& name);
+
+  void generate_empty (const std::string& name);
 
   void prepare();
   void clean();

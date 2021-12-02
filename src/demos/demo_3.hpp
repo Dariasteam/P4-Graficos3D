@@ -210,18 +210,18 @@ namespace demo_3 {
 
     glBindVertexArray(FboManager::get().planeVAO);
 
-
-
+    Texture color_fbo_tex = TextureManager::get().get_texture("color_fbo");
+    Texture z_fbo_tex = TextureManager::get().get_texture("z_fbo");
 
 		glActiveTexture(GL_TEXTURE0);		// Activación del texture unit 0
-		glBindTexture(GL_TEXTURE_2D, FboManager::get().color_fbo_tex.id);
+		glBindTexture(GL_TEXTURE_2D, color_fbo_tex.id);
 
     int uColorTexPP = glGetUniformLocation(shader_manager.programs_projection["p_p0"]->id, "colorTex");
 		glUniform1i(uColorTexPP, 0);
 
 
 		glActiveTexture(GL_TEXTURE0 +1 ); // Activación del texture unit 1
-		glBindTexture(GL_TEXTURE_2D,  FboManager::get().z_fbo_tex.id);
+		glBindTexture(GL_TEXTURE_2D, z_fbo_tex.id);
 
 
 

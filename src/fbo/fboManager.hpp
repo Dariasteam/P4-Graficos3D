@@ -20,12 +20,6 @@ public:
   unsigned planeVAO;
   unsigned planeVertexVBO;
 
-  FboTexture color_fbo_tex;
-  FboTexture specular_fbo_tex;
-  FboTexture normal_fbo_tex;
-  FboTexture depth_fbo_tex;
-  FboTexture z_fbo_tex;
-
   inline static FboManager& get () {
     static FboManager instance;
     return instance;
@@ -58,15 +52,19 @@ public:
 
     glGenFramebuffers(1, &fbo);
 
-    glGenTextures(1, &color_fbo_tex.id);
-    glGenTextures(1, &depth_fbo_tex.id);
-    glGenTextures(1, &z_fbo_tex.id);
+    auto& texture_manager = TextureManager::get();
 
-    TextureManager::get().min_index_uniform_tex = 3;
+    texture_manager.generate_empty("color_fbo");
+    texture_manager.generate_empty("normal_fbo");
+    texture_manager.generate_empty("specular_fbo");
+    texture_manager.generate_empty("depth_fbo");
+    texture_manager.generate_empty("z_fbo");
   }
 
   void generate_color_tex (unsigned w, unsigned h) {
-    glBindTexture(GL_TEXTURE_2D, color_fbo_tex.id);     // Activar la textura
+    Texture t = TextureManager::get().get_texture("color_fbo");
+
+    glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
     // Dar formato y reservar uan textura MUTABLE pero no subimos información
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0,
                 GL_RGBA, GL_FLOAT, NULL);
@@ -78,7 +76,7 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-											 	GL_TEXTURE_2D, color_fbo_tex.id, 0);
+											 	GL_TEXTURE_2D, t.id, 0);
   }
 
   void generate_normal_tex (unsigned w, unsigned h) {
@@ -90,8 +88,10 @@ public:
   }
 
   void generate_depth_tex (unsigned w, unsigned h) {
+    Texture t = TextureManager::get().get_texture("depth_fbo");
+
     // Imagen del z buffer usada en el postproceso (Coordenadas normalizadas Z)
-    glBindTexture(GL_TEXTURE_2D, depth_fbo_tex.id);
+    glBindTexture(GL_TEXTURE_2D, t.id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, w, h, 0,
                 GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 
@@ -99,12 +99,13 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-												   depth_fbo_tex.id, 0);
+												   t.id, 0);
   }
 
   void generate_z_tex (unsigned w, unsigned h) {
+    Texture t = TextureManager::get().get_texture("z_fbo");
     // Imagen del z buffer usada en el postproceso (Coordenadas de la cámara)
-    glBindTexture(GL_TEXTURE_2D, z_fbo_tex.id);
+    glBindTexture(GL_TEXTURE_2D, t.id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, w, h, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
@@ -112,7 +113,7 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
-											     GL_TEXTURE_2D, z_fbo_tex.id, 0);
+											     GL_TEXTURE_2D, t.id, 0);
   }
 
 
