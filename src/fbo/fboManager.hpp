@@ -97,7 +97,7 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-												 depth_fbo_tex.id, 0);
+												   depth_fbo_tex.id, 0);
   }
 
   void generate_z_tex (unsigned w, unsigned h) {
@@ -125,7 +125,6 @@ public:
 
 	  const GLenum buffs[2] = {GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT0};
 	  glDrawBuffers(2, buffs);
-
 
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))

@@ -160,7 +160,7 @@ namespace demo_3 {
     const auto& view = world_manager.camera->get_view_matrix();
     const auto& proj = world_manager.camera->get_projection_matrix();
 
-    for (auto p : shader_manager.programs) {
+    for (auto p : shader_manager.programs_shading) {
       Program& program = *p.second;
 
       glUseProgram(program.id);
@@ -205,7 +205,7 @@ namespace demo_3 {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glUseProgram(shader_manager.programs2["p_p0"]->id);
+    glUseProgram(shader_manager.programs_projection["p_p0"]->id);
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
 
@@ -217,7 +217,7 @@ namespace demo_3 {
 		glActiveTexture(GL_TEXTURE0);		// Activación del texture unit 0
 		glBindTexture(GL_TEXTURE_2D, FboManager::get().color_fbo_tex.id);
 
-    int uColorTexPP = glGetUniformLocation(shader_manager.programs2["p_p0"]->id, "colorTex");
+    int uColorTexPP = glGetUniformLocation(shader_manager.programs_projection["p_p0"]->id, "colorTex");
 		glUniform1i(uColorTexPP, 0);
 
 
@@ -227,7 +227,7 @@ namespace demo_3 {
 
 
 
-    int uZTexPP = glGetUniformLocation(shader_manager.programs2["p_p0"]->id, "zTex");
+    int uZTexPP = glGetUniformLocation(shader_manager.programs_projection["p_p0"]->id, "zTex");
     glUniform1i(uZTexPP, 1);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
