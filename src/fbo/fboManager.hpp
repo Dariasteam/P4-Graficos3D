@@ -70,7 +70,7 @@ public:
                 GL_RGBA, GL_FLOAT, NULL);
 
     // Gestión de las situaciones de aliasing con los mipmaps
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // FIXME: Linear aquí o abajo?
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -80,11 +80,37 @@ public:
   }
 
   void generate_normal_tex (unsigned w, unsigned h) {
+    Texture t = TextureManager::get().get_texture("normal_fbo");
 
+    glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0,
+                GL_RGBA, GL_FLOAT, NULL);
+
+    // Gestión de las situaciones de aliasing con los mipmaps
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2,
+											 	GL_TEXTURE_2D, t.id, 0);
   }
 
   void generate_specular_tex (unsigned w, unsigned h) {
+    Texture t = TextureManager::get().get_texture("specular_fbo");
 
+    glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0,
+                GL_RGBA, GL_FLOAT, NULL);
+
+    // Gestión de las situaciones de aliasing con los mipmaps
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3,
+											 	GL_TEXTURE_2D, t.id, 0);
   }
 
   void generate_depth_tex (unsigned w, unsigned h) {
