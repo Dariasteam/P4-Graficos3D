@@ -64,7 +64,7 @@ namespace demo_3 {
     robotmesh.mat = &mat_a;
 
     // BIND LIGHT IDS IN PROGRAM TO LIGHTS
-    light_manager.bind_program_ids("p_p0", ShaderManager::P_PROJECTION);
+    light_manager.bind_program_ids("p_p0", ShaderManager::P_LIGHTING);
 
     // INSTANTIATE LIGHTS
     PointLight& point_light = light_manager.create_point_light();
@@ -205,7 +205,7 @@ namespace demo_3 {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    auto& program = shader_manager.programs_projection["p_p0"];
+    auto& program = shader_manager.programs_lightning["p_p0"];
     glUseProgram(program->id);
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
