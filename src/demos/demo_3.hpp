@@ -17,10 +17,12 @@ namespace demo_3 {
     // LOAD TEXTURES
     if (!texture_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
+    if (!texture_manager.load_texture("img/normal.png", "normalTex")) exit(-1);
+    if (!texture_manager.load_texture("img/specMap.png", "specTex")) exit(-1);
 
     // COMPILING SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P4/shader.v1.vert", "v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P4/shader.v1.frag", "f0")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/shader_material.vert", "v0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/shader_material.frag", "f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
@@ -55,6 +57,8 @@ namespace demo_3 {
 
     mat_a.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
     mat_a.shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
+    mat_a.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normalTex"));
+    mat_a.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
 
     // ASSIGN MATERIALS TO MESH INSTANCES
     robotmesh.mat = &mat_a;
