@@ -36,7 +36,7 @@ public:
     auto& shader_manager = ShaderManager::get();
 
     // COMPILING POST PROCESS SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P4/post_processing.vert", "p_v0")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/deferred_lightning_pass.vert", "p_v0")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P4/deferred_lightning_pass.frag", "p_f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
@@ -62,6 +62,7 @@ public:
     texture_manager.generate_empty("specular_fbo");
     texture_manager.generate_empty("depth_fbo");
     texture_manager.generate_empty("z_fbo");
+    texture_manager.generate_empty("pos_fbo");
   }
 
   void generate_color_tex (unsigned w, unsigned h) {
@@ -86,7 +87,7 @@ public:
     Texture t = TextureManager::get().get_texture("normal_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, w, h, 0,
                 GL_RGBA, GL_FLOAT, NULL);
 
     // Gestión de las situaciones de aliasing con los mipmaps
@@ -113,6 +114,23 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3,
+											 	GL_TEXTURE_2D, t.id, 0);
+  }
+
+  void generate_pos_tex (unsigned w, unsigned h) {
+    Texture t = TextureManager::get().get_texture("pos_fbo");
+
+    glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, w, h, 0,
+                GL_RGBA, GL_FLOAT, NULL);
+
+    // Gestión de las situaciones de aliasing con los mipmaps
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4,
 											 	GL_TEXTURE_2D, t.id, 0);
   }
 
@@ -154,21 +172,24 @@ public:
     generate_specular_tex(w, h);
     generate_depth_tex(w, h);
     generate_z_tex(w, h);
+    generate_pos_tex (w, h);
 
-	  const GLenum buffs[4] = {GL_COLOR_ATTACHMENT1,
+	  const GLenum buffs[5] = {GL_COLOR_ATTACHMENT1,
                              GL_COLOR_ATTACHMENT0,
                              GL_COLOR_ATTACHMENT2,
-                             GL_COLOR_ATTACHMENT3};
-	  glDrawBuffers(4, buffs);
+                             GL_COLOR_ATTACHMENT3,
+                             GL_COLOR_ATTACHMENT4};
+	  glDrawBuffers(5, buffs);
 
     auto& texture_manager = TextureManager::get();
     mat = MaterialManager::get().create_material();
 
     mat.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
     mat.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
     mat.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
     mat.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
-
+    mat.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
 
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))

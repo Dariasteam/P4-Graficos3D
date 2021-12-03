@@ -4,6 +4,7 @@ layout (location = 0) out float outZ;
 layout (location = 1) out vec4 outColor;
 layout (location = 2) out vec3 outNormal;
 layout (location = 3) out vec3 outSpecular;
+layout (location = 4) out vec3 outPosition;
 
 in vec3 color;
 in vec3 vpos;
@@ -25,8 +26,10 @@ void main() {
 	vec3 specular = texture(specularTex, tc).rgb;
 	vec3 normal = normalize(vnormal);
 
-	outColor = vec4(diffuse + emissive + _ambientLightC, 1.0);
+	//outColor = vec4(_ambientLightC * diffuse + emissive, 1.0);
+	outColor = vec4(diffuse + emissive, 1.0);
 	outNormal = normal;
 	outSpecular = specular;
+	outPosition = vpos;
 	outZ = vpos.z;
 }

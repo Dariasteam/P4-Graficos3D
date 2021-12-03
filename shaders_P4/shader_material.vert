@@ -10,7 +10,7 @@ uniform mat4 modelView;
 uniform mat4 normal;
 
 out vec3 color;
-out vec3 vpos;
+out vec3 vpos;;
 out vec3 vnormal;
 out vec2 tc;
 
@@ -21,5 +21,5 @@ void main()
 	vnormal = (normal * vec4(inNormal, 0.0)).xyz;
 	vpos = (modelView * vec4(inPos, 1.0)).xyz;
 
-	gl_Position =  modelViewProj * vec4 (inPos,1.0);
+	gl_Position = modelViewProj * vec4 (inPos,1.0);
 }

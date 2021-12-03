@@ -1,6 +1,7 @@
 #include "../aux/demo.hpp"
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
+#include <glm/matrix.hpp>
 
 using namespace demo_default_objs;
 
@@ -68,7 +69,7 @@ namespace demo_3 {
 
     // INSTANTIATE LIGHTS
     PointLight& point_light = light_manager.create_point_light();
-    point_light.color.vec_3 = {0, 0, 0};
+    point_light.color.vec_3 = {0, 0, 1};
     point_light.translation() = {2, 0, 0};
 
     FocalLight& focal_light = light_manager.create_focal_light();
@@ -82,7 +83,7 @@ namespace demo_3 {
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     AmbientLight& ambient_light = light_manager.get_ambient_light();
-    ambient_light.color.vec_3 = {.1, .2, .2};
+    ambient_light.color.vec_3 = {.1, .1, .1};
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
@@ -169,7 +170,9 @@ namespace demo_3 {
       glUseProgram(program.id);
       glBindVertexArray(vbo_manager.get_vao());
 
-      light_manager.upload_ambient_light();
+      // FIXME: We are calling this too many times
+      //light_manager.bind_program_ids("p0", ShaderManager::P_SHADING);
+      //light_manager.upload_ambient_light();
 
       for (MeshInstance* mesh_instance : program.associated_meshes) {
         const auto model = mesh_instance->get_model_matrix();
@@ -207,6 +210,7 @@ namespace demo_3 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     auto& program = shader_manager.programs_lightning["p_p0"];
     glUseProgram(program->id);
+
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
 
@@ -218,10 +222,13 @@ namespace demo_3 {
       FboManager::get().mat.upload_uniform(name, parameter_id);
     }
 
-    // FIXME: This loop has only sense when using a deferred shading
-    while (light_manager.upload_next_light_pass(view)) {
+    light_manager.bind_program_ids("p_p0", ShaderManager::P_LIGHTING);
+
+    // FIXME: This loop only makes sense when using a deferred shading
+    while(light_manager.upload_next_light_pass(view)) {
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);
