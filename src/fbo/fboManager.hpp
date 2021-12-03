@@ -121,7 +121,7 @@ public:
     Texture t = TextureManager::get().get_texture("pos_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, w, h, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, w, h, 0,
                 GL_RGBA, GL_FLOAT, NULL);
 
     // Gestión de las situaciones de aliasing con los mipmaps

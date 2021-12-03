@@ -14,7 +14,6 @@ uniform sampler2D depthTex;
 // Lights
 uniform vec3 _dirLightC;
 uniform vec3 _dirLightD;
-/*
 
 uniform vec3 _pointLightC;
 uniform vec4 _pointLightP;
@@ -29,10 +28,8 @@ uniform vec3 _ambientLightC;
 ////////////////////////////////////
 //	Objeto
 vec3 pos;
-*/
 vec3 N;
 vec3 Kd;
-/*
 vec3 Ks;
 float n;
 vec3 Ke;
@@ -125,13 +122,12 @@ vec3 shade_directional_light() {
 
   vec3 L = -_dirLightD;
   vec3 Il = _dirLightC;                  // light intensity (color)
-  //vec3 P = pos;                          // Positions of the fragment
+  vec3 P = pos;                          // Positions of the fragment
 
 	//Diffuse
 	c += Kd * max(dot(N, L), 0);
-	return c;
-	//Specular
 
+	//Specular
 	vec3 V = normalize(-P);
 	vec3 R = reflect(-L, N);
 	c += Ks * pow(max(dot(R, V), 0), n);
@@ -143,39 +139,27 @@ vec3 shade_directional_light() {
 
 const float focalDistance = -25.0;
 const float maxDistanceFactor = 1.0/5.0;  // A una distancia de 5 unidades borrosidad máxima
-*/
+
 void main() {
-
   Kd = texture(colorTex, texCoord).rgb;
-	//Ks = texture(specularTex, texCoord).rgb;
-	N = texture(normalTex, texCoord).rgb;
-	//pos = texture(positionTex, texCoord).rgb;
+	Ks = texture(specularTex, texCoord).rgb;
+	N  = texture(normalTex, texCoord).rgb;
+	pos = texture(positionTex, texCoord).rgb;
+
 	float z  = texture(zTex, texCoord).x;
-
-	vec3 c = N + vec3(0.707107, -0.707107, 0);
-
-  color = (z < .000001) ? vec4(c, 1.0) : vec4(.2);
-	return;
-/*
-
 	float depth = texture(depthTex, texCoord).x;
 
 	n = 50.0;
-*/
-/*
-	pos.x = texCoord.x;
-	pos.y = texCoord.y;
-	pos.z = depth;
-*/
-/*
+
+	pos.z = z;
+
+
 	vec3 c = Kd;
 	Ks = vec3(1, 1, 1);
 
 	//c += shade_point_light();
-	//c += shade_focal_light();
-	c = shade_directional_light();
+	c += shade_focal_light();
+	//c += shade_directional_light();
 
-	*/
-	//vec3 c = vec3( max(dot(N, -_dirLightD), 0) );
-  color = (z < .000001) ? vec4(c, 1.0) : vec4(.2);
+  color = (z < .000001) ? vec4(c, 1) : vec4(.2);
 }
