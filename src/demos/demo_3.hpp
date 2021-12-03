@@ -170,10 +170,6 @@ namespace demo_3 {
       glUseProgram(program.id);
       glBindVertexArray(vbo_manager.get_vao());
 
-      // FIXME: We are calling this too many times
-      //light_manager.bind_program_ids("p0", ShaderManager::P_SHADING);
-      //light_manager.upload_ambient_light();
-
       for (MeshInstance* mesh_instance : program.associated_meshes) {
         const auto model = mesh_instance->get_model_matrix();
         const OglMesh* ogl_mesh = mesh_instance->mesh;
@@ -207,15 +203,34 @@ namespace demo_3 {
       }
     }
 
+    // DEFERRED
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    auto& program = shader_manager.programs_lightning["p_p0"];
-    glUseProgram(program->id);
 
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
 
     glBindVertexArray(FboManager::get().planeVAO);
 
+    // Ambient light
+    auto& program = shader_manager.programs_lightning["p_pbase"];
+    glUseProgram(program->id);
+
+    light_manager.bind_program_ids("p_pbase", ShaderManager::P_LIGHTING);
+    light_manager.upload_ambient_light();
+
+    for (const auto& uniform : program->uniforms) {
+      const std::string& name = uniform.first;
+      const int parameter_id = uniform.second;
+      FboManager::get().mat_lightning_base.upload_uniform(name, parameter_id);
+    }
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    // LIGHTNING PASSES
+
+/*
+    program = shader_manager.programs_lightning["p_p0"];
+    glUseProgram(program->id);
     for (const auto& uniform : program->uniforms) {
       const std::string& name = uniform.first;
       const int parameter_id = uniform.second;
@@ -226,8 +241,9 @@ namespace demo_3 {
 
     // FIXME: This loop only makes sense when using a deferred shading
     while(light_manager.upload_next_light_pass(view)) {
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
+*/
 
 
     glDisable(GL_BLEND);

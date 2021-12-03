@@ -43,8 +43,6 @@ vec3 shade_point_light() {
 	vec3 light_point = _pointLightP.xyz;
 	vec3 Il = _pointLightC;
 
-	return Il;
-
 	float d_min = 1.f;
 	float d_max = 100.f;
 	float d0 = 1.f;
@@ -144,22 +142,19 @@ void main() {
   Kd = texture(colorTex, texCoord).rgb;
 	Ks = texture(specularTex, texCoord).rgb;
 	N  = texture(normalTex, texCoord).rgb;
-	pos = texture(positionTex, texCoord).rgb;
-
 	float z  = texture(zTex, texCoord).x;
+	pos = vec3(texture(positionTex, texCoord).rg, z);
+
 	float depth = texture(depthTex, texCoord).x;
 
 	n = 50.0;
 
-	pos.z = z;
-
-
 	vec3 c = Kd;
 	Ks = vec3(1, 1, 1);
 
-	//c += shade_point_light();
+	c += shade_point_light();
 	c += shade_focal_light();
-	//c += shade_directional_light();
+	c += shade_directional_light();
 
   color = (z < .000001) ? vec4(c, 1) : vec4(.2);
 }

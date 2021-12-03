@@ -21,7 +21,8 @@ public:
   unsigned planeVAO;
   unsigned planeVertexVBO;
 
-  Material mat;
+  Material mat_lightning_passes;
+  Material mat_lightning_base;
 
   inline static FboManager& get () {
     static FboManager instance;
@@ -36,11 +37,15 @@ public:
     auto& shader_manager = ShaderManager::get();
 
     // COMPILING POST PROCESS SHADERS
+    if (!shader_manager.load_vertex_shader("shaders_P4/deferred_lightning_base.vert", "p_vbase")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/deferred_lightning_base.frag", "p_fbase")) exit(-1);
+
     if (!shader_manager.load_vertex_shader("shaders_P4/deferred_lightning_pass.vert", "p_v0")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P4/deferred_lightning_pass.frag", "p_f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
     if (!shader_manager.create_program("p_p0", "p_v0", "p_f0", ShaderManager::P_LIGHTING)) exit(-1);
+    if (!shader_manager.create_program("p_pbase", "p_vbase", "p_fbase", ShaderManager::P_LIGHTING)) exit(-1);
 
     glGenVertexArrays(1, &planeVAO);
     glBindVertexArray(planeVAO);
@@ -121,7 +126,7 @@ public:
     Texture t = TextureManager::get().get_texture("pos_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, w, h, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, w, h, 0,
                 GL_RGBA, GL_FLOAT, NULL);
 
     // Gestión de las situaciones de aliasing con los mipmaps
@@ -182,14 +187,17 @@ public:
 	  glDrawBuffers(5, buffs);
 
     auto& texture_manager = TextureManager::get();
-    mat = MaterialManager::get().create_material();
+    mat_lightning_passes = MaterialManager::get().create_material();
 
-    mat.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
-    mat.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
-    mat.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
-    mat.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
-    mat.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
-    mat.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
+    mat_lightning_passes.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_lightning_passes.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
+    mat_lightning_passes.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
+    mat_lightning_passes.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
+    mat_lightning_passes.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+    mat_lightning_passes.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
+
+    mat_lightning_base.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
+    mat_lightning_base.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
 
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))
