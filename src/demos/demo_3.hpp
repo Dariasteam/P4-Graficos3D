@@ -1,4 +1,5 @@
 #include "../aux/demo.hpp"
+#include <cstdlib>
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
 #include <glm/matrix.hpp>
@@ -72,12 +73,16 @@ namespace demo_3 {
     point_light.color.vec_3 = {0, 0, 1};
     point_light.translation() = {2, 0, 0};
 
+    srand(NULL);
+    std::cout << rand()  << std::endl;
+
     for (unsigned i = 0; i < 40; i++) {
+      double r = ((double) rand() / (RAND_MAX));
       FocalLight& focal_light = light_manager.create_focal_light();
-      focal_light.color.vec_3 = {i * 2, 10, i};
-      focal_light.translation() = {i * 0.1, 0, 3};
-      focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, .2, -1});
-      focal_light.aperture.value = .1;
+      focal_light.color.vec_3 = {i * .1, 4 - i * .1, r};
+      focal_light.translation() = {-0.5 + i * 0.025, -1, 3};
+      focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, r / 2, -1});
+      focal_light.aperture.value = .03;
     }
 
     DirectionalLight& dir_light = light_manager.create_directional_light();
@@ -133,6 +138,18 @@ namespace demo_3 {
         value.x += .1;
 
       value = glm::normalize(value);
+    }
+
+    if (key == 'B' || key == 'b') {
+      for (auto& v : light_manager.focal_lights) {
+        v->direction.vec_3.y += .01;
+        v->direction.vec_3 = glm::normalize(v->direction.vec_3);
+      }
+    } else if (key == 'N' || key == 'n') {
+      for (auto& v : light_manager.focal_lights) {
+        v->direction.vec_3.y -= .01;
+        v->direction.vec_3 = glm::normalize(v->direction.vec_3);
+      }
     }
   };
 
