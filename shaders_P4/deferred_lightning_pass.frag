@@ -140,7 +140,7 @@ const float maxDistanceFactor = 1.0/5.0;  // A una distancia de 5 unidades borro
 
 void main() {
   Kd = texture(colorTex, texCoord).rgb;
-	Ks = texture(specularTex, texCoord).rgb;
+	Ks = texture(specularTex, texCoord).rrr;
 	N  = texture(normalTex, texCoord).rgb;
 	float z  = texture(zTex, texCoord).x;
 	pos = vec3(texture(positionTex, texCoord).rg, z);
@@ -150,7 +150,6 @@ void main() {
 	n = 50.0;
 
 	vec3 c = vec3(0);
-	Ks = vec3(1, 1, 1);
 
 	c += shade_point_light();
 	c += shade_focal_light();

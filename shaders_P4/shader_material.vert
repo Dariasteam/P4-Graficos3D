@@ -22,4 +22,19 @@ void main()
 	vpos = (modelView * vec4(inPos, 1.0)).xyz;
 
 	gl_Position = modelViewProj * vec4 (inPos,1.0);
+
+
+
+	/*
+	// Normal mapping
+	vec3 T = normalize(vec3(model * vec4(inTangent,   0.0)));
+  vec3 N = normalize(vec3(model * vec4(inNormal,    0.0)));
+  vec3 B = normalize(cross(N, T));
+
+	mat3 TBN = mat3(T, B, N);
+
+	tangentLightPos = TBN * lightPos;
+	tangentViewPos  = TBN * vpos;
+	tangentFragPos  = TBN * vec3(model * vec4(inPos, 1.0));
+	*/
 }

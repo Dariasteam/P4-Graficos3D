@@ -51,7 +51,7 @@ namespace demo_3 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
+    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
 
@@ -79,7 +79,7 @@ namespace demo_3 {
     for (unsigned i = 0; i < 40; i++) {
       double r = ((double) rand() / (RAND_MAX));
       FocalLight& focal_light = light_manager.create_focal_light();
-      focal_light.color.vec_3 = {i * .1, 4 - i * .1, r};
+      focal_light.color.vec_3 = {2 + i * .1, 1+ 4 - i * .1, r};
       focal_light.translation() = {-0.5 + i * 0.025, -1, 3};
       focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, r / 2, -1});
       focal_light.aperture.value = .03;
