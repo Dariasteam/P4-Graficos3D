@@ -237,7 +237,7 @@ namespace demo_3 {
     glUseProgram(program->id);
 
     light_manager.bind_program_ids("p_pbase");
-    light_manager.upload_single_lights();
+    light_manager.upload_single_lights(view);
 
     for (const auto& uniform : program->uniforms) {
       const std::string& name = uniform.first;
@@ -267,9 +267,6 @@ namespace demo_3 {
     while(light_manager.upload_next_light_pass(view)) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
-
-
-
 
 
 

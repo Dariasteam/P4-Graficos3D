@@ -86,9 +86,9 @@ public:
     return true;
   };
 
-  bool upload_single_lights () {
+  bool upload_single_lights (const glm::mat4& view) {
     ambient_light.upload_data();
-    dir_light.upload_data();
+    dir_light.adjust_to_view(view);
   }
 
   bool upload_next_light_pass (const glm::mat4& view) {
