@@ -110,19 +110,26 @@ public:
       dir_lights[i_dir]->adjust_to_view (view);
       i_dir++;
       end = false;
+    } else {
+      dir_lights[0]->upload_black("_dirLightC");
     }
 
     if (i_point < point_lights.size()) {
       point_lights[i_point]->adjust_to_view (view);
       i_point++;
       end = false;
+    } else {
+      point_lights[0]->upload_black("_pointLightC");
     }
 
     if (i_focal < focal_lights.size()) {
       focal_lights[i_focal]->adjust_to_view (view);
       i_focal++;
       end = false;
+    } else {
+      focal_lights[0]->upload_black("_focalLightC");
     }
+
 
     if (end) {
       i_dir = 0;

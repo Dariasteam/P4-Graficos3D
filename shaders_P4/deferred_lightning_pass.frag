@@ -152,7 +152,6 @@ void main() {
 	vec3 c = vec3(0);
 	Ks = vec3(1, 1, 1);
 
-
 	c += shade_point_light();
 	c += shade_focal_light();
 	c += shade_directional_light();

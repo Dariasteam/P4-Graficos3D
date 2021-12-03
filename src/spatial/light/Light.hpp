@@ -11,8 +11,11 @@
 struct AbstractLight : public Spatial {
 public:
   SP_Vec3f color;
+  SP_Vec3f black;
 protected:
-  AbstractLight () {}
+  AbstractLight () {
+    black.vec_3 = {0, 0, 0};
+  }
   virtual void upload_data() = 0;
 
 public:
@@ -22,13 +25,13 @@ public:
   }
   void update(float dummy_time) {}
 
+  virtual void upload_black(const std::string& name) = 0;
+
   virtual void adjust_to_view(const glm::mat4& view) = 0;
 };
 
-
 struct AmbientLight : public AbstractLight {
   static std::map<std::string, int> uniform_ids;
-
   void adjust_to_view(const glm::mat4& view) {
     upload_data();
   }
@@ -36,12 +39,14 @@ struct AmbientLight : public AbstractLight {
   void upload_data() {
     color.upload_data(uniform_ids["_ambientLightC"]);
   }
+  void upload_black(const std::string& name) {
+    black.upload_data(uniform_ids[name]);
+  }
 };
 
 struct PointLight : public AbstractLight {
-  SP_Vec4f position;
-
   static std::map<std::string, int> uniform_ids;
+  SP_Vec4f position;
 
   void upload_data() {
     color.upload_data(uniform_ids["_pointLightC"]);
@@ -52,11 +57,13 @@ struct PointLight : public AbstractLight {
     position.vec_4 = view * get_model_matrix() * glm::vec4{0, 0, 0, 1};
     upload_data();
   }
+  void upload_black(const std::string& name) {
+    black.upload_data(uniform_ids[name]);
+  }
 };
 
 struct DirectionalLight : public AbstractLight {
   static std::map<std::string, int> uniform_ids;
-
   SP_Vec3f direction;
 
   void upload_data() {
@@ -71,11 +78,13 @@ struct DirectionalLight : public AbstractLight {
     upload_data();
     direction.vec_3 = v;
   }
+  void upload_black(const std::string& name) {
+    black.upload_data(uniform_ids[name]);
+  }
 };
 
 struct FocalLight : public AbstractLight {
   static std::map<std::string, int> uniform_ids;
-
   SP_Vec4f position;
   SP_Vec3f direction;
   SP_Valuef aperture;
@@ -85,6 +94,9 @@ struct FocalLight : public AbstractLight {
     position.upload_data(uniform_ids["_focalLightP"]);
     aperture.upload_data(uniform_ids["_focalLightA"]);
     direction.upload_data(uniform_ids["_focalLightD"]);
+  }
+  void upload_black(const std::string& name) {
+    black.upload_data(uniform_ids[name]);
   }
 
   // FIXME: This is a mess, we shouldn't be modifying and restoring light properties
