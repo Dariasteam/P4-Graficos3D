@@ -9,20 +9,11 @@
 #include <string>
 #include <vector>
 
-
 class ShaderManager {
 private:
   GLuint loadShader(const char *fileName, GLenum type);
   ShaderManager () {}
 public:
-
-  enum {
-    P_PROJECTION,
-    P_SHADING,
-    P_LIGHTING,
-    P_POST_PROCESSING,
-  };
-
 
   inline static ShaderManager& get () {
     static ShaderManager instance;
@@ -34,31 +25,7 @@ public:
 
   std::map<std::string, VertexShader *> vertex_shaders;
   std::map<std::string, FragmentShader *> fragment_shaders;
-
-  std::map<std::string, Program *> programs_projection;
-  std::map<std::string, Program *> programs_shading;
-  std::map<std::string, Program *> programs_lightning;
-  std::map<std::string, Program *> programs_post_processing;
-
-  std::map<std::string, Program *>& get_container (const unsigned program_type) {
-    switch (program_type) {
-      case P_PROJECTION:
-        return programs_projection;
-      break;
-
-      case P_SHADING:
-        return programs_shading;
-      break;
-
-      case P_LIGHTING:
-        return programs_lightning;
-      break;
-
-      case P_POST_PROCESSING:
-        return programs_post_processing;
-      break;
-    }
-  }
+  std::map<std::string, Program *> programs;
 
   std::map<std::string, int> get_uniforms_in_program (const std::string& program_name) {
     std::map<std::string, int> uniforms;
@@ -86,10 +53,7 @@ public:
     return uniforms;
   }
 
-  inline bool check_program_exist (const std::string& program,
-                                   const unsigned prog_type = P_SHADING) {
-
-    auto& programs = get_container(prog_type);
+  inline bool check_program_exist (const std::string& program) {
     return (programs.find(program) != programs.end());
   }
 
@@ -109,9 +73,8 @@ public:
     return fragment_shaders[f_shader];
   }
 
-  inline Program* get_program (const std::string& program,
-                               const unsigned prog_type = P_SHADING) {
-    return get_container(prog_type)[program];
+  inline Program* get_program (const std::string& program) {
+    return programs[program];
   }
 
   void clean();
@@ -121,18 +84,12 @@ public:
 
   bool create_program(const std::string &name,
                       const std::string &v_name,
-                      const std::string &f_name,
-                      int type = P_SHADING);
+                      const std::string &f_name);
 
-  bool set_mesh_per_program(const std::string& program_name, MeshInstance& mesh,
-                            const unsigned program_type = P_SHADING);
+  bool set_mesh_per_program(const std::string& program_name, MeshInstance& mesh) const;
 
   bool bind_program_attributes(const std::string& program_name,
-                const std::map<std::string, unsigned> &attribute_name_location,
-                const unsigned program_type = P_SHADING);
-
-  void detach_programs_in_container(const unsigned program_type);
-  void delete_programs_in_container(const unsigned program_type);
+                const std::map<std::string, unsigned> &attribute_name_location);
 };
 
 

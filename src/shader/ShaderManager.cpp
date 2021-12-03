@@ -2,8 +2,7 @@
 
 bool ShaderManager::create_program(const std::string& program_name,
                                    const std::string &v_name,
-                                   const std::string &f_name,
-                                   int program_type) {
+                                   const std::string &f_name) {
 
   const unsigned program_id = glCreateProgram();
 
@@ -71,8 +70,7 @@ bool ShaderManager::create_program(const std::string& program_name,
     aux_program->uniforms[name] = glGetUniformLocation(program_id, name);
   }
 
-  get_container(program_type)[program_name] = aux_program;
-
+  programs[program_name] = aux_program;
   return true;
 }
 
@@ -136,11 +134,9 @@ bool ShaderManager::load_vertex_shader (const std::string& path,
 }
 
 bool ShaderManager::bind_program_attributes (const std::string& program_name,
-                                              const std::map<std::string, unsigned>&
-                                                     attribute_name_location,
-                                              const unsigned program_type) {
+                                             const std::map<std::string, unsigned>&
+                                            attribute_name_location) {
 
-  auto programs = get_container(program_type);
   const auto& it = programs.find(program_name);
   if (it == programs.end()) {
     std::cout << "Error bindeando atributos. No existe el programa "
@@ -160,10 +156,8 @@ bool ShaderManager::bind_program_attributes (const std::string& program_name,
 }
 
 bool ShaderManager::set_mesh_per_program (const std::string& program_name,
-                                          MeshInstance& mesh,
-                                          const unsigned program_type) {
+                                          MeshInstance& mesh) const {
 
-  auto programs = get_container(program_type);
   const auto& it = programs.find(program_name);
   if (it == programs.end()) {
     std::cout << "Error enlazando meshInstance con programa. No existe el programa "
@@ -177,41 +171,20 @@ bool ShaderManager::set_mesh_per_program (const std::string& program_name,
   return true;
 }
 
-void ShaderManager::detach_programs_in_container(const unsigned program_type) {
-  for (auto& program : get_container(program_type))
-    program.second->detach();
-}
-
-void ShaderManager::delete_programs_in_container(const unsigned program_type) {
-  for (auto& program : get_container(program_type))
-    delete program.second;
-}
-
 void ShaderManager::clean() {
-  // DETACH PROGRAMS
-  detach_programs_in_container(P_PROJECTION);
-  detach_programs_in_container(P_SHADING);
-  detach_programs_in_container(P_LIGHTING);
-  detach_programs_in_container(P_POST_PROCESSING);
+  for (auto& program : programs)
+    program.second->detach();
 
-  // DELETE INDIVIDUAL SHADERS
   for (auto& shader : vertex_shaders)
     delete shader.second;
 
   for (auto& shader : fragment_shaders)
     delete shader.second;
 
-  // DELETE PROGRAMS
-  delete_programs_in_container(P_PROJECTION);
-  delete_programs_in_container(P_SHADING);
-  delete_programs_in_container(P_LIGHTING);
-  delete_programs_in_container(P_POST_PROCESSING);
+  for (auto& program : programs)
+    delete program.second;
 
   vertex_shaders.clear();
   fragment_shaders.clear();
-
-  programs_projection.clear();
-  programs_shading.clear();
-  programs_lightning.clear();
-  programs_post_processing.clear();
+  programs.clear();
 }

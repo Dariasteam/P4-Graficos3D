@@ -44,8 +44,8 @@ public:
     if (!shader_manager.load_fragment_shader("shaders_P4/deferred_lightning_pass.frag", "p_f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
-    if (!shader_manager.create_program("p_p0", "p_v0", "p_f0", ShaderManager::P_LIGHTING)) exit(-1);
-    if (!shader_manager.create_program("p_pbase", "p_vbase", "p_fbase", ShaderManager::P_LIGHTING)) exit(-1);
+    if (!shader_manager.create_program("p_p0", "p_v0", "p_f0")) exit(-1);
+    if (!shader_manager.create_program("p_pbase", "p_vbase", "p_fbase")) exit(-1);
 
     glGenVertexArrays(1, &planeVAO);
     glBindVertexArray(planeVAO);

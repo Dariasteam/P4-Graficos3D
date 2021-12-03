@@ -66,7 +66,7 @@ namespace demo_3 {
     robotmesh.mat = &mat_a;
 
     // BIND LIGHT IDS IN PROGRAM TO LIGHTS
-    light_manager.bind_program_ids("p_p0", ShaderManager::P_LIGHTING);
+    light_manager.bind_program_ids("p_p0");
 
     // INSTANTIATE LIGHTS
     PointLight& point_light = light_manager.create_point_light();
@@ -183,7 +183,7 @@ namespace demo_3 {
     const auto& view = world_manager.camera->get_view_matrix();
     const auto& proj = world_manager.camera->get_projection_matrix();
 
-    for (auto p : shader_manager.programs_shading) {
+    for (auto p : shader_manager.programs) {
       Program& program = *p.second;
 
       glUseProgram(program.id);
@@ -235,10 +235,10 @@ namespace demo_3 {
 
 
     // SINGLE PASS LIGHTS
-    auto& program = shader_manager.programs_lightning["p_pbase"];
+    auto& program = shader_manager.programs["p_pbase"];
     glUseProgram(program->id);
 
-    light_manager.bind_program_ids("p_pbase", ShaderManager::P_LIGHTING);
+    light_manager.bind_program_ids("p_pbase");
     light_manager.upload_ambient_light();
 
     for (const auto& uniform : program->uniforms) {
@@ -255,7 +255,7 @@ namespace demo_3 {
 
 
     // MULTIPLE PASS LIGHTS
-    auto& program2 = shader_manager.programs_lightning["p_p0"];
+    auto& program2 = shader_manager.programs["p_p0"];
 
     glUseProgram(program2->id);
     for (const auto& uniform : program2->uniforms) {
@@ -264,7 +264,7 @@ namespace demo_3 {
       FboManager::get().mat_lightning_passes.upload_uniform(name, parameter_id);
     }
 
-    light_manager.bind_program_ids("p_p0", ShaderManager::P_LIGHTING);
+    light_manager.bind_program_ids("p_p0");
 
     while(light_manager.upload_next_light_pass(view)) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
