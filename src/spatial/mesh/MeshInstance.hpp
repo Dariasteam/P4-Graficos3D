@@ -4,18 +4,13 @@
 #include "../../ogl/OGLObject.hpp"
 #include "../Spatial.h"
 #include "OGLMesh.hpp"
-#include "../../material/Material.hpp"
 #include "../../shader/Shaders.hpp"
 
 struct MeshInstance : public Spatial {
 protected:
 	int obj_id = -1;
-	std::map<std::string, AbstractShaderParameter*> shader_uniforms;
 public:
-	Material* mat;
 	const OglMesh* mesh;
-
-	MeshInstance () : mat(new Material) {}
 
 	int get_obj_id () { return obj_id; }
 

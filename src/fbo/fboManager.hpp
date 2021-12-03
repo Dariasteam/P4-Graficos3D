@@ -1,6 +1,7 @@
 #ifndef FBO_MANAGER_H_
 #define FBO_MANAGER_H_
 
+#include "../spatial/light/LightManager.hpp"
 #include "../material/MaterialManager.hpp"
 #include "../texture/TextureManager.hpp"
 #include "../shader/ShaderManager.hpp"
@@ -50,7 +51,7 @@ public:
     if (!shader_manager.create_program("p_pbase", "p_vbase", "p_fbase")) exit(-1);
 
 
-    // LINKING POST PROCESS SHADERS
+    // COMPILING POST PROCESS SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/post_processing.vert", "post_processing.vert")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P4/post_processing.frag", "post_processing.frag")) exit(-1);
 
@@ -88,7 +89,6 @@ public:
     texture_manager.generate_empty("pos_fbo");
     texture_manager.generate_empty("post_process_fbo");
 
-
     mat_lightning_passes.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
     mat_lightning_passes.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
     mat_lightning_passes.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
@@ -105,6 +105,20 @@ public:
 
     mat_post_processing.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
     mat_post_processing.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("post_process_fbo"));
+
+    shader_manager.bind_material("p_p0", mat_lightning_passes);
+    shader_manager.bind_material("p_pbase", mat_lightning_base);
+    shader_manager.bind_material("post_processing", mat_post_processing);
+
+
+    // BIND LIGHT IDS IN PROGRAM TO LIGHTS
+    // single pass lights
+    LightManager::get().bind_ambient_light("p_pbase");
+    LightManager::get().bind_directional_light("p_pbase");
+
+    // multiple pass lights
+    LightManager::get().bind_focal_light("p_p0");
+    LightManager::get().bind_directional_light("p_p0");
   }
 
   void generate_post_processing_tex (unsigned w, unsigned h) {

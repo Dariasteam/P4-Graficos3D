@@ -1,6 +1,7 @@
 #ifndef _PROGRAM_H_
 #define _PROGRAM_H_
 
+#include "../material/Material.hpp"
 #include "Shaders.hpp"
 #include "../spatial/mesh/MeshInstance.hpp"
 
@@ -18,7 +19,7 @@ struct Program : OglObject{
 	std::map<std::string, int> uniforms;
 	std::map<std::string, int> attributes;
 
-	std::unordered_set<MeshInstance*> associated_meshes;
+	std::unordered_set<Material*> associated_materials;
 
 	void detach () {
     glDetachShader(id, vertex->id);
@@ -27,6 +28,14 @@ struct Program : OglObject{
 
 	~Program () {
 		glDeleteProgram(id);
+	}
+
+	void add_associated_material (Material& material) {
+		associated_materials.insert(&material);
+
+		for (const auto& uniform : uniforms) {
+			material.bind(uniform.first, uniform.second);
+		}
 	}
 
 };

@@ -6,7 +6,7 @@
 
 using namespace demo_default_objs;
 
-namespace demo_3 {
+namespace demo_4 {
 
   // INIT
   const std::function<void (void)> init = [] () {
@@ -28,6 +28,9 @@ namespace demo_3 {
 
     // LINKING POST PROCESS PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
+
+    // BIND CAMERA
+    shader_manager.bind_camera("p_v0", *world_manager.camera);
 
     // LOADING MESHES
     mesh_loader.import_default_cube();
@@ -61,12 +64,9 @@ namespace demo_3 {
     mat_a.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normalTex"));
     mat_a.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
 
-    // ASSIGN MATERIALS TO MESH INSTANCES
-
-    //robotmesh.mat = &mat_a; FIX
-
-    // BIND LIGHT IDS IN PROGRAM TO LIGHTS
-    light_manager.bind_lights_to_program("p_p0");
+    // BIND MATERIAL - SHADER - MESH INSTANCE
+    shader_manager.bind_material("p0", mat_a);
+    mat_a.associate_mesh_instance(&robotmesh);
 
     // INSTANTIATE LIGHTS
     PointLight& point_light = light_manager.create_point_light();
@@ -94,9 +94,6 @@ namespace demo_3 {
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
       self.rotation().x = dummy_time / 10;
     };
-
-    // ASSIGN PROGRAMS TO MESHES
-    shader_manager.set_mesh_per_program("p0", robotmesh);
   };
 
 
@@ -178,8 +175,7 @@ namespace demo_3 {
     glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().deferred_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const auto& view = world_manager.camera->get_view_matrix();
-    const auto& proj = world_manager.camera->get_projection_matrix();
+    const auto& camera = world_manager.camera;
 
     for (auto p : shader_manager.programs) {
       Program& program = *p.second;
@@ -187,36 +183,20 @@ namespace demo_3 {
       glUseProgram(program.id);
       glBindVertexArray(vbo_manager.get_vao());
 
-      for (MeshInstance* mesh_instance : program.associated_meshes) {
-        const auto model = mesh_instance->get_model_matrix();
-        const OglMesh* ogl_mesh = mesh_instance->mesh;
-        Material* material = mesh_instance->mat;
+      for (Material* material : program.associated_materials) {
+        material->upload_uniforms();
 
-        material->calculate_matrices(model, view, proj);
+        for (MeshInstance* mesh_instance : material->associated_mesh_instances) {
+          const auto model = mesh_instance->get_model_matrix();
+          const OglMesh* ogl_mesh = mesh_instance->mesh;
 
-        // Upload Uniforms
-        for (const auto& uniform : program.uniforms) {
-          const std::string& name = uniform.first;
-          const int parameter_id = uniform.second;
-          mesh_instance->mat->upload_uniform(name, parameter_id);
+          camera->upload_matrices(*mesh_instance);
+          vbo_manager.upload_attributes_for_mesh (*ogl_mesh);
+
+          // Draw call
+          glDrawElements(GL_TRIANGLES, ogl_mesh->n_triangles * 3,
+                        GL_UNSIGNED_INT, (GLvoid*)(ogl_mesh->gl_draw_offset));
         }
-
-        // Upload Attributes (Layout / Location)
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.posVBO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->pos_offset);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.colorVBO);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->color_offset);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.normalVBO);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->normal_offset);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_manager.texCoordVBO);
-        glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh->tex_coord_offset);
-
-        // Draw call
-        glDrawElements(GL_TRIANGLES, ogl_mesh->n_triangles * 3,
-                      GL_UNSIGNED_INT, (GLvoid*)(ogl_mesh->gl_draw_offset));
       }
     }
 
@@ -233,17 +213,11 @@ namespace demo_3 {
     glBindVertexArray(FboManager::get().planeVAO);
 
     // SINGLE PASS LIGHTS
-    auto& program = shader_manager.programs["p_pbase"];
-    glUseProgram(program->id);
+    auto& program_l1 = shader_manager.programs["p_pbase"];
+    glUseProgram(program_l1->id);
+    light_manager.upload_single_lights(camera->get_view_matrix());
 
-    light_manager.bind_lights_to_program("p_pbase");
-    light_manager.upload_single_lights(view);
-
-    for (const auto& uniform : program->uniforms) {
-      const std::string& name = uniform.first;
-      const int parameter_id = uniform.second;
-      FboManager::get().mat_lightning_base.upload_uniforms(name, parameter_id);
-    }
+    FboManager::get().mat_lightning_base.upload_uniforms();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -254,21 +228,12 @@ namespace demo_3 {
 
     // MULTIPLE PASS LIGHTS
     auto& program2 = shader_manager.programs["p_p0"];
-
     glUseProgram(program2->id);
-    for (const auto& uniform : program2->uniforms) {
-      const std::string& name = uniform.first;
-      const int parameter_id = uniform.second;
-      FboManager::get().mat_lightning_passes.upload_uniforms(name, parameter_id);
-    }
+    FboManager::get().mat_lightning_passes.upload_uniforms();
 
-    light_manager.bind_lights_to_program("p_p0");
-
-    while(light_manager.upload_next_light_pass(view)) {
+    while(light_manager.upload_next_light_pass(camera->get_view_matrix())) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
-
-
 
     glDisable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -278,12 +243,7 @@ namespace demo_3 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto& program3 = shader_manager.programs["post_processing"];
-    glUseProgram(program3->id);
-    for (const auto& uniform : program3->uniforms) {
-      const std::string& name = uniform.first;
-      const int parameter_id = uniform.second;
-      FboManager::get().mat_post_processing.upload_uniforms(name, parameter_id);
-    }
+    FboManager::get().mat_post_processing.upload_uniforms();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 

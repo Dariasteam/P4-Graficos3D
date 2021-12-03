@@ -171,6 +171,20 @@ public:
 
 		meshes.clear();
 	}
+
+	void upload_attributes_for_mesh(const OglMesh& ogl_mesh) {
+		glBindBuffer(GL_ARRAY_BUFFER, posVBO);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.pos_offset);
+
+		glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.color_offset);
+
+		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.normal_offset);
+
+		glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
+		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tex_coord_offset);
+	}
 };
 
 #endif // _VBO_MANAGER_

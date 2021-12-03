@@ -4,6 +4,7 @@
 #include "../texture/Texture.hpp"
 #include "../spatial/light/Light.hpp"
 #include "../shader/Shaders.hpp"
+#include "../spatial/mesh/MeshInstance.hpp"
 
 #include <map>
 #include <string>
@@ -23,37 +24,28 @@ struct Material {
 public:
   std::map<std::string, AbstractShaderParameter*> shader_uniforms;
 
+  std::vector<MeshInstance*> associated_mesh_instances;
+
 public:
-  Material () {
-    shader_uniforms["modelView"] = new SP_Mat4f(glm::mat4(1));
-    shader_uniforms["modelViewProj"] = new SP_Mat4f(glm::mat4(1));
-    shader_uniforms["normal"] = new SP_Mat4f(glm::mat4(1));
+
+  void associate_mesh_instance(MeshInstance* mesh) {
+    associated_mesh_instances.push_back(mesh);
   }
 
-
-  // FIXME: We could have this pre binded
-  bool upload_uniform (const std::string& parameter_name, const unsigned id) const {
-    const auto& it = shader_uniforms.find(parameter_name);
+  bool bind (const std::string uniform_name, const unsigned uniform_id) {
+    const auto& it = shader_uniforms.find(uniform_name);
     if (it != shader_uniforms.end()) {
-      it->second->upload_data(id);
+        it->second->uniform_id = uniform_id;
       return true;
     } else {
       return false;
     }
   }
 
-  void calculate_matrices (const glm::mat4& model,
-                           const glm::mat4& view,
-                           const glm::mat4& proj) {
-
-    glm::mat4& modelView = static_cast<SP_Mat4f*>(shader_uniforms["modelView"])->mat_4;
-    glm::mat4& modelViewProj = static_cast<SP_Mat4f*>(shader_uniforms["modelViewProj"])->mat_4;
-    glm::mat4& normal = static_cast<SP_Mat4f*>(shader_uniforms["normal"])->mat_4;
-
-
-    modelView = view * model;
-    modelViewProj = proj * modelView;
-    normal = glm::transpose(glm::inverse(modelView));
+  void upload_uniforms () const {
+    for (const auto& parameter : shader_uniforms) {
+      parameter.second->upload_data();
+    }
   }
 
   ~Material () {

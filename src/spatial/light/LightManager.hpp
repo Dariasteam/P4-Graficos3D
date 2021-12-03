@@ -42,6 +42,9 @@ public:
   inline PointLight& create_point_light() {
     PointLight* light = new PointLight;
 
+    light->color.uniform_id = PointLight::uniform_ids["_pointLightC"];
+    light->position.uniform_id = PointLight::uniform_ids["_pointLightP"];
+
     point_lights.push_back(light);
 
     WorldManager::get().add(light);
@@ -51,39 +54,46 @@ public:
   inline FocalLight& create_focal_light() {
     FocalLight* light = new FocalLight;
 
+    light->color.uniform_id = PointLight::uniform_ids["_pointLightC"];
+    light->position.uniform_id = PointLight::uniform_ids["_pointLightP"];
+
     focal_lights.push_back(light);
 
     WorldManager::get().add(light);
     return *light;
   }
 
-  bool bind_program_ids(const std::string& program_name) {
+  void bind_directional_light (const std::string& program_name) {
+    auto* program = ShaderManager::get().get_program(program_name);
 
-    const auto* program = ShaderManager::get().get_program(program_name);
+    dir_light.color.uniform_id = program->uniforms["_dirLightC"];
+    dir_light.direction.uniform_id = program->uniforms["_dirLightD"];
+  }
 
-    auto& dir_uniforms = DirectionalLight::uniform_ids;
+  void bind_ambient_light (const std::string& program_name) {
+    auto* program = ShaderManager::get().get_program(program_name);
+
+    ambient_light.color.uniform_id = program->uniforms["_ambientLightC"];
+  }
+
+  void bind_point_light(const std::string& program_name) {
+
+    auto* program = ShaderManager::get().get_program(program_name);
     auto& point_uniforms = PointLight::uniform_ids;
+
+    point_uniforms["_pointLightC"] = program->uniforms["_pointLightC"];
+    point_uniforms["_pointLightP"] = program->uniforms["_pointLightP"];
+  };
+
+  void bind_focal_light(const std::string& program_name) {
+
+    auto* program = ShaderManager::get().get_program(program_name);
     auto& focal_uniforms = FocalLight::uniform_ids;
-    auto& ambient_uniforms = AmbientLight::uniform_ids;
 
-    for (const auto uniform : program->uniforms) {
-      const auto& name = uniform.first;
-      const auto& value = uniform.second;
-
-      if (dir_uniforms.find(name) != dir_uniforms.end())
-        dir_uniforms[name] = value;
-
-      if (point_uniforms.find(name) != point_uniforms.end())
-        point_uniforms[name] = value;
-
-      if (focal_uniforms.find(name) != focal_uniforms.end())
-        focal_uniforms[name] = value;
-
-      if (ambient_uniforms.find(name) != ambient_uniforms.end())
-        ambient_uniforms[name] = value;
-    }
-
-    return true;
+    focal_uniforms["_focalLightC"] = program->uniforms["_focalLightC"];
+    focal_uniforms["_focalLightD"] = program->uniforms["_focalLightD"];
+    focal_uniforms["_focalLightA"] = program->uniforms["_focalLightA"];
+    focal_uniforms["_focalLightP"] = program->uniforms["_focalLightP"];
   };
 
   bool upload_single_lights (const glm::mat4& view) {

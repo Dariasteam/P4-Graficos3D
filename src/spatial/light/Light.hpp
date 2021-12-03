@@ -31,13 +31,12 @@ public:
 };
 
 struct AmbientLight : public AbstractLight {
-  static std::map<std::string, int> uniform_ids;
   void adjust_to_view(const glm::mat4& view) {
     upload_data();
   }
 
   void upload_data() {
-    color.upload_data(uniform_ids["_ambientLightC"]);
+    color.upload_data();
   }
   void upload_black() {
   }
@@ -48,8 +47,8 @@ struct PointLight : public AbstractLight {
   SP_Vec4f position;
 
   void upload_data() {
-    color.upload_data(uniform_ids["_pointLightC"]);
-    position.upload_data(uniform_ids["_pointLightP"]);
+    color.upload_data();
+    position.upload_data();
   }
 
   void adjust_to_view(const glm::mat4& view) {
@@ -57,17 +56,16 @@ struct PointLight : public AbstractLight {
     upload_data();
   }
   void upload_black() {
-    black.upload_data(uniform_ids["_pointLightC"]);
+    black.upload_data();
   }
 };
 
 struct DirectionalLight : public AbstractLight {
-  static std::map<std::string, int> uniform_ids;
   SP_Vec3f direction;
 
   void upload_data() {
-    color.upload_data(uniform_ids["_dirLightC"]);
-    direction.upload_data(uniform_ids["_dirLightD"]);
+    color.upload_data();
+    direction.upload_data();
   }
 
   void adjust_to_view(const glm::mat4& view) {
@@ -78,7 +76,7 @@ struct DirectionalLight : public AbstractLight {
     direction.vec_3 = v;
   }
   void upload_black() {
-    black.upload_data(uniform_ids["_dirLightC"]);
+    black.upload_data();
   }
 };
 
@@ -89,13 +87,13 @@ struct FocalLight : public AbstractLight {
   SP_Valuef aperture;
 
   void upload_data() {
-    color.upload_data(uniform_ids["_focalLightC"]);
-    position.upload_data(uniform_ids["_focalLightP"]);
-    aperture.upload_data(uniform_ids["_focalLightA"]);
-    direction.upload_data(uniform_ids["_focalLightD"]);
+    color.upload_data();
+    position.upload_data();
+    aperture.upload_data();
+    direction.upload_data();
   }
   void upload_black() {
-    black.upload_data(uniform_ids["_focalLightC"]);
+    black.upload_data();
   }
 
   // FIXME: This is a mess, we shouldn't be modifying and restoring light properties

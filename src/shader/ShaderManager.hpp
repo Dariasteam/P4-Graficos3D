@@ -1,6 +1,7 @@
 #ifndef _SHADER_H_
 #define _SHADER_H_
 
+#include "../spatial/camera/Camera.h"
 #include "Shaders.hpp"
 #include "Program.hpp"
 #include "../aux/auxiliar.h"
@@ -86,7 +87,13 @@ public:
                       const std::string &v_name,
                       const std::string &f_name);
 
-  bool set_mesh_per_program(const std::string& program_name, MeshInstance& mesh) const;
+  //bool set_mesh_per_program(const std::string& program_name, MeshInstance& mesh) const;
+
+  bool bind_material (const std::string& program_name,
+                              Material& materal);
+
+  bool bind_camera (const std::string& program_name,
+                    AbstractCameraHandler& camera);
 
   bool bind_program_attributes(const std::string& program_name,
                 const std::map<std::string, unsigned> &attribute_name_location);
