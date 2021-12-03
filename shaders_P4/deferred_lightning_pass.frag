@@ -149,8 +149,9 @@ void main() {
 
 	n = 50.0;
 
-	vec3 c = Kd;
+	vec3 c = vec3(0);
 	Ks = vec3(1, 1, 1);
+
 
 	c += shade_point_light();
 	c += shade_focal_light();
