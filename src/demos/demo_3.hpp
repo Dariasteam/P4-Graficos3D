@@ -72,10 +72,10 @@ namespace demo_3 {
     point_light.color.vec_3 = {0, 0, 1};
     point_light.translation() = {2, 0, 0};
 
-    for (unsigned i = 0; i < 2; i++) {
+    for (unsigned i = 0; i < 40; i++) {
       FocalLight& focal_light = light_manager.create_focal_light();
       focal_light.color.vec_3 = {i * 2, 10, i};
-      focal_light.translation() = {i, 0, 3};
+      focal_light.translation() = {i * 0.1, 0, 3};
       focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, .2, -1});
       focal_light.aperture.value = .1;
     }
@@ -249,7 +249,7 @@ namespace demo_3 {
 
     light_manager.bind_program_ids("p_p0", ShaderManager::P_LIGHTING);
 
-    while(light_manager.upload_next_light_pass(view)){
+    while(light_manager.upload_next_light_pass(view)) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 

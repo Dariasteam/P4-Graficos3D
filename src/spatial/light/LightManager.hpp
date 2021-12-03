@@ -104,40 +104,37 @@ public:
   }
 
   bool upload_next_light_pass (const glm::mat4& view) {
-    bool end = true;
+    bool new_unpainted_lights = false;
+
+    dir_lights[0]->upload_black();
+    point_lights[0]->upload_black();
+    focal_lights[0]->upload_black();
 
     if (i_dir < dir_lights.size()) {
       dir_lights[i_dir]->adjust_to_view (view);
       i_dir++;
-      end = false;
-    } else {
-      dir_lights[0]->upload_black("_dirLightC");
+      new_unpainted_lights = true;
     }
 
     if (i_point < point_lights.size()) {
       point_lights[i_point]->adjust_to_view (view);
       i_point++;
-      end = false;
-    } else {
-      point_lights[0]->upload_black("_pointLightC");
+      new_unpainted_lights = true;
     }
 
     if (i_focal < focal_lights.size()) {
       focal_lights[i_focal]->adjust_to_view (view);
       i_focal++;
-      end = false;
-    } else {
-      focal_lights[0]->upload_black("_focalLightC");
+      new_unpainted_lights = true;
     }
 
-
-    if (end) {
+    if (!new_unpainted_lights) {
       i_dir = 0;
       i_focal = 0;
       i_point = 0;
     }
 
-    return end;
+    return new_unpainted_lights;
   }
 
   void clean () {

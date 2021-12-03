@@ -25,7 +25,7 @@ public:
   }
   void update(float dummy_time) {}
 
-  virtual void upload_black(const std::string& name) = 0;
+  virtual void upload_black() = 0;
 
   virtual void adjust_to_view(const glm::mat4& view) = 0;
 };
@@ -39,8 +39,7 @@ struct AmbientLight : public AbstractLight {
   void upload_data() {
     color.upload_data(uniform_ids["_ambientLightC"]);
   }
-  void upload_black(const std::string& name) {
-    black.upload_data(uniform_ids[name]);
+  void upload_black() {
   }
 };
 
@@ -57,8 +56,8 @@ struct PointLight : public AbstractLight {
     position.vec_4 = view * get_model_matrix() * glm::vec4{0, 0, 0, 1};
     upload_data();
   }
-  void upload_black(const std::string& name) {
-    black.upload_data(uniform_ids[name]);
+  void upload_black() {
+    black.upload_data(uniform_ids["_pointLightC"]);
   }
 };
 
@@ -78,8 +77,8 @@ struct DirectionalLight : public AbstractLight {
     upload_data();
     direction.vec_3 = v;
   }
-  void upload_black(const std::string& name) {
-    black.upload_data(uniform_ids[name]);
+  void upload_black() {
+    black.upload_data(uniform_ids["_dirLightC"]);
   }
 };
 
@@ -95,8 +94,8 @@ struct FocalLight : public AbstractLight {
     aperture.upload_data(uniform_ids["_focalLightA"]);
     direction.upload_data(uniform_ids["_focalLightD"]);
   }
-  void upload_black(const std::string& name) {
-    black.upload_data(uniform_ids[name]);
+  void upload_black() {
+    black.upload_data(uniform_ids["_focalLightC"]);
   }
 
   // FIXME: This is a mess, we shouldn't be modifying and restoring light properties
