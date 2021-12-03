@@ -156,5 +156,5 @@ void main() {
 	c += shade_focal_light();
 	c += shade_directional_light();
 
-  color = (z < .000001) ? vec4(c, 1) : vec4(.2);
+  color = (z < .000001) ? vec4(c, 1) : vec4(0);
 }

@@ -205,13 +205,17 @@ namespace demo_3 {
 
     // DEFERRED
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
 
     glBindVertexArray(FboManager::get().planeVAO);
 
-    // Ambient light
+
+
+
+    // SINGLE PASS LIGHTS
     auto& program = shader_manager.programs_lightning["p_pbase"];
     glUseProgram(program->id);
 
@@ -226,25 +230,28 @@ namespace demo_3 {
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    // LIGHTNING PASSES
+    glEnable (GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glBlendEquation(GL_FUNC_ADD);
 
-/*
-    program = shader_manager.programs_lightning["p_p0"];
-    glUseProgram(program->id);
-    for (const auto& uniform : program->uniforms) {
+
+
+
+    // MULTIPLE PASS LIGHTS
+    auto& program2 = shader_manager.programs_lightning["p_p0"];
+
+    glUseProgram(program2->id);
+    for (const auto& uniform : program2->uniforms) {
       const std::string& name = uniform.first;
       const int parameter_id = uniform.second;
-      FboManager::get().mat.upload_uniform(name, parameter_id);
+      FboManager::get().mat_lightning_passes.upload_uniform(name, parameter_id);
     }
 
     light_manager.bind_program_ids("p_p0", ShaderManager::P_LIGHTING);
 
-    // FIXME: This loop only makes sense when using a deferred shading
     while(light_manager.upload_next_light_pass(view)) {
-      //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
-*/
-
 
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);

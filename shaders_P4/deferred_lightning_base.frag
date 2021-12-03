@@ -29,5 +29,5 @@ void main() {
   Ka = texture(colorTex, texCoord).rgb;
 	float z  = texture(zTex, texCoord).x;
 	vec3 c = shade_base();
-  color = (z < .000001) ? vec4(c, 1) : vec4(.2);
+  color = (z < .000001) ? vec4(c, 1) : vec4(Ka, 1);
 }
