@@ -12,9 +12,6 @@ uniform sampler2D positionTex;
 uniform sampler2D depthTex;
 
 // Lights
-uniform vec3 _dirLightC;
-uniform vec3 _dirLightD;
-
 uniform vec3 _pointLightC;
 uniform vec4 _pointLightP;
 
@@ -114,27 +111,6 @@ vec3 shade_focal_light() {
 	return c;
 }
 
-
-vec3 shade_directional_light() {
-	vec3 c = vec3(0);
-
-  vec3 L = -_dirLightD;
-  vec3 Il = _dirLightC;                  // light intensity (color)
-  vec3 P = pos;                          // Positions of the fragment
-
-	//Diffuse
-	c += Kd * max(dot(N, L), 0);
-
-	//Specular
-	vec3 V = normalize(-P);
-	vec3 R = reflect(-L, N);
-	c += Ks * pow(max(dot(R, V), 0), n);
-
-	c *= Il;
-	return c;
-}
-
-
 const float focalDistance = -25.0;
 const float maxDistanceFactor = 1.0/5.0;  // A una distancia de 5 unidades borrosidad máxima
 
@@ -153,7 +129,6 @@ void main() {
 
 	c += shade_point_light();
 	c += shade_focal_light();
-	c += shade_directional_light();
 
   color = (z < .000001) ? vec4(c, 1) : vec4(0);
 }

@@ -62,6 +62,7 @@ public:
 
     mat_lightning_passes = MaterialManager::get().create_material();
     mat_post_processing = MaterialManager::get().create_material();
+    mat_lightning_base = MaterialManager::get().create_material();
 
     glGenVertexArrays(1, &planeVAO);
     glBindVertexArray(planeVAO);
@@ -238,6 +239,9 @@ public:
 
     mat_lightning_base.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
     mat_lightning_base.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_lightning_base.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+    mat_lightning_base.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
+    mat_lightning_base.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
 
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))

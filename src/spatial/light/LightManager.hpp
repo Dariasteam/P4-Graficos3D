@@ -11,13 +11,12 @@
 
 class LightManager {
 public:
-  std::vector<DirectionalLight*> dir_lights;
   std::vector<PointLight*> point_lights;
   std::vector<FocalLight*> focal_lights;
 
   AmbientLight ambient_light;
+  DirectionalLight dir_light;
 
-  unsigned i_dir = 0;
   unsigned i_point = 0;
   unsigned i_focal = 0;
 
@@ -36,13 +35,8 @@ public:
     return ambient_light;
   }
 
-  inline DirectionalLight& create_directional_light() {
-    DirectionalLight* light = new DirectionalLight;
-
-    dir_lights.push_back(light);
-
-    WorldManager::get().add(light);
-    return *light;
+  inline DirectionalLight& get_directional_light () {
+    return dir_light;
   }
 
   inline PointLight& create_point_light() {
@@ -92,22 +86,16 @@ public:
     return true;
   };
 
-  bool upload_ambient_light () {
+  bool upload_single_lights () {
     ambient_light.upload_data();
+    dir_light.upload_data();
   }
 
   bool upload_next_light_pass (const glm::mat4& view) {
     bool new_unpainted_lights = false;
 
-    dir_lights[0]->upload_black();
     point_lights[0]->upload_black();
     focal_lights[0]->upload_black();
-
-    if (i_dir < dir_lights.size()) {
-      dir_lights[i_dir]->adjust_to_view (view);
-      i_dir++;
-      new_unpainted_lights = true;
-    }
 
     if (i_point < point_lights.size()) {
       point_lights[i_point]->adjust_to_view (view);
@@ -122,7 +110,6 @@ public:
     }
 
     if (!new_unpainted_lights) {
-      i_dir = 0;
       i_focal = 0;
       i_point = 0;
     }
@@ -132,7 +119,6 @@ public:
 
   void clean () {
     // We do not delete the lights since they are managed by the world
-    dir_lights.clear();
     point_lights.clear();
     focal_lights.clear();
   }

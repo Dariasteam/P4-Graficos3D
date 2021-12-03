@@ -83,12 +83,13 @@ namespace demo_3 {
       focal_light.aperture.value = .03;
     }
 
-    DirectionalLight& dir_light = light_manager.create_directional_light();
-    dir_light.color.vec_3 = {1, 1, 1};
-    dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     AmbientLight& ambient_light = light_manager.get_ambient_light();
     ambient_light.color.vec_3 = {.1, .1, .1};
+
+    DirectionalLight& dir_light = light_manager.get_directional_light();
+    dir_light.color.vec_3 = {1, 1, 1};
+    dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
@@ -128,7 +129,7 @@ namespace demo_3 {
     }
 
     if (key == 'V' || key == 'v') {
-      auto& value = light_manager.dir_lights[0]->direction.vec_3;
+      auto& value = light_manager.dir_light.direction.vec_3;
 
       if (value.x > .5)
         value.x = -1;
@@ -237,7 +238,7 @@ namespace demo_3 {
     glUseProgram(program->id);
 
     light_manager.bind_program_ids("p_pbase");
-    light_manager.upload_ambient_light();
+    light_manager.upload_single_lights();
 
     for (const auto& uniform : program->uniforms) {
       const std::string& name = uniform.first;
@@ -268,7 +269,14 @@ namespace demo_3 {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
+
+
+
+
+
     glDisable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glBlendEquation(GL_FUNC_ADD);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
