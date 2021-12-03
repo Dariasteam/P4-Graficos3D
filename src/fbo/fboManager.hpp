@@ -87,6 +87,24 @@ public:
     texture_manager.generate_empty("z_fbo");
     texture_manager.generate_empty("pos_fbo");
     texture_manager.generate_empty("post_process_fbo");
+
+
+    mat_lightning_passes.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_lightning_passes.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
+    mat_lightning_passes.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
+    mat_lightning_passes.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
+    mat_lightning_passes.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+    mat_lightning_passes.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
+
+
+    mat_lightning_base.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
+    mat_lightning_base.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_lightning_base.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+    mat_lightning_base.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
+    mat_lightning_base.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
+
+    mat_post_processing.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_post_processing.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("post_process_fbo"));
   }
 
   void generate_post_processing_tex (unsigned w, unsigned h) {
@@ -227,22 +245,6 @@ public:
 
     glDrawBuffers(5, buffs_deferred);
 
-    auto& texture_manager = TextureManager::get();
-
-    mat_lightning_passes.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
-    mat_lightning_passes.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
-    mat_lightning_passes.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
-    mat_lightning_passes.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
-    mat_lightning_passes.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
-    mat_lightning_passes.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
-
-
-    mat_lightning_base.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
-    mat_lightning_base.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
-    mat_lightning_base.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
-    mat_lightning_base.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
-    mat_lightning_base.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
-
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))
     {
@@ -262,11 +264,6 @@ public:
 
     glDrawBuffers(2, buffs_post_processing);
 
-    auto& texture_manager = TextureManager::get();
-
-
-    mat_post_processing.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
-    mat_post_processing.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("post_process_fbo"));
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))
     {

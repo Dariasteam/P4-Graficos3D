@@ -83,7 +83,6 @@ namespace demo_3 {
       focal_light.aperture.value = .03;
     }
 
-
     AmbientLight& ambient_light = light_manager.get_ambient_light();
     ambient_light.color.vec_3 = {.1, .1, .1};
 
