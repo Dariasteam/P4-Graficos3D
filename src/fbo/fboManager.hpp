@@ -16,13 +16,15 @@ private:
   FboManager () {}
 
 public:
-  unsigned fbo;
+  unsigned deferred_fbo;
+  unsigned post_processing_fbo;
 
   unsigned planeVAO;
   unsigned planeVertexVBO;
 
   Material mat_lightning_passes;
   Material mat_lightning_base;
+  Material mat_post_processing;
 
   inline static FboManager& get () {
     static FboManager instance;
@@ -36,16 +38,30 @@ public:
   void init () {
     auto& shader_manager = ShaderManager::get();
 
-    // COMPILING POST PROCESS SHADERS
+    // COMPILING DEFERRED LIGHTNING SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/deferred_lightning_base.vert", "p_vbase")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P4/deferred_lightning_base.frag", "p_fbase")) exit(-1);
 
     if (!shader_manager.load_vertex_shader("shaders_P4/deferred_lightning_pass.vert", "p_v0")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P4/deferred_lightning_pass.frag", "p_f0")) exit(-1);
 
-    // LINKING POST PROCESS PROGRAMS
+    // LINKING DEFERRED LIGHTNING SHADERS
     if (!shader_manager.create_program("p_p0", "p_v0", "p_f0")) exit(-1);
     if (!shader_manager.create_program("p_pbase", "p_vbase", "p_fbase")) exit(-1);
+
+
+    // LINKING POST PROCESS SHADERS
+    if (!shader_manager.load_vertex_shader("shaders_P4/post_processing.vert", "post_processing.vert")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/post_processing.frag", "post_processing.frag")) exit(-1);
+
+    // LINKING POST PROCESS SHADERS
+    if (!shader_manager.create_program("post_processing",
+                                       "post_processing.vert",
+                                       "post_processing.frag")) exit(-1);
+
+
+    mat_lightning_passes = MaterialManager::get().create_material();
+    mat_post_processing = MaterialManager::get().create_material();
 
     glGenVertexArrays(1, &planeVAO);
     glBindVertexArray(planeVAO);
@@ -58,7 +74,8 @@ public:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    glGenFramebuffers(1, &fbo);
+    glGenFramebuffers(1, &deferred_fbo);
+    glGenFramebuffers(1, &post_processing_fbo);
 
     auto& texture_manager = TextureManager::get();
 
@@ -68,6 +85,23 @@ public:
     texture_manager.generate_empty("depth_fbo");
     texture_manager.generate_empty("z_fbo");
     texture_manager.generate_empty("pos_fbo");
+    texture_manager.generate_empty("post_process_fbo");
+  }
+
+  void generate_post_processing_tex (unsigned w, unsigned h) {
+    Texture t = TextureManager::get().get_texture("post_process_fbo");
+
+    glBindTexture(GL_TEXTURE_2D, t.id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0,
+                GL_RGBA, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5,
+											 	GL_TEXTURE_2D, t.id, 0);
   }
 
   void generate_color_tex (unsigned w, unsigned h) {
@@ -102,7 +136,7 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2,
-											 	GL_TEXTURE_2D, t.id, 0);
+											 	   GL_TEXTURE_2D, t.id, 0);
   }
 
   void generate_specular_tex (unsigned w, unsigned h) {
@@ -168,9 +202,14 @@ public:
 											     GL_TEXTURE_2D, t.id, 0);
   }
 
-
   void resizeFBO(unsigned int w, unsigned int h) {
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    resize_deferred_fbo (w, h);
+    resize_post_processing_fbo(w, h);
+  }
+
+  void resize_deferred_fbo(unsigned int w, unsigned int h) {
+
+    glBindFramebuffer(GL_FRAMEBUFFER, deferred_fbo);
 
     generate_color_tex(w, h);
     generate_normal_tex(w, h);
@@ -179,15 +218,15 @@ public:
     generate_z_tex(w, h);
     generate_pos_tex (w, h);
 
-	  const GLenum buffs[5] = {GL_COLOR_ATTACHMENT1,
-                             GL_COLOR_ATTACHMENT0,
-                             GL_COLOR_ATTACHMENT2,
-                             GL_COLOR_ATTACHMENT3,
-                             GL_COLOR_ATTACHMENT4};
-	  glDrawBuffers(5, buffs);
+	  const GLenum buffs_deferred[5] = {GL_COLOR_ATTACHMENT1,
+                                      GL_COLOR_ATTACHMENT0,
+                                      GL_COLOR_ATTACHMENT2,
+                                      GL_COLOR_ATTACHMENT3,
+                                      GL_COLOR_ATTACHMENT4};
+
+    glDrawBuffers(5, buffs_deferred);
 
     auto& texture_manager = TextureManager::get();
-    mat_lightning_passes = MaterialManager::get().create_material();
 
     mat_lightning_passes.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
     mat_lightning_passes.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
@@ -196,13 +235,38 @@ public:
     mat_lightning_passes.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
     mat_lightning_passes.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
 
+
     mat_lightning_base.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
     mat_lightning_base.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
 
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))
     {
-      std::cerr << "Error configurando el FBO" << std::endl;
+      std::cerr << "Error configurando el FBO de deferred" << std::endl;
+      exit(-1);
+    }
+  }
+
+  void resize_post_processing_fbo(unsigned int w, unsigned int h) {
+
+    glBindFramebuffer(GL_FRAMEBUFFER, post_processing_fbo);
+
+    generate_post_processing_tex(w, h);
+
+	  const GLenum buffs_post_processing[2] = {GL_COLOR_ATTACHMENT5,
+                                             GL_COLOR_ATTACHMENT0};
+
+    glDrawBuffers(2, buffs_post_processing);
+
+    auto& texture_manager = TextureManager::get();
+
+
+    mat_post_processing.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_post_processing.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("post_process_fbo"));
+    // Comprobar si el FBO está bien construido
+    if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))
+    {
+      std::cerr << "Error configurando el FBO de post procesado" << std::endl;
       exit(-1);
     }
   }

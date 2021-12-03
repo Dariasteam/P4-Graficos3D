@@ -74,8 +74,6 @@ namespace demo_3 {
     point_light.translation() = {2, 0, 0};
 
     srand(NULL);
-    std::cout << rand()  << std::endl;
-
     for (unsigned i = 0; i < 40; i++) {
       double r = ((double) rand() / (RAND_MAX));
       FocalLight& focal_light = light_manager.create_focal_light();
@@ -94,7 +92,7 @@ namespace demo_3 {
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      //self.rotation().y = dummy_time / 4;
+      self.rotation().x = dummy_time / 10;
     };
 
     // ASSIGN PROGRAMS TO MESHES
@@ -177,7 +175,7 @@ namespace demo_3 {
   const std::function<void (void)> render = []() {
 
     // RENDER TO FBO
-    glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().deferred_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const auto& view = world_manager.camera->get_view_matrix();
@@ -222,17 +220,17 @@ namespace demo_3 {
       }
     }
 
+
+
+
     // DEFERRED
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().post_processing_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE);
 	  glDisable(GL_DEPTH_TEST);
 
     glBindVertexArray(FboManager::get().planeVAO);
-
-
-
 
     // SINGLE PASS LIGHTS
     auto& program = shader_manager.programs["p_pbase"];
@@ -270,10 +268,28 @@ namespace demo_3 {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
+    glDisable(GL_BLEND);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    auto& program3 = shader_manager.programs["post_processing"];
+    glUseProgram(program3->id);
+    for (const auto& uniform : program3->uniforms) {
+      const std::string& name = uniform.first;
+      const int parameter_id = uniform.second;
+      FboManager::get().mat_post_processing.upload_uniform(name, parameter_id);
+    }
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
+
+
+
+
 
     // POST PROCESSING
     glutSwapBuffers();
