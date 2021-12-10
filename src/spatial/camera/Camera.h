@@ -1,7 +1,6 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
-#include "../mesh/MeshInstance.hpp"
 #include "../../shader/Shaders.hpp"
 
 #include <glm/fwd.hpp>
@@ -20,8 +19,8 @@ protected:
 	glm::vec2 last_rot {0, 0};
 
 	glm::mat4 proj = glm::mat4(0.0f);
-	glm::mat4 view_2 = glm::mat4(1.0f); //Identity matrix
 
+	glm::mat4 view_2 = glm::mat4(1.0f); //Identity matrix
 	glm::vec4 look_at = glm::vec4 (0.f, 0.f, -1.f, 0.0f);
 	glm::vec4 up = glm::vec4 (0.f, 1.f, 0.f, 0.0f);
 	glm::vec4 right = glm::vec4 (1.f, 0.f, 0.f, 0.0f);
@@ -30,11 +29,6 @@ protected:
   unsigned h = 0;
 
 public:
-	SP_Mat4f view;
-	SP_Mat4f model;
-	SP_Mat4f modelView;
-	SP_Mat4f modelViewProj;
-	SP_Mat4f normal;
 
 	virtual glm::mat4 get_view_matrix() = 0;
 	glm::mat4 get_projection_matrix() { return proj; };
@@ -51,21 +45,6 @@ public:
 
 	AbstractCameraHandler () {
 		update_projection(1);
-	}
-
-	void upload_matrices (MeshInstance& mesh) {
-
-		view.mat_4 = view_2;
-		model.mat_4 = mesh.get_model_matrix();
-		modelView.mat_4 = view_2 * model.mat_4;
-    modelViewProj.mat_4 = proj * modelView.mat_4;
-    normal.mat_4 = glm::transpose(glm::inverse(modelView.mat_4));
-
-		view.upload_data();
-		model.upload_data();
-		modelView.upload_data();
-		modelViewProj.upload_data();
-		normal.upload_data();
 	}
 
 };

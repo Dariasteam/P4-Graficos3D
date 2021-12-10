@@ -18,7 +18,7 @@ struct VertexShader : public OglObject {
 
 // FIXME: Change name to AbstractShaderUniform
 struct AbstractShaderParameter {
-	unsigned uniform_id;
+	int uniform_id {-1};
 
   virtual void upload_data () const = 0;
   virtual ~AbstractShaderParameter () {}
@@ -29,7 +29,8 @@ struct SP_Mat4f : public AbstractShaderParameter {
 	SP_Mat4f() {}
   SP_Mat4f (const glm::mat4 m) : mat_4 (m) {}
   void upload_data () const {
-    glUniformMatrix4fv(uniform_id, 1, GL_FALSE, &(mat_4[0][0]));
+    if (uniform_id != -1)
+      glUniformMatrix4fv(uniform_id, 1, GL_FALSE, &(mat_4[0][0]));
   }
 };
 
@@ -38,7 +39,8 @@ struct SP_Mat3f : public AbstractShaderParameter {
   SP_Mat3f (const glm::mat3 m) : mat_3 (m) {}
   glm::mat3 mat_3;
   void upload_data () const {
-    glUniformMatrix3fv(uniform_id, 1, GL_FALSE, &(mat_3[0][0]));
+    if (uniform_id != -1)
+      glUniformMatrix3fv(uniform_id, 1, GL_FALSE, &(mat_3[0][0]));
   }
 };
 
@@ -47,7 +49,8 @@ struct SP_Mat2f : public AbstractShaderParameter {
   SP_Mat2f (const glm::mat2 m) : mat_2 (m) {}
   glm::mat2 mat_2;
   void upload_data () const {
-    glUniformMatrix2fv(uniform_id, 1, GL_FALSE, &(mat_2[0][0]));
+    if (uniform_id != -1)
+      glUniformMatrix2fv(uniform_id, 1, GL_FALSE, &(mat_2[0][0]));
   }
 };
 
@@ -56,7 +59,8 @@ struct SP_Vec4f : public AbstractShaderParameter {
   SP_Vec4f (const glm::vec4 v) : vec_4 (v) {}
   glm::vec4 vec_4;
   void upload_data () const {
-    glUniform4fv(uniform_id, 1, &(vec_4[0]));
+    if (uniform_id != -1)
+      glUniform4fv(uniform_id, 1, &(vec_4[0]));
   }
 };
 
@@ -74,7 +78,8 @@ struct SP_Vec2f : public AbstractShaderParameter {
   SP_Vec2f (const glm::vec2 v) : vec_2 (v) {}
   glm::vec2 vec_2;
   void upload_data () const {
-    glUniform2fv(uniform_id, 1, &(vec_2[0]));
+    if (uniform_id != -1)
+      glUniform2fv(uniform_id, 1, &(vec_2[0]));
   }
 };
 
@@ -83,7 +88,8 @@ struct SP_Valuef : public AbstractShaderParameter {
   SP_Valuef (const float v) : value (v) {}
   float value;
   void upload_data () const {
-    glUniform1f(uniform_id, value);
+    if (uniform_id != -1)
+      glUniform1f(uniform_id, value);
   }
 };
 

@@ -155,41 +155,6 @@ bool ShaderManager::bind_program_attributes (const std::string& program_name,
   return true;
 }
 
-/*
-bool ShaderManager::set_mesh_per_program (const std::string& program_name,
-                                          MeshInstance& mesh) const {
-
-  const auto& it = programs.find(program_name);
-  if (it == programs.end()) {
-    std::cout << "Error enlazando meshInstance con programa. No existe el programa "
-              << program_name << std::endl;
-    return false;
-  }
-
-  auto& program = *it->second;
-
-  program.associated_meshes.insert(&mesh);
-  return true;
-}
-*/
-
-bool ShaderManager::bind_camera (const std::string& program_name,
-                  AbstractCameraHandler& camera) {
-
-  const auto& it = programs.find(program_name);
-  if (it == programs.end()) {
-    std::cout << "Error enlazando cámara con programa. No existe el programa "
-              << program_name << std::endl;
-    return false;
-  }
-
-  auto& program = it->second;
-  camera.view.uniform_id = program->uniforms["_view"];
-  camera.modelView.uniform_id = program->uniforms["_modelView"];
-  camera.modelViewProj.uniform_id = program->uniforms["_modelViewProj"];
-  camera.normal.uniform_id = program->uniforms["_normal"];
-}
-
 bool ShaderManager::bind_material (const std::string& program_name,
                                            Material& material) {
   const auto& it = programs.find(program_name);

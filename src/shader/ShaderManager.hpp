@@ -92,8 +92,8 @@ public:
   bool bind_material (const std::string& program_name,
                               Material& materal);
 
-  bool bind_camera (const std::string& program_name,
-                    AbstractCameraHandler& camera);
+  bool bind_camera (Program& program,
+                    AbstractCameraHandler* camera);
 
   bool bind_program_attributes(const std::string& program_name,
                 const std::map<std::string, unsigned> &attribute_name_location);

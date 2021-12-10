@@ -56,10 +56,10 @@ namespace demo_3 {
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();
 
-    mat_a.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
-    mat_a.shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
-    mat_a.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normalTex"));
-    mat_a.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
+    mat_a.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
+    mat_a.shader_mat_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
+    mat_a.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normalTex"));
+    mat_a.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
 
     // ASSIGN MATERIALS TO MESH INSTANCES
 

@@ -39,6 +39,7 @@ public:
   void init () {
     auto& shader_manager = ShaderManager::get();
 
+
     // COMPILING DEFERRED LIGHTNING SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/deferred_lightning_base.vert", "p_vbase")) exit(-1);
     if (!shader_manager.load_fragment_shader("shaders_P4/deferred_lightning_base.frag", "p_fbase")) exit(-1);
@@ -49,6 +50,7 @@ public:
     // LINKING DEFERRED LIGHTNING SHADERS
     if (!shader_manager.create_program("p_p0", "p_v0", "p_f0")) exit(-1);
     if (!shader_manager.create_program("p_pbase", "p_vbase", "p_fbase")) exit(-1);
+
 
 
     // COMPILING POST PROCESS SHADERS
@@ -89,22 +91,22 @@ public:
     texture_manager.generate_empty("pos_fbo");
     texture_manager.generate_empty("post_process_fbo");
 
-    mat_lightning_passes.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
-    mat_lightning_passes.shader_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
-    mat_lightning_passes.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
-    mat_lightning_passes.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
-    mat_lightning_passes.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
-    mat_lightning_passes.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
+    mat_lightning_passes.shader_mat_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_lightning_passes.shader_mat_uniforms["depthTex"] = new SP_Texture(texture_manager.get_texture("depth_fbo"));
+    mat_lightning_passes.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
+    mat_lightning_passes.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
+    mat_lightning_passes.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+    mat_lightning_passes.shader_mat_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
 
 
-    mat_lightning_base.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
-    mat_lightning_base.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
-    mat_lightning_base.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
-    mat_lightning_base.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
-    mat_lightning_base.shader_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
+    mat_lightning_base.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
+    mat_lightning_base.shader_mat_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_lightning_base.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+    mat_lightning_base.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
+    mat_lightning_base.shader_mat_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
 
-    mat_post_processing.shader_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
-    mat_post_processing.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("post_process_fbo"));
+    mat_post_processing.shader_mat_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
+    mat_post_processing.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("post_process_fbo"));
 
     shader_manager.bind_material("p_p0", mat_lightning_passes);
     shader_manager.bind_material("p_pbase", mat_lightning_base);

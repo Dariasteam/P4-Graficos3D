@@ -9,6 +9,7 @@
 struct MeshInstance : public Spatial {
 protected:
 	int obj_id = -1;
+
 public:
 	const OglMesh* mesh;
 

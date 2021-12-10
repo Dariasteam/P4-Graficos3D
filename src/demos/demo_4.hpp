@@ -23,14 +23,11 @@ namespace demo_4 {
     if (!texture_manager.load_texture("img/specMap.png", "specTex")) exit(-1);
 
     // COMPILING SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P4/shader_material.vert", "v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P4/shader_material.frag", "f0")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/shader.v1.vert", "v0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/shader.v1.frag", "f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
-
-    // BIND CAMERA
-    shader_manager.bind_camera("p_v0", *world_manager.camera);
 
     // LOADING MESHES
     mesh_loader.import_default_cube();
@@ -59,10 +56,10 @@ namespace demo_4 {
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();
 
-    mat_a.shader_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
-    mat_a.shader_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
-    mat_a.shader_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normalTex"));
-    mat_a.shader_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
+    mat_a.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
+    mat_a.shader_mat_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
+    mat_a.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normalTex"));
+    mat_a.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
 
     // BIND MATERIAL - SHADER - MESH INSTANCE
     shader_manager.bind_material("p0", mat_a);
@@ -172,10 +169,10 @@ namespace demo_4 {
   const std::function<void (void)> render = []() {
 
     // RENDER TO FBO
-    glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().deferred_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const auto& camera = world_manager.camera;
+    auto& camera = world_manager.camera;
 
     for (auto p : shader_manager.programs) {
       Program& program = *p.second;
@@ -184,13 +181,14 @@ namespace demo_4 {
       glBindVertexArray(vbo_manager.get_vao());
 
       for (Material* material : program.associated_materials) {
-        material->upload_uniforms();
+        material->upload_mat_uniforms();
 
         for (MeshInstance* mesh_instance : material->associated_mesh_instances) {
-          const auto model = mesh_instance->get_model_matrix();
           const OglMesh* ogl_mesh = mesh_instance->mesh;
 
-          camera->upload_matrices(*mesh_instance);
+          material->set_geometry_uniforms(*mesh_instance, camera);
+          material->upload_geometry_uniforms();
+
           vbo_manager.upload_attributes_for_mesh (*ogl_mesh);
 
           // Draw call
@@ -200,7 +198,7 @@ namespace demo_4 {
       }
     }
 
-
+    /*
 
 
     // DEFERRED
@@ -235,9 +233,12 @@ namespace demo_4 {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
+
+
     glDisable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ZERO);
-    glBlendEquation(GL_FUNC_ADD);
+
+    //glBlendFunc(GL_ONE, GL_ZERO);
+    //glBlendEquation(GL_FUNC_ADD);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -246,16 +247,13 @@ namespace demo_4 {
     FboManager::get().mat_post_processing.upload_uniforms();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
 
-
-
-
     // POST PROCESSING
+    */
     glutSwapBuffers();
   };
 }
