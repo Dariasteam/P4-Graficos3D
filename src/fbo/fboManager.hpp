@@ -120,7 +120,7 @@ public:
 
     // multiple pass lights
     LightManager::get().bind_focal_light("p_p0");
-    LightManager::get().bind_directional_light("p_p0");
+    LightManager::get().bind_point_light("p_p0");
   }
 
   void generate_post_processing_tex (unsigned w, unsigned h) {
