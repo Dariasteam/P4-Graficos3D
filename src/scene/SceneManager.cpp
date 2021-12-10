@@ -7,7 +7,6 @@ void SceneManager::add_scene(const std::string &name, Scene *scene) {
 
 bool SceneManager::set_init_scene (const std::string &scene_name) {
   const auto &it = scenes.find(scene_name);
-
   if (it == scenes.end()) {
     std::cerr << "Error cambiando de escena. No existe la escena " << scene_name
               << std::endl;

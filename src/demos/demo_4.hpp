@@ -71,13 +71,13 @@ namespace demo_4 {
     point_light.translation() = {2, 0, 0};
 
     srand(NULL);
-    for (unsigned i = 0; i < 40; i++) {
+    for (unsigned i = 0; i < 140; i++) {
       double r = ((double) rand() / (RAND_MAX));
       FocalLight& focal_light = light_manager.create_focal_light();
       focal_light.color.vec_3 = {2 + i * .1, 1+ 4 - i * .1, r};
-      focal_light.translation() = {-0.5 + i * 0.025, -1, 3};
+      focal_light.translation() = {-0.5 + i * 0.005, -1, 3};
       focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, r / 2, -1});
-      focal_light.aperture.value = .03;
+      focal_light.aperture.value = .02;
     }
 
     AmbientLight& ambient_light = light_manager.get_ambient_light();
@@ -89,7 +89,7 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      self.rotation().x = dummy_time / 10;
+      //self.rotation().y = dummy_time / 10;
     };
   };
 
@@ -197,6 +197,8 @@ namespace demo_4 {
         }
       }
     }
+
+
 
 
     // DEFERRED

@@ -24,10 +24,10 @@ int main(int argc, char** argv) {
 	scene_4.render = demo_4::render;
 
 	SceneManager::get().add_scene("scene_4", &scene_4);
-
 	SceneManager::get().set_init_scene("scene_4");
 
 	OGLManager opengl_manager;
+
 	opengl_manager.init_context(argc, argv);
 	opengl_manager.init_OGL();
 	opengl_manager.init_callbacks();
