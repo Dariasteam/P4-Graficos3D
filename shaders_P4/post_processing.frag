@@ -11,5 +11,4 @@ void main() {
   vec3 c = texture(colorTex, texCoord).rgb;
 	float z  = texture(zTex, texCoord).x;
   color = vec4(c, 1);
-	color = vec4(02);
 }

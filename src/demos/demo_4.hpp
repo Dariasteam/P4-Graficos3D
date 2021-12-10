@@ -200,7 +200,7 @@ namespace demo_4 {
 
 
     // DEFERRED
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().post_processing_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE);
@@ -229,8 +229,11 @@ namespace demo_4 {
     while(light_manager.upload_next_light_pass(camera->get_view_matrix())) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
+
+
+
     // POST PROCESSING
-/*
+
     glDisable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ZERO);
     glBlendEquation(GL_FUNC_ADD);
@@ -239,10 +242,10 @@ namespace demo_4 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto& program3 = shader_manager.programs["post_processing"];
+    glUseProgram(program3->id);
     FboManager::get().mat_post_processing.upload_mat_uniforms();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-*/
 
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);
