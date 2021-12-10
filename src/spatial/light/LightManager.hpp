@@ -42,7 +42,9 @@ public:
   inline PointLight& create_point_light() {
     PointLight* light = new PointLight;
 
+    light->black.uniform_id = PointLight::uniform_ids["_pointLightC"];
     light->color.uniform_id = PointLight::uniform_ids["_pointLightC"];
+
     light->position.uniform_id = PointLight::uniform_ids["_pointLightP"];
 
     point_lights.push_back(light);
@@ -54,8 +56,13 @@ public:
   inline FocalLight& create_focal_light() {
     FocalLight* light = new FocalLight;
 
-    light->color.uniform_id = PointLight::uniform_ids["_pointLightC"];
-    light->position.uniform_id = PointLight::uniform_ids["_pointLightP"];
+    light->black.uniform_id = FocalLight::uniform_ids["_focalLightC"];
+    light->color.uniform_id = FocalLight::uniform_ids["_focalLightC"];
+
+    // FIXME: move these to constructor of the light
+    light->position.uniform_id = FocalLight::uniform_ids["_focalLightP"];
+    light->aperture.uniform_id = FocalLight::uniform_ids["_focalLightA"];
+    light->direction.uniform_id = FocalLight::uniform_ids["_focalLightD"];
 
     focal_lights.push_back(light);
 

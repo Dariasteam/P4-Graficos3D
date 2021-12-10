@@ -190,7 +190,6 @@ void main() {
 	c += shade_focal_light();
 
 	//c += fog(c);
-
 	outColor = vec4(c, 1.0);
 	outNormal = N;
 	outSpecular = texture(specularTex, tc).xyz;

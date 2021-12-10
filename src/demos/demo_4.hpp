@@ -23,8 +23,8 @@ namespace demo_4 {
     if (!texture_manager.load_texture("img/specMap.png", "specTex")) exit(-1);
 
     // COMPILING SHADERS
-    if (!shader_manager.load_vertex_shader("shaders_P4/shader.v1.vert", "v0")) exit(-1);
-    if (!shader_manager.load_fragment_shader("shaders_P4/shader.v1.frag", "f0")) exit(-1);
+    if (!shader_manager.load_vertex_shader("shaders_P4/shader_material.vert", "v0")) exit(-1);
+    if (!shader_manager.load_fragment_shader("shaders_P4/shader_material.frag", "f0")) exit(-1);
 
     // LINKING POST PROCESS PROGRAMS
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
@@ -169,7 +169,7 @@ namespace demo_4 {
   const std::function<void (void)> render = []() {
 
     // RENDER TO FBO
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().deferred_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto& camera = world_manager.camera;
@@ -198,11 +198,9 @@ namespace demo_4 {
       }
     }
 
-    /*
-
 
     // DEFERRED
-    glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().post_processing_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE);
@@ -215,7 +213,7 @@ namespace demo_4 {
     glUseProgram(program_l1->id);
     light_manager.upload_single_lights(camera->get_view_matrix());
 
-    FboManager::get().mat_lightning_base.upload_uniforms();
+    FboManager::get().mat_lightning_base.upload_mat_uniforms();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -223,37 +221,33 @@ namespace demo_4 {
     glBlendFunc(GL_ONE, GL_ONE);
     glBlendEquation(GL_FUNC_ADD);
 
-
     // MULTIPLE PASS LIGHTS
     auto& program2 = shader_manager.programs["p_p0"];
     glUseProgram(program2->id);
-    FboManager::get().mat_lightning_passes.upload_uniforms();
+    FboManager::get().mat_lightning_passes.upload_mat_uniforms();
 
     while(light_manager.upload_next_light_pass(camera->get_view_matrix())) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
-
-
-
+    // POST PROCESSING
+/*
     glDisable(GL_BLEND);
-
-    //glBlendFunc(GL_ONE, GL_ZERO);
-    //glBlendEquation(GL_FUNC_ADD);
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glBlendEquation(GL_FUNC_ADD);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto& program3 = shader_manager.programs["post_processing"];
-    FboManager::get().mat_post_processing.upload_uniforms();
+    FboManager::get().mat_post_processing.upload_mat_uniforms();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+*/
 
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
-
-    // POST PROCESSING
-    */
     glutSwapBuffers();
   };
 }
