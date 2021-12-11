@@ -11,7 +11,7 @@
 
 #include <iostream>
 
-class AbstractCameraHandler {
+class AbstractCamera {
 protected:
 	glm::vec4 t {0, 0, 0, 0};
 	glm::vec2 r {0, 0};
@@ -20,7 +20,7 @@ protected:
 
 	glm::mat4 proj = glm::mat4(0.0f);
 
-	glm::mat4 view_2 = glm::mat4(1.0f); //Identity matrix
+	glm::mat4 view = glm::mat4(1.0f); //Identity matrix
 	glm::vec4 look_at = glm::vec4 (0.f, 0.f, -1.f, 0.0f);
 	glm::vec4 up = glm::vec4 (0.f, 1.f, 0.f, 0.0f);
 	glm::vec4 right = glm::vec4 (1.f, 0.f, 0.f, 0.0f);
@@ -43,32 +43,32 @@ public:
   inline void set_w (const unsigned W) { w = W; }
   inline void set_h (const unsigned H) { h = H; }
 
-	AbstractCameraHandler () {
+	AbstractCamera () {
 		update_projection(1);
 	}
 
 };
 
-class FPSCameraHandler : public AbstractCameraHandler {
+class FPSCamera : public AbstractCamera {
 private:
   glm::mat4 get_view_matrix();
 
 public:
-  FPSCameraHandler();
+  FPSCamera();
 
   void handle_keys(unsigned char key);
   void handle_mouse_buttons(int button, int state, int x, int y);
   void handle_mouse_motion(int x, int y);
 };
 
-class OrbitalCameraHandler : public AbstractCameraHandler {
+class OrbitalCamera : public AbstractCamera {
 private:
 	int mouse_button {0};
 
   glm::mat4 get_view_matrix();
 
 public:
-  OrbitalCameraHandler();
+  OrbitalCamera();
 
   void handle_keys (unsigned char key);
   void handle_mouse_buttons(int button, int state, int x, int y);

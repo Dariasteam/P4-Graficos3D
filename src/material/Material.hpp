@@ -71,7 +71,7 @@ public:
     }
   }
 
-  void set_geometry_uniforms(MeshInstance mesh, AbstractCameraHandler* camera) {
+  void set_geometry_uniforms(MeshInstance mesh, AbstractCamera* camera) {
     const auto& view_2 = camera->get_view_matrix();
     const auto& proj_2 = camera->get_projection_matrix();
 

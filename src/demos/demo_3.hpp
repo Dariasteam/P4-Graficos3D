@@ -10,7 +10,7 @@ namespace demo_3 {
 
   // INIT
   const std::function<void (void)> init = [] () {
-    world_manager.camera = new OrbitalCameraHandler;
+    world_manager.camera = new OrbitalCamera;
 
     FboManager::get().init();
     FboManager::get().resizeFBO(500, 500);

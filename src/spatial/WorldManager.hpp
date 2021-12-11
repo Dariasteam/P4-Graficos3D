@@ -16,7 +16,7 @@ private:
 
   std::vector<Spatial*> world_objects;
 public:
-  AbstractCameraHandler* camera;
+  AbstractCamera* camera;
 
   void add (Spatial* sp) { world_objects.push_back(sp); }
 

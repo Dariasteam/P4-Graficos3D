@@ -10,7 +10,7 @@ namespace demo_4 {
 
   // INIT
   const std::function<void (void)> init = [] () {
-    world_manager.camera = new OrbitalCameraHandler;
+    world_manager.camera = new OrbitalCamera;
 
     FboManager::get().init();
     FboManager::get().resizeFBO(500, 500);
@@ -68,14 +68,14 @@ namespace demo_4 {
     // INSTANTIATE LIGHTS
     PointLight& point_light = light_manager.create_point_light();
     point_light.color.vec_3 = {0, 0, 1};
-    point_light.translation() = {2, 0, 0};
+    point_light.translation() = {2, -2, 0};
 
     srand(NULL);
     for (unsigned i = 0; i < 140; i++) {
       double r = ((double) rand() / (RAND_MAX));
       FocalLight& focal_light = light_manager.create_focal_light();
-      focal_light.color.vec_3 = {2 + i * .1, 1+ 4 - i * .1, r};
-      focal_light.translation() = {-0.5 + i * 0.005, -1, 3};
+      focal_light.color.vec_3 = {2 + i * .02, 4 - i * .02, r};
+      focal_light.translation() = {-0.5 + i * 0.009, -1, 3};
       focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, r / 2, -1});
       focal_light.aperture.value = .02;
     }
@@ -89,7 +89,7 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      //self.rotation().y = dummy_time / 10;
+      self.rotation().y = dummy_time / 10;
     };
   };
 
@@ -228,7 +228,7 @@ namespace demo_4 {
     glUseProgram(program2->id);
     FboManager::get().mat_lightning_passes.upload_mat_uniforms();
 
-    while(light_manager.upload_next_light_pass(camera->get_view_matrix())) {
+    while(light_manager.upload_next_light_pass( camera->get_view_matrix())) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 

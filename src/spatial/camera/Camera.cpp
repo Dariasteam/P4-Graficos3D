@@ -2,7 +2,7 @@
 
 // ABSTRACT
 
-void AbstractCameraHandler::update_projection(double a) {
+void AbstractCamera::update_projection(double a) {
 	float n = 1.0f;
 	float f = 15.0f;
 	float x = 1.0f / (glm::tan(30.0f * 3.1419f / 180.0f));
@@ -13,7 +13,7 @@ void AbstractCameraHandler::update_projection(double a) {
 	proj[3].z = 2.0f * n * f / (n - f);
 }
 
-void AbstractCameraHandler::update_aspect_ratio(int width, int height) {
+void AbstractCamera::update_aspect_ratio(int width, int height) {
   set_w (width);
   set_h (height);
 
@@ -22,9 +22,9 @@ void AbstractCameraHandler::update_aspect_ratio(int width, int height) {
 
 // FPS
 
-FPSCameraHandler::FPSCameraHandler() { view_2[3].z = -6.0f; }
+FPSCamera::FPSCamera() { view[3].z = -6.0f; }
 
-void FPSCameraHandler::handle_keys(unsigned char key) {
+void FPSCamera::handle_keys(unsigned char key) {
 
   std::cout << "Se ha pulsado la tecla " << key << std::endl << std::endl;
 
@@ -72,7 +72,7 @@ void FPSCameraHandler::handle_keys(unsigned char key) {
     return;
   }
 }
-void FPSCameraHandler::handle_mouse_buttons(int button, int state, int x,
+void FPSCamera::handle_mouse_buttons(int button, int state, int x,
                                             int y) {
   if (state == 0) {
     std::cout << "Se ha pulsado el botón ";
@@ -94,12 +94,12 @@ void FPSCameraHandler::handle_mouse_buttons(int button, int state, int x,
   std::cout << "en la posición " << x << " " << y << std::endl << std::endl;
 }
 
-void FPSCameraHandler::handle_mouse_motion(int x, int y) {
+void FPSCamera::handle_mouse_motion(int x, int y) {
   r.x = last_rot.x + float(x - last_mouse_pos.x) / w;
   r.y = last_rot.y + float(y - last_mouse_pos.y) / h;
 }
 
-glm::mat4 FPSCameraHandler::get_view_matrix() {
+glm::mat4 FPSCamera::get_view_matrix() {
   glm::mat4 rot_horizontal(1.0f);
   glm::mat4 rot_vertical(1.0f);
   glm::mat4 translation(1.0f);
@@ -109,26 +109,26 @@ glm::mat4 FPSCameraHandler::get_view_matrix() {
       glm::rotate(rot_horizontal, r.x, glm::vec3(0.0f, 1.0f, 0.0f));
   rot_vertical = glm::rotate(rot_vertical, r.y, glm::vec3(1.0f, 0.0f, 0.0f));
 
-  look_at = view_2[2] * rot_horizontal;
-  right = view_2[0] * rot_horizontal;
+  look_at = view[2] * rot_horizontal;
+  right = view[0] * rot_horizontal;
 
   // Rotation order guarantees correct horizon
-  return rot_vertical * rot_horizontal * translation * view_2;
+  return rot_vertical * rot_horizontal * translation * view;
 }
 
 // ORBITAL
 
-OrbitalCameraHandler::OrbitalCameraHandler() {
+OrbitalCamera::OrbitalCamera() {
   // t.z used as radius of the rotation
   t.z = -10;
   t.x = 0.1;
   t.y = 0.1;
 
   // Put camera in the center of the world (origin of the rotation)
-  view_2[3].z = 0;
+  view[3].z = 0;
 }
 
-glm::mat4 OrbitalCameraHandler::get_view_matrix() {
+glm::mat4 OrbitalCamera::get_view_matrix() {
   glm::mat4 rot_horizontal(1.0f);
   glm::mat4 rot_vertical(1.0f);
   glm::mat4 translation(1.0f);
@@ -142,14 +142,14 @@ glm::mat4 OrbitalCameraHandler::get_view_matrix() {
   auto t2 = t * rot_horizontal * rot_vertical;
 
   // Adjust right vector to obtain correct vertical rotation
-  right = view_2[0] * rot_horizontal;
+  right = view[0] * rot_horizontal;
 
   translation = glm::translate(translation, glm::vec3(t2.x, t2.y, t2.z));
 
-  return rot_horizontal * rot_vertical * translation * view_2;
+  return rot_horizontal * rot_vertical * translation * view;
 }
 
-void OrbitalCameraHandler::handle_keys(unsigned char key) {
+void OrbitalCamera::handle_keys(unsigned char key) {
 
   switch (key) {
     // TRANSLATIONS
@@ -163,7 +163,7 @@ void OrbitalCameraHandler::handle_keys(unsigned char key) {
   }
 }
 
-void OrbitalCameraHandler::handle_mouse_buttons(int button, int state, int x,
+void OrbitalCamera::handle_mouse_buttons(int button, int state, int x,
                                                 int y) {
   mouse_button = button;
   if (state == 0) { // PRESS
@@ -174,7 +174,7 @@ void OrbitalCameraHandler::handle_mouse_buttons(int button, int state, int x,
   }
 };
 
-void OrbitalCameraHandler::handle_mouse_motion(int x, int y) {
+void OrbitalCamera::handle_mouse_motion(int x, int y) {
   if (mouse_button == 0) { // PAN
     r.x = last_rot.x + float(x - last_mouse_pos.x) / w;
     r.y = last_rot.y + float(y - last_mouse_pos.y) / h;

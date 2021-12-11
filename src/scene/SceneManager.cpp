@@ -1,7 +1,7 @@
 #include "SceneManager.hpp"
 #include "Scene.hpp"
 
-void SceneManager::add_scene(const std::string &name, Scene *scene) {
+void SceneManager::add_scene(const std::string &name, Scene* scene) {
   scenes[name] = scene;
 }
 
@@ -12,8 +12,7 @@ bool SceneManager::set_init_scene (const std::string &scene_name) {
               << std::endl;
     return false;
   }
-  Scene &scene = *it->second;
-  current_scene = &scene;
+  current_scene = it->second;
 }
 
 void SceneManager::init () {
