@@ -1,8 +1,10 @@
 #include "../aux/demo.hpp"
+
 #include <cstdlib>
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
 #include <glm/matrix.hpp>
+#include <chrono>
 
 using namespace demo_default_objs;
 
@@ -15,7 +17,6 @@ namespace demo_4 {
     FboManager::get().init();
     FboManager::get().resizeFBO(500, 500);
 
-    texture_manager.prepare();
     // LOAD TEXTURES
     if (!texture_manager.load_texture("img/color2.png", "colorTex")) exit(-1);
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
@@ -89,7 +90,7 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      self.rotation().y = dummy_time / 10;
+      //self.rotation().y = dummy_time / 10;
     };
   };
 
@@ -164,7 +165,6 @@ namespace demo_4 {
     glutPostRedisplay();
   };
 
-
   // ON RENDER
   const std::function<void (void)> render = []() {
 
@@ -228,7 +228,7 @@ namespace demo_4 {
     glUseProgram(program2->id);
     FboManager::get().mat_lightning_passes.upload_mat_uniforms();
 
-    while(light_manager.upload_next_light_pass( camera->get_view_matrix())) {
+    while(light_manager.upload_next_light_pass(camera->get_view_matrix())) {
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 

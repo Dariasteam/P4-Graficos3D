@@ -1,6 +1,8 @@
 #include "OpenGLManager.h"
 #include <GL/freeglut_std.h>
 
+Statistics OGLManager::statistics;
+
 void OGLManager::init_OGL () {
   glEnable(GL_DEPTH_TEST);
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
@@ -8,6 +10,8 @@ void OGLManager::init_OGL () {
 	glFrontFace(GL_CCW);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_CULL_FACE);
+
+  TextureManager::get().prepare();
 }
 
 void OGLManager::destroy() {
@@ -48,6 +52,7 @@ void OGLManager::init_callbacks() {
   glutMouseFunc(mouseFunc);
 }
 void OGLManager::renderFunc() {
+  statistics.update();
   SceneManager::get().get_current_scene()->render();
 }
 

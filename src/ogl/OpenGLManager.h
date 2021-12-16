@@ -2,6 +2,7 @@
 #define _OPENGL_MANAGER_H_
 
 #include "../aux/auxiliar.h"
+#include "../aux/statistics.hpp"
 #include "../shader/Shaders.hpp"
 #include "../shader/Program.hpp"
 #include "../texture/Texture.hpp"
@@ -23,6 +24,8 @@
 class OGLManager {
 public:
   ~OGLManager() { destroy(); }
+
+	static Statistics statistics;
 
   void init_context(int argc, char **argv);
   void init_OGL();

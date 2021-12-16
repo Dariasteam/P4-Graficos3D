@@ -65,7 +65,7 @@ const Texture& TextureManager::get_texture (const std::string& name) {
 }
 
 void TextureManager::prepare() {
-  if (glutExtensionSupported ("GL_EXT_texture_filter_anisotropic") != 0) {
+  if (!glutExtensionSupported ("GL_EXT_texture_filter_anisotropic")) {
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
     std::cout << "Max anisotropy level: " << fLargest << std::endl;
 	} else {
