@@ -200,7 +200,7 @@ public:
 		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tex_coord_offset);
 
 		glBindBuffer(GL_ARRAY_BUFFER, tangentVBO);
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tangent_offset);
+		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tangent_offset);
 	}
 };
 

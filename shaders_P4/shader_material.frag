@@ -23,12 +23,12 @@ void main() {
 	vec3 diffuse = texture(colorTex, tc).rgb;
 	vec3 emissive = texture(emiTex, tc).rgb;
 	vec3 specular = texture(specularTex, tc).rgb;
-	//vec3 normal = normalize(vnormal);
-
+	vec3 normal = normalize(vnormal);
+/*
 	vec3 normal = texture(normalTex, tc).rgb;
 	normal = normal * 2.0 - 1.0;
 	normal = normalize(TBN * normal);
-
+*/
 	outColor = vec4(diffuse, 1.0);
 	outNormal = normal;
 	outSpecular = specular;
