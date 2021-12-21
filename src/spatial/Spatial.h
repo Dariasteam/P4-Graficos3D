@@ -17,7 +17,7 @@ struct Spatial {
 protected:
 	glm::vec3 _translation {0, 0, 0};
 	glm::vec3 _rotation_angle {0, 0, 0};
-	glm::vec3 _scale {0, 0, 0};
+	glm::vec3 _scale {1, 1, 1};
 
 	SP_Mat4f _local_transform {glm::mat4(1.0f)}; // Transform / View
 
@@ -30,6 +30,11 @@ public:
     modified = true;
     return _translation;
   }
+
+	glm::vec3& scale() {
+		modified = true;
+		return _scale;
+	}
 
   glm::vec3& rotation() {
     modified = true;

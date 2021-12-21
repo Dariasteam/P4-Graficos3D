@@ -72,7 +72,7 @@ namespace demo_4 {
     point_light.translation() = {2, -2, 0};
 
     srand(NULL);
-    for (unsigned i = 0; i < 140; i++) {
+    for (unsigned i = 0; i < 40; i++) {
       double r = ((double) rand() / (RAND_MAX));
       FocalLight& focal_light = light_manager.create_focal_light();
       focal_light.color.vec_3 = {2 + i * .02, 4 - i * .02, r};
@@ -90,8 +90,9 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      //self.rotation().y = dummy_time / 10;
+      self.rotation().y = dummy_time / 10;
     };
+
   };
 
 
