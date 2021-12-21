@@ -33,10 +33,4 @@ void main()
   vec3 B = normalize(cross(N, T));
 
 	TBN = mat3(T, B, N);
-
-	/*
-	tangentLightPos = TBN * lightPos;
-	tangentViewPos  = TBN * vpos;
-	tangentFragPos  = TBN * vec3(model * vec4(inPos, 1.0));
-	*/
 }

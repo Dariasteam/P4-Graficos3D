@@ -53,7 +53,7 @@ namespace demo_4 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
+    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();

@@ -87,14 +87,15 @@ public:
 									GL_STATIC_DRAW);
 		//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
+		glBindBuffer(GL_ARRAY_BUFFER, tangentVBO);
+		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 3, nullptr,
+								 GL_STATIC_DRAW);
+		//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
 		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 2, nullptr,
 								 GL_STATIC_DRAW);
-		//glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, tangentVBO);
-		glBufferData(GL_ARRAY_BUFFER, n_total_vertices * sizeof(float) * 2, nullptr,
-								 GL_STATIC_DRAW);
+		//glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, n_total_triangles * sizeof(unsigned) * 3,
