@@ -13,6 +13,7 @@ struct OglMesh : public OglObject {
   unsigned color_offset;
   unsigned normal_offset;
   unsigned tex_coord_offset;
+  unsigned tangent_offset;
 };
 
 #endif // _OGL_MEHS_

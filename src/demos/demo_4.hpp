@@ -45,6 +45,7 @@ namespace demo_4 {
       {"inColor", 1},
       {"inNormal", 2},
       {"inTexCoord", 3},
+      {"inTangent", 4},
     };
 
     shader_manager.bind_program_attributes("p0", attribute_name_location);
@@ -52,7 +53,7 @@ namespace demo_4 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
+    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();
@@ -198,7 +199,6 @@ namespace demo_4 {
         }
       }
     }
-
 
 
 
