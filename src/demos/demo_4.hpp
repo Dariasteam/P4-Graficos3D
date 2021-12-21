@@ -44,8 +44,8 @@ namespace demo_4 {
       {"inPos", 0},
       {"inColor", 1},
       {"inNormal", 2},
-      {"inTexCoord", 3},
-      {"inTangent", 4},
+      {"inTangent", 3},
+      {"inTexCoord", 4},
     };
 
     shader_manager.bind_program_attributes("p0", attribute_name_location);
@@ -53,7 +53,7 @@ namespace demo_4 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
+    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();
@@ -91,7 +91,7 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      self.rotation().y = dummy_time / 10;
+      //self.rotation().y = dummy_time / 10;
     };
 
   };

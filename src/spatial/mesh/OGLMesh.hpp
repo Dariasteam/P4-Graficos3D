@@ -3,6 +3,7 @@
 
 #include "../../ogl/OGLObject.hpp"
 
+// FIXME: We are not using ID, only offsets
 struct OglMesh : public OglObject {
   unsigned n_vertices;
 	unsigned n_triangles;

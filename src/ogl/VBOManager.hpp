@@ -14,8 +14,8 @@ public:
 	unsigned posVBO;
 	unsigned colorVBO;
 	unsigned normalVBO;
-	unsigned texCoordVBO;
 	unsigned tangentVBO;
+	unsigned texCoordVBO;
 	unsigned triangleIndexVBO;
 
 	std::vector<OglMesh> meshes;
@@ -39,8 +39,8 @@ public:
     glGenBuffers(1, &posVBO);
 		glGenBuffers(1, &colorVBO);
 		glGenBuffers(1, &normalVBO);
-		glGenBuffers(1, &texCoordVBO);
 		glGenBuffers(1, &tangentVBO);
+		glGenBuffers(1, &texCoordVBO);
 		glGenBuffers(1, &triangleIndexVBO);
 
 		glGenVertexArrays(1, &vao);
@@ -52,8 +52,8 @@ public:
     glDeleteBuffers(1, &posVBO);
     glDeleteBuffers(1, &colorVBO);
     glDeleteBuffers(1, &normalVBO);
-    glDeleteBuffers(1, &texCoordVBO);
 		glDeleteBuffers(1, &tangentVBO);
+    glDeleteBuffers(1, &texCoordVBO);
     glDeleteBuffers(1, &triangleIndexVBO);
     glDeleteVertexArrays(1, &vao);
   }
@@ -136,15 +136,16 @@ public:
 			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 3 * sizeof(float),
 											n_vertices * sizeof(float) * 3, normals);
 
+			// TANGENTS
+			glBindBuffer(GL_ARRAY_BUFFER, tangentVBO);
+			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 3 * sizeof(float),
+											n_vertices * sizeof(float) * 3, tangents);
+
       // TEX COORDS
 			glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
 			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 2 * sizeof(float),
 											n_vertices * sizeof(float) * 2, texCoords);
 
-			// TANGENTS
-			glBindBuffer(GL_ARRAY_BUFFER, tangentVBO);
-			glBufferSubData(GL_ARRAY_BUFFER, offset_vertices * 2 * sizeof(float),
-											n_vertices * sizeof(float) * 2, tangents);
 
       // TRIANGLE INDEX
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleIndexVBO);
@@ -177,8 +178,8 @@ public:
 		glDeleteBuffers (1, &posVBO);
 		glDeleteBuffers (1, &colorVBO);
 		glDeleteBuffers (1, &normalVBO);
-		glDeleteBuffers (1, &texCoordVBO);
 		glDeleteBuffers (1, &tangentVBO);
+		glDeleteBuffers (1, &texCoordVBO);
 		glDeleteBuffers (1, &triangleIndexVBO);
 
 		glDeleteVertexArrays(1, &vao);
@@ -196,11 +197,11 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.normal_offset);
 
-		glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tex_coord_offset);
-
 		glBindBuffer(GL_ARRAY_BUFFER, tangentVBO);
-		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tangent_offset);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tangent_offset);
+
+		glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
+		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 0, (void*)ogl_mesh.tex_coord_offset);
 	}
 };
 
