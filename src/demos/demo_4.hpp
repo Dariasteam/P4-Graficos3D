@@ -53,7 +53,7 @@ namespace demo_4 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
+    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();
@@ -73,17 +73,17 @@ namespace demo_4 {
     point_light.translation() = {2, -2, 0};
 
     srand(NULL);
-    for (unsigned i = 0; i < 40; i++) {
+    for (unsigned i = 0; i < 14; i++) {
       double r = ((double) rand() / (RAND_MAX));
       FocalLight& focal_light = light_manager.create_focal_light();
-      focal_light.color.vec_3 = {2 + i * .02, 4 - i * .02, r};
+      focal_light.color.vec_3 = {2 + i * .04, 4 - i * .04, r};
       focal_light.translation() = {-0.5 + i * 0.009, -1, 3};
       focal_light.direction.vec_3 = glm::normalize(glm::vec3{0, r / 2, -1});
-      focal_light.aperture.value = .02;
+      focal_light.aperture.value = .08;
     }
 
     AmbientLight& ambient_light = light_manager.get_ambient_light();
-    ambient_light.color.vec_3 = {.1, .1, .1};
+    ambient_light.color.vec_3 = {.2, .2, .2};
 
     DirectionalLight& dir_light = light_manager.get_directional_light();
     dir_light.color.vec_3 = {1, 1, 1};
