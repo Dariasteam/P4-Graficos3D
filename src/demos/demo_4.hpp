@@ -22,6 +22,8 @@ namespace demo_4 {
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
     if (!texture_manager.load_texture("img/normal.png", "normalTex")) exit(-1);
     if (!texture_manager.load_texture("img/specMap.png", "specTex")) exit(-1);
+    if (!texture_manager.load_texture("img/helmet_albedo.png", "helmet_albedo")) exit(-1);
+    if (!texture_manager.load_texture("img/helmet_normal.png", "helmet_normal")) exit(-1);
 
     // COMPILING SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/shader_material.vert", "v0")) exit(-1);
@@ -31,8 +33,9 @@ namespace demo_4 {
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
 
     // LOADING MESHES
-    mesh_loader.import_default_cube();
-    mesh_loader.import_from_file("meshes/suzanne_smooth.glb");
+    //mesh_loader.import_default_cube();
+    //mesh_loader.import_from_file("meshes/suzanne_smooth.glb");
+    mesh_loader.import_from_file("meshes/helmet.fbx");
 
     vbo_manager.generate_VBOs();
     vbo_manager.populate_VBOs(mesh_loader.get_meshes());
@@ -53,19 +56,27 @@ namespace demo_4 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
+    //MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
+    MeshInstance& helmetmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();
+    Material& mat_b = material_manager.create_material();
 
     mat_a.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("colorTex"));
     mat_a.shader_mat_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emiTex"));
     mat_a.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normalTex"));
     mat_a.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
 
+    mat_b.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("helmet_albedo"));
+    mat_b.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("helmet_normal"));
+
     // BIND MATERIAL - SHADER - MESH INSTANCE
     shader_manager.bind_material("p0", mat_a);
-    mat_a.associate_mesh_instance(&robotmesh);
+    shader_manager.bind_material("p0", mat_b);
+
+    //mat_a.associate_mesh_instance(&robotmesh);
+    mat_b.associate_mesh_instance(&helmetmesh);
 
     // INSTANTIATE LIGHTS
     PointLight& point_light = light_manager.create_point_light();
@@ -90,9 +101,11 @@ namespace demo_4 {
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
+    /*
     robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
       //self.rotation().y = dummy_time / 10;
     };
+    */
 
   };
 
