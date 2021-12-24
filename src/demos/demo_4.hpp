@@ -22,8 +22,10 @@ namespace demo_4 {
     if (!texture_manager.load_texture("img/emissive.png", "emiTex")) exit(-1);
     if (!texture_manager.load_texture("img/normal.png", "normalTex")) exit(-1);
     if (!texture_manager.load_texture("img/specMap.png", "specTex")) exit(-1);
+
     if (!texture_manager.load_texture("img/helmet_albedo.png", "helmet_albedo")) exit(-1);
     if (!texture_manager.load_texture("img/helmet_normal.png", "helmet_normal")) exit(-1);
+    if (!texture_manager.load_texture("img/helmet_spec.png",    "helmet_spec")) exit(-1);
 
     // COMPILING SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/shader_material.vert", "v0")) exit(-1);
@@ -70,6 +72,7 @@ namespace demo_4 {
 
     mat_b.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("helmet_albedo"));
     mat_b.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("helmet_normal"));
+    mat_b.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("helmet_spec"));
 
     // BIND MATERIAL - SHADER - MESH INSTANCE
     shader_manager.bind_material("p0", mat_a);
