@@ -9,6 +9,7 @@ uniform sampler2D zTex;
 uniform sampler2D normalTex;
 uniform sampler2D specularTex;
 uniform sampler2D positionTex;
+uniform sampler2D emiTex;
 
 // Lights
 uniform vec3 _ambientLightC;
@@ -69,6 +70,7 @@ void main() {
 
 	c += shade_base();
 	c += shade_directional_light();
+	c += texture(emiTex, texCoord).rgb;
 
   color = (z < .000001) ? vec4(c, 1) : vec4(Ka, 1);
 }

@@ -8,6 +8,7 @@ uniform sampler2D colorTex;
 uniform sampler2D zTex;
 uniform sampler2D normalTex;
 uniform sampler2D specularTex;
+uniform sampler2D emiTex;
 uniform sampler2D positionTex;
 uniform sampler2D depthTex;
 

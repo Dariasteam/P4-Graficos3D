@@ -87,6 +87,7 @@ public:
     texture_manager.generate_empty("normal_fbo");
     texture_manager.generate_empty("specular_fbo");
     texture_manager.generate_empty("depth_fbo");
+    texture_manager.generate_empty("emissive_fbo");
     texture_manager.generate_empty("z_fbo");
     texture_manager.generate_empty("pos_fbo");
     texture_manager.generate_empty("post_process_fbo");
@@ -102,6 +103,7 @@ public:
     mat_lightning_base.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("color_fbo"));
     mat_lightning_base.shader_mat_uniforms["zTex"] = new SP_Texture(texture_manager.get_texture("z_fbo"));
     mat_lightning_base.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specular_fbo"));
+    mat_lightning_base.shader_mat_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("emissive_fbo"));
     mat_lightning_base.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("normal_fbo"));
     mat_lightning_base.shader_mat_uniforms["positionTex"] = new SP_Texture(texture_manager.get_texture("pos_fbo"));
 
@@ -124,7 +126,7 @@ public:
   }
 
   void generate_post_processing_tex (unsigned w, unsigned h) {
-    Texture t = TextureManager::get().get_texture("post_process_fbo");
+    const Texture& t = TextureManager::get().get_texture("post_process_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0,
@@ -140,7 +142,7 @@ public:
   }
 
   void generate_color_tex (unsigned w, unsigned h) {
-    Texture t = TextureManager::get().get_texture("color_fbo");
+    const Texture& t = TextureManager::get().get_texture("color_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
     // Dar formato y reservar uan textura MUTABLE pero no subimos información
@@ -158,7 +160,7 @@ public:
   }
 
   void generate_normal_tex (unsigned w, unsigned h) {
-    Texture t = TextureManager::get().get_texture("normal_fbo");
+    const Texture& t = TextureManager::get().get_texture("normal_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, w, h, 0,
@@ -175,7 +177,7 @@ public:
   }
 
   void generate_specular_tex (unsigned w, unsigned h) {
-    Texture t = TextureManager::get().get_texture("specular_fbo");
+    const Texture& t = TextureManager::get().get_texture("specular_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0,
@@ -191,8 +193,26 @@ public:
 											 	GL_TEXTURE_2D, t.id, 0);
   }
 
+  void generate_emissive_tex (unsigned w, unsigned h) {
+    const Texture& t = TextureManager::get().get_texture("emissive_fbo");
+
+    glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
+    // Dar formato y reservar uan textura MUTABLE pero no subimos información
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, w, h, 0,
+                GL_RGBA, GL_FLOAT, NULL);
+
+    // Gestión de las situaciones de aliasing con los mipmaps
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6,
+											 	GL_TEXTURE_2D, t.id, 0);
+  }
+
   void generate_pos_tex (unsigned w, unsigned h) {
-    Texture t = TextureManager::get().get_texture("pos_fbo");
+    const Texture& t = TextureManager::get().get_texture("pos_fbo");
 
     glBindTexture(GL_TEXTURE_2D, t.id);     // Activar la textura
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, w, h, 0,
@@ -209,7 +229,7 @@ public:
   }
 
   void generate_depth_tex (unsigned w, unsigned h) {
-    Texture t = TextureManager::get().get_texture("depth_fbo");
+    const Texture& t = TextureManager::get().get_texture("depth_fbo");
 
     // Imagen del z buffer usada en el postproceso (Coordenadas normalizadas Z)
     glBindTexture(GL_TEXTURE_2D, t.id);
@@ -224,7 +244,7 @@ public:
   }
 
   void generate_z_tex (unsigned w, unsigned h) {
-    Texture t = TextureManager::get().get_texture("z_fbo");
+    const Texture& t = TextureManager::get().get_texture("z_fbo");
     // Imagen del z buffer usada en el postproceso (Coordenadas de la cámara)
     glBindTexture(GL_TEXTURE_2D, t.id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, w, h, 0,
@@ -252,14 +272,18 @@ public:
     generate_depth_tex(w, h);
     generate_z_tex(w, h);
     generate_pos_tex (w, h);
+    generate_emissive_tex(w, h);
 
-	  const GLenum buffs_deferred[5] = {GL_COLOR_ATTACHMENT1,
+    const GLenum buffs_deferred[6] = {GL_COLOR_ATTACHMENT1,
                                       GL_COLOR_ATTACHMENT0,
                                       GL_COLOR_ATTACHMENT2,
                                       GL_COLOR_ATTACHMENT3,
-                                      GL_COLOR_ATTACHMENT4};
+                                      GL_COLOR_ATTACHMENT6,
+                                      GL_COLOR_ATTACHMENT4,
+                                      };
 
-    glDrawBuffers(5, buffs_deferred);
+
+    glDrawBuffers(6, buffs_deferred);
 
     // Comprobar si el FBO está bien construido
     if (GL_FRAMEBUFFER_COMPLETE != glCheckFramebufferStatus(GL_FRAMEBUFFER))

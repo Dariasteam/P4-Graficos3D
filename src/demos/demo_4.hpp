@@ -26,6 +26,7 @@ namespace demo_4 {
     if (!texture_manager.load_texture("img/helmet_albedo.png", "helmet_albedo")) exit(-1);
     if (!texture_manager.load_texture("img/helmet_normal.png", "helmet_normal")) exit(-1);
     if (!texture_manager.load_texture("img/helmet_spec.png",    "helmet_spec")) exit(-1);
+    if (!texture_manager.load_texture("img/helmet_emissive.png", "helmet_emissive")) exit(-1);
 
     // COMPILING SHADERS
     if (!shader_manager.load_vertex_shader("shaders_P4/shader_material.vert", "v0")) exit(-1);
@@ -35,7 +36,7 @@ namespace demo_4 {
     if (!shader_manager.create_program("p0", "v0", "f0")) exit(-1);
 
     // LOADING MESHES
-    //mesh_loader.import_default_cube();
+    mesh_loader.import_default_cube();
     //mesh_loader.import_from_file("meshes/suzanne_smooth.glb");
     mesh_loader.import_from_file("meshes/helmet.fbx");
 
@@ -58,8 +59,8 @@ namespace demo_4 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    //MeshInstance& robotmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
-    MeshInstance& helmetmesh = world_manager.create_mesh_instance(ogl_meshes[0]);
+    //MeshInstance& cubemesh = world_manager.create_mesh_instance(ogl_meshes[0]);
+    MeshInstance& helmetmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
     Material& mat_a = material_manager.create_material();
@@ -71,6 +72,7 @@ namespace demo_4 {
     mat_a.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("specTex"));
 
     mat_b.shader_mat_uniforms["colorTex"] = new SP_Texture(texture_manager.get_texture("helmet_albedo"));
+    mat_b.shader_mat_uniforms["emiTex"] = new SP_Texture(texture_manager.get_texture("helmet_emissive"));
     mat_b.shader_mat_uniforms["normalTex"] = new SP_Texture(texture_manager.get_texture("helmet_normal"));
     mat_b.shader_mat_uniforms["specularTex"] = new SP_Texture(texture_manager.get_texture("helmet_spec"));
 
@@ -78,7 +80,7 @@ namespace demo_4 {
     shader_manager.bind_material("p0", mat_a);
     shader_manager.bind_material("p0", mat_b);
 
-    //mat_a.associate_mesh_instance(&robotmesh);
+    //mat_a.associate_mesh_instance(&cubemesh);
     mat_b.associate_mesh_instance(&helmetmesh);
 
     // INSTANTIATE LIGHTS
