@@ -106,11 +106,10 @@ namespace demo_4 {
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
-    /*
-    robotmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      //self.rotation().y = dummy_time / 10;
+
+    helmetmesh.update_logic = [](Spatial& self, const float dummy_time) {
+      self.rotation().y = dummy_time / 10;
     };
-    */
 
   };
 

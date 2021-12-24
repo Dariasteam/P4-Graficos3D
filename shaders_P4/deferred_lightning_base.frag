@@ -65,7 +65,7 @@ void main() {
 	pos = vec3(texture(positionTex, texCoord).rg, z);
 
 	Kd = Ka;
-	n = 50.0;
+	n = 150.0;
 	vec3 c = vec3(0);
 
 	c += shade_base();

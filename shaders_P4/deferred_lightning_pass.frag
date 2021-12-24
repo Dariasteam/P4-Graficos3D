@@ -8,7 +8,6 @@ uniform sampler2D colorTex;
 uniform sampler2D zTex;
 uniform sampler2D normalTex;
 uniform sampler2D specularTex;
-uniform sampler2D emiTex;
 uniform sampler2D positionTex;
 uniform sampler2D depthTex;
 
@@ -127,7 +126,7 @@ void main() {
 	//pos.x = gl_FragCoord.x;
 	//pos.y = gl_FragCoord.y;
 
-	n = 150.0;
+	n = 50.0;
 
 	vec3 c = vec3(0);
 
