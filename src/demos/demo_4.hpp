@@ -108,7 +108,7 @@ namespace demo_4 {
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
 
     helmetmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      self.rotation().y = dummy_time / 10;
+      //self.rotation().y = dummy_time / 10;
     };
 
   };
@@ -120,7 +120,6 @@ namespace demo_4 {
     glViewport(0, 0, W, H);
     glutPostRedisplay();
   };
-
 
 
   // ON KEYBOARD

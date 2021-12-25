@@ -3,7 +3,7 @@
 // ABSTRACT
 
 void AbstractCamera::update_projection(double a) {
-	float n = 1.0f;
+	float n = .2f;
 	float f = 15.0f;
 	float x = 1.0f / (glm::tan(30.0f * 3.1419f / 180.0f));
 	proj[0].x = x * 1.0 / a;

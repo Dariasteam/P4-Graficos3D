@@ -156,7 +156,7 @@ bool ShaderManager::bind_program_attributes (const std::string& program_name,
 }
 
 bool ShaderManager::bind_material (const std::string& program_name,
-                                           Material& material) {
+                                   Material& material) {
   const auto& it = programs.find(program_name);
   if (it == programs.end()) {
     std::cout << "Error enlazando material con programa. No existe el programa "

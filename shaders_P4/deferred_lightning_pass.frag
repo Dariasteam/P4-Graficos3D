@@ -126,7 +126,7 @@ void main() {
 	//pos.x = gl_FragCoord.x;
 	//pos.y = gl_FragCoord.y;
 
-	n = 50.0;
+	n = 150.0;
 
 	vec3 c = vec3(0);
 
