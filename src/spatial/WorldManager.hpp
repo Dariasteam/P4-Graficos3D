@@ -36,7 +36,7 @@ public:
 
   void update () {
     for (auto* object : world_objects) {
-      object->update(dummy_time);
+      object->on_update(dummy_time);
     }
     dummy_time += .1;
   }

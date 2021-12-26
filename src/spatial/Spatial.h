@@ -2,6 +2,7 @@
 #define _MESH_H_
 
 #include "../shader/Shaders.hpp"
+#include "../scriptable/Scriptable.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/fwd.hpp>
@@ -13,7 +14,7 @@
 
 #define GLM_FORCE_RADIANS
 
-struct Spatial {
+struct Spatial : public Scriptable{
 protected:
 	glm::vec3 _translation {0, 0, 0};
 	glm::vec3 _rotation_angle {0, 0, 0};
@@ -42,12 +43,9 @@ public:
   }
 
 	virtual glm::mat4 get_model_matrix () = 0;
-	virtual void update (float dummy_time) = 0;
 
-	std::function<void (Spatial& self, const float dummy_time)> update_logic
-    = [](Spatial& self, const float dummy_time) -> bool {
-		return false;
-	};
+	std::function<void (const float dummy_time)> update_logic
+		= [](const float dummy_time) {};
 };
 
 

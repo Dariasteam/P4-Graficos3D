@@ -107,8 +107,8 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
 
-    helmetmesh.update_logic = [](Spatial& self, const float dummy_time) {
-      //self.rotation().y = dummy_time / 10;
+    helmetmesh.on_update = [&](const float dummy_time) {
+      helmetmesh.rotation().y = dummy_time / 10;
     };
 
   };

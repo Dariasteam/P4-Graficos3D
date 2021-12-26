@@ -34,10 +34,6 @@ public:
 		modified = false;
 		return prev_transform.mat_4;
   }
-
-	void update (float dummy_time) {
-    update_logic (*this, dummy_time);
-	}
 };
 
 
