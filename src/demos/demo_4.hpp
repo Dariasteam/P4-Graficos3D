@@ -117,10 +117,11 @@ namespace demo_4 {
       __END_SCRIPT__
     });
 
+
     dir_light.script([&](){
       dir_light.on_input = [&](const InputEvent& ev) {
-        std::cout << "Receive" << std::endl;
-        if (ev.type == InputEvent::INPUT_KEYBOARD && (ev.key == 'v' || ev.key == 'V')) {
+        if (ev.type == InputEvent::INPUT_KEYBOARD &&
+                    (ev.key == 'v' || ev.key == 'V')) {
           auto& value = dir_light.direction.vec_3;
           if (value.x > .5)
             value.x = -1;
@@ -133,6 +134,21 @@ namespace demo_4 {
       __END_SCRIPT__
     });
 
+    point_light.script([&]() {
+      dir_light.on_input = [&](const InputEvent& ev) {
+
+        if (ev.type == InputEvent::INPUT_KEYBOARD &&
+                    (ev.key == 'f' || ev.key == 'F')) {
+          auto& value = point_light.color.vec_3.b;
+
+          if (value > 10)
+            value = 0;
+          else
+            value += .1;
+        }
+      };
+      __END_SCRIPT__
+    });
 
   };
 
@@ -154,15 +170,6 @@ namespace demo_4 {
     if (key == 'G' || key == 'g') {
       std::cout << "Cambiando de escena" << std::endl;
       scene_manager.change_scene("scene_1");
-    }
-
-    if (key == 'F' || key == 'f') {
-      auto& value = light_manager.point_lights[0]->color.vec_3.z;
-
-      if (value > 10)
-        value = 0;
-      else
-        value += .1;
     }
 
     if (key == 'B' || key == 'b') {
