@@ -118,6 +118,8 @@ namespace demo_4 {
       };
     });
 
+    scriptable_manager.init_scripts();
+
   };
 
 

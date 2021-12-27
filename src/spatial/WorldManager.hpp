@@ -5,6 +5,7 @@
 #include "light/Light.hpp"
 #include "mesh/MeshInstance.hpp"
 #include "mesh/OGLMesh.hpp"
+#include "../scriptable/ScriptableManager.hpp"
 
 #include <vector>
 
@@ -31,6 +32,7 @@ public:
   inline MeshInstance& create_mesh_instance(const OglMesh& ogl_mesh) {
     MeshInstance* mesh = new MeshInstance (ogl_mesh);
     world_objects.push_back(mesh);
+    ScriptableManager::get().add_object(mesh);
     return *mesh;
   }
 

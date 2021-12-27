@@ -9,6 +9,7 @@
 #include "../texture/TextureManager.hpp"
 #include "../material/MaterialManager.hpp"
 #include "../ogl/VBOManager.hpp"
+#include "../scriptable/ScriptableManager.hpp"
 
 namespace demo_default_objs {
   WorldManager& world_manager = WorldManager::get();
@@ -19,6 +20,7 @@ namespace demo_default_objs {
   LightManager& light_manager = LightManager::get();
   SceneManager& scene_manager = SceneManager::get();
   MeshLoader& mesh_loader = MeshLoader::get();
+  ScriptableManager& scriptable_manager = ScriptableManager::get();
 }
 
 

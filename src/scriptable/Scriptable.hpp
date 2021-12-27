@@ -20,10 +20,13 @@ struct InputEvent {
 };
 
 struct Scriptable {
+  std::function<void (void)> sc = [](){};
   std::function<void (const float dummy_time)> on_update = [](const float){};
   std::function<void (const InputEvent& event)> on_input = [](const InputEvent& event) {};
 
   void script(const std::function<void (void)>& s) {
+    sc = s;
+    /*
     std::thread t ([=]() {
       s();
 
@@ -36,6 +39,7 @@ struct Scriptable {
 
     });
     t.detach();
+    */
   }
 };
 
