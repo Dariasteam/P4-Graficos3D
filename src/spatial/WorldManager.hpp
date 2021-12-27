@@ -40,6 +40,7 @@ public:
     for (auto* object : world_objects) {
       object->on_update(delta_time.count());
     }
+    prev = now;
   }
 
   void clear () {

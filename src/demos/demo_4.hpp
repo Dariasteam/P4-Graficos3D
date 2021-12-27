@@ -113,7 +113,7 @@ namespace demo_4 {
 
       helmetmesh.on_update = [&](const float delta_time) {
         helmetmesh.rotation().y += 0.01;
-        //std::cout << a << std::endl;
+        std::cout << a << " " << delta_time << std::endl;
         ++a;
       };
     });
