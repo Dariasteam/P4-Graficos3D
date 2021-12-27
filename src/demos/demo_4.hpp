@@ -1,5 +1,7 @@
 #include "../aux/demo.hpp"
+
 #include "scripts/orbital_camera.h"
+#include "scripts/mesh_rotator.h"
 
 #include <cstdlib>
 #include <glm/fwd.hpp>
@@ -110,13 +112,8 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC
 
+    helmetmesh.script(mesh_rotator);
 /*
-    helmetmesh.script([&](){
-      helmetmesh.on_update = [&](const float delta_time) {
-        helmetmesh.rotation().y += 0.01;
-      };
-      __END_SCRIPT__
-    });
 
 
     dir_light.script([&](){
