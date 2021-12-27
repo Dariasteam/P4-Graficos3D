@@ -12,9 +12,6 @@
 class WorldManager {
 private:
   WorldManager () {}
-
-  std::chrono::time_point<std::chrono::steady_clock, std::chrono::duration<long, std::ratio<1, 1000000000>>> prev;
-
   std::vector<Spatial*> world_objects;
 public:
   AbstractCamera* camera;
@@ -34,15 +31,6 @@ public:
     world_objects.push_back(mesh);
     ScriptableManager::get().add_object(mesh);
     return *mesh;
-  }
-
-  void update () {
-    auto now = std::chrono::steady_clock::now();
-    std::chrono::duration<double> delta_time = now - prev;
-    for (auto* object : world_objects) {
-      object->on_update(delta_time.count());
-    }
-    prev = now;
   }
 
   void clear () {

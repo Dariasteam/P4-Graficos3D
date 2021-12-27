@@ -119,18 +119,21 @@ namespace demo_4 {
 
       helmetmesh.on_update = [&](const float delta_time) {
         helmetmesh.rotation().y += 0.01;
-        std::cout << vec.size() << " " << b << " " << a << " " << delta_time << std::endl;
+        //std::cout << vec.size() << " " << b << " " << a << " " << delta_time << std::endl;
         ++a;
         b *= 2;
-        calc (b);
-        vec.push_back(b);
+        //calc (b);
+        //vec.push_back(b);
+      };
+
+      helmetmesh.on_input = [&](const InputEvent& ev) {
+        if (ev.type == InputEvent::INPUT_KEYBOARD && ev.key == 'k') {
+          std::cout << "Receive event" << std::endl;
+        }
       };
 
       __END_SCRIPT__
     });
-
-    //scriptable_manager.init_scripts();
-
   };
 
 
@@ -144,6 +147,8 @@ namespace demo_4 {
 
   // ON KEYBOARD
   const std::function<void (unsigned char key)> on_keyboard = [](unsigned char key) {
+    scriptable_manager.on_keyboard(key);
+
     world_manager.camera->handle_keys(key);
 
     if (key == 'G' || key == 'g') {
@@ -199,7 +204,7 @@ namespace demo_4 {
 
   // ON IDLE
   const std::function<void (void)> on_idle = [] () {
-    world_manager.update();
+    scriptable_manager.on_update();
     glutPostRedisplay();
   };
 

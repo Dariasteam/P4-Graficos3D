@@ -17,7 +17,9 @@ struct InputEvent {
   };
 
   unsigned type;
-  unsigned x, y;
+  unsigned x;
+  unsigned y;
+  unsigned state;
   char key;
 };
 
