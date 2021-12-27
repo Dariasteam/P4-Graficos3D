@@ -20,27 +20,9 @@ struct InputEvent {
 };
 
 struct Scriptable {
-  std::function<void (void)> sc = [](){};
+  std::function<void (void)> script = [](){};
   std::function<void (const float dummy_time)> on_update = [](const float){};
   std::function<void (const InputEvent& event)> on_input = [](const InputEvent& event) {};
-
-  void script(const std::function<void (void)>& s) {
-    sc = s;
-    /*
-    std::thread t ([=]() {
-      s();
-
-      std::condition_variable cv;
-      std::mutex m;
-      std::unique_lock<std::mutex> lock(m);
-      cv.wait(lock, []{return false;});
-
-      std::cout << "ERROR: This should never be reach in execution" << std::endl;
-
-    });
-    t.detach();
-    */
-  }
 };
 
 #endif // _SCRIPTABLE_

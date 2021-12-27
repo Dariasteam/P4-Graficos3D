@@ -24,9 +24,9 @@ public:
 
   void init_scripts () {
     std::thread t ([=]() {
-      for (auto* obj : scriptable_objects) {
-        obj->sc();
-      }
+      for (auto* obj : scriptable_objects)
+        obj->script();
+
       std::condition_variable cv;
       std::mutex m;
       std::unique_lock<std::mutex> lock(m);
