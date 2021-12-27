@@ -1,5 +1,6 @@
 #include "../aux/demo.hpp"
 
+#include "scripts/rotate_dir_light.h"
 #include "scripts/orbital_camera.h"
 #include "scripts/mesh_rotator.h"
 #include "scripts/blue_light.h"
@@ -113,26 +114,9 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC
 
+
+    dir_light.script(rotate_dir_light);
     helmetmesh.script(mesh_rotator);
-/*
-    dir_light.script([&](){
-      dir_light.on_input = [&](const InputEvent& ev) {
-        if (ev.type == InputEvent::INPUT_KEYBOARD &&
-                    (ev.key == 'v' || ev.key == 'V')) {
-          auto& value = dir_light.direction.vec_3;
-          if (value.x > .5)
-            value.x = -1;
-          else
-            value.x += .1;
-
-          value = glm::normalize(value);
-        }
-      };
-      __END_SCRIPT__
-    });
-
-
-*/
     point_light.script(blue_light);
     camera.script(orbital_camera);
 
