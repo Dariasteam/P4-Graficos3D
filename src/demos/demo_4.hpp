@@ -108,19 +108,28 @@ namespace demo_4 {
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     // CREATE BEHAVIOUR LOGIC
-    helmetmesh.script = [&](){
-      int m = 10;
-      int dos = 190;
+    helmetmesh.script([&](){
+      int a = 0;
+      double b = 1;
+      std::vector<double> vec;
+
+      auto calc = [&](double v) {
+        std::cout << "El valor es " << v << std::endl;
+      };
 
       helmetmesh.on_update = [&](const float delta_time) {
         helmetmesh.rotation().y += 0.01;
-        dos = dos + 2;
-        std::cout << dos << " " << m << " " << delta_time << std::endl;
-        ++m;
+        std::cout << vec.size() << " " << b << " " << a << " " << delta_time << std::endl;
+        ++a;
+        b *= 2;
+        calc (b);
+        vec.push_back(b);
       };
-    };
 
-    scriptable_manager.init_scripts();
+      __END_SCRIPT__
+    });
+
+    //scriptable_manager.init_scripts();
 
   };
 
