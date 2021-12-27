@@ -3,6 +3,7 @@
 
 #include "Light.hpp"
 #include "../WorldManager.hpp"
+#include "../../scriptable/ScriptableManager.hpp"
 #include "../../shader/ShaderManager.hpp"
 
 #include <glm/fwd.hpp>
@@ -21,7 +22,10 @@ public:
   unsigned i_focal = 0;
 
 private:
-  LightManager () {}
+  LightManager () {
+    ScriptableManager::get().add_object(&dir_light);
+    ScriptableManager::get().add_object(&ambient_light);
+  }
 public:
   LightManager (const LightManager&) = delete;
   void operator= (const LightManager&) = delete;
@@ -50,6 +54,8 @@ public:
     point_lights.push_back(light);
 
     WorldManager::get().add(light);
+    ScriptableManager::get().add_object(light);
+
     return *light;
   }
 
@@ -67,6 +73,7 @@ public:
     focal_lights.push_back(light);
 
     WorldManager::get().add(light);
+    ScriptableManager::get().add_object(light);
     return *light;
   }
 

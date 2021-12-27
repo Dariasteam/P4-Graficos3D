@@ -108,32 +108,32 @@ namespace demo_4 {
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     // CREATE BEHAVIOUR LOGIC
+
+
     helmetmesh.script([&](){
-      int a = 0;
-      double b = 1;
-      std::vector<double> vec;
-
-      auto calc = [&](double v) {
-        std::cout << "El valor es " << v << std::endl;
-      };
-
       helmetmesh.on_update = [&](const float delta_time) {
         helmetmesh.rotation().y += 0.01;
-        //std::cout << vec.size() << " " << b << " " << a << " " << delta_time << std::endl;
-        ++a;
-        b *= 2;
-        //calc (b);
-        //vec.push_back(b);
       };
-
-      helmetmesh.on_input = [&](const InputEvent& ev) {
-        if (ev.type == InputEvent::INPUT_KEYBOARD && ev.key == 'k') {
-          std::cout << "Receive event" << std::endl;
-        }
-      };
-
       __END_SCRIPT__
     });
+
+    dir_light.script([&](){
+      dir_light.on_input = [&](const InputEvent& ev) {
+        std::cout << "Receive" << std::endl;
+        if (ev.type == InputEvent::INPUT_KEYBOARD && (ev.key == 'v' || ev.key == 'V')) {
+          auto& value = dir_light.direction.vec_3;
+          if (value.x > .5)
+            value.x = -1;
+          else
+            value.x += .1;
+
+          value = glm::normalize(value);
+        }
+      };
+      __END_SCRIPT__
+    });
+
+
   };
 
 
@@ -165,17 +165,6 @@ namespace demo_4 {
         value += .1;
     }
 
-    if (key == 'V' || key == 'v') {
-      auto& value = light_manager.dir_light.direction.vec_3;
-
-      if (value.x > .5)
-        value.x = -1;
-      else
-        value.x += .1;
-
-      value = glm::normalize(value);
-    }
-
     if (key == 'B' || key == 'b') {
       for (auto& v : light_manager.focal_lights) {
         v->direction.vec_3.y += .01;
@@ -192,12 +181,14 @@ namespace demo_4 {
 
   // ON MOUSE BUTTON
   const std::function<void (int, int, int, int)> on_mouse_button = [](int button, int state, int x, int y) {
+    scriptable_manager.on_mouse_button(button, state, x, y);
     world_manager.camera->handle_mouse_buttons(button, state, x, y);
   };
 
 
   // ON MOUSE MOTION
   const std::function<void (int, int)> on_mouse_motion = [](int x, int y) {
+    scriptable_manager.on_mouse_motion(x, y);
     world_manager.camera->handle_mouse_motion(x, y);
   };
 
