@@ -6,6 +6,8 @@
 #include <glm/matrix.hpp>
 #include <chrono>
 
+#include <thread>
+
 using namespace demo_default_objs;
 
 namespace demo_4 {
@@ -106,10 +108,15 @@ namespace demo_4 {
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
+    helmetmesh.script([&](){
+      int a = 0;
 
-    helmetmesh.on_update = [&](const float dummy_time) {
-      helmetmesh.rotation().y = dummy_time / 10;
-    };
+      helmetmesh.on_update = [&](const float dummy_time) {
+        helmetmesh.rotation().y = dummy_time / 10;
+        //std::cout << a << std::endl;
+        ++a;
+      };
+    });
 
   };
 

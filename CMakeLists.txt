@@ -48,5 +48,6 @@ target_link_libraries(p4 ${OPENGL_LIBRARIES}
                          ${FREEIMAGE_INCLUDE_DIRS}
                          ${ASSIMP_LIBRARIES}
                          "-lfreeimage"
+                         "-pthread"
                          "-lglut") #Un poco chapuza pero no me quería complicar
 
