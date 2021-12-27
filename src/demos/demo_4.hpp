@@ -107,12 +107,12 @@ namespace demo_4 {
     dir_light.color.vec_3 = {1, 1, 1};
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
-    // CREATE BEHAVIOUR LOGIC FOR MESH INSTANCES
+    // CREATE BEHAVIOUR LOGIC
     helmetmesh.script([&](){
       int a = 0;
 
-      helmetmesh.on_update = [&](const float dummy_time) {
-        helmetmesh.rotation().y = dummy_time / 10;
+      helmetmesh.on_update = [&](const float delta_time) {
+        helmetmesh.rotation().y += 0.01;
         //std::cout << a << std::endl;
         ++a;
       };
