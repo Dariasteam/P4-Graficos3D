@@ -9,4 +9,3 @@ __START_SCRIPT__ (mesh_rotator, MeshInstance)
   };
 
 __END_SCRIPT__
-};

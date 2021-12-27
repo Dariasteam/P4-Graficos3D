@@ -2,6 +2,7 @@
 
 #include "scripts/orbital_camera.h"
 #include "scripts/mesh_rotator.h"
+#include "scripts/blue_light.h"
 
 #include <cstdlib>
 #include <glm/fwd.hpp>
@@ -114,8 +115,6 @@ namespace demo_4 {
 
     helmetmesh.script(mesh_rotator);
 /*
-
-
     dir_light.script([&](){
       dir_light.on_input = [&](const InputEvent& ev) {
         if (ev.type == InputEvent::INPUT_KEYBOARD &&
@@ -133,22 +132,8 @@ namespace demo_4 {
     });
 
 
-    point_light.script([&]() {
-      dir_light.on_input = [&](const InputEvent& ev) {
-
-        if (ev.type == InputEvent::INPUT_KEYBOARD &&
-                    (ev.key == 'f' || ev.key == 'F')) {
-          auto& value = point_light.color.vec_3.b;
-
-          if (value > 10)
-            value = 0;
-          else
-            value += .1;
-        }
-      };
-      __END_SCRIPT__
-    });
 */
+    point_light.script(blue_light);
     camera.script(orbital_camera);
 
   };

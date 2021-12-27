@@ -76,4 +76,3 @@ __START_SCRIPT__ (orbital_camera, Camera)
   };
 
 __END_SCRIPT__
-};

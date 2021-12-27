@@ -15,13 +15,8 @@
 
 #define __START_SCRIPT__(_NAME_, _EXTENDS_) auto _NAME_ = [](Scriptable& self) -> void { _EXTENDS_& $ = *static_cast<_EXTENDS_*> (&self);
 
-#define __END_SCRIPT__ { \
-    std::condition_variable cv; \
-    std::mutex m; \
-    std::unique_lock<std::mutex> lock(m); \
-    cv.wait(lock, []{return false;}); \
-    std::cout << "ERROR: This should never be reach in execution" << std::endl; \
-}
+#define __END_SCRIPT__  std::condition_variable cv; std::mutex m; std::unique_lock<std::mutex> lock(m); cv.wait(lock, []{return false;}); std::cout << "ERROR: This should never be reach in execution" << std::endl; };
+
 
 struct InputEvent {
   enum {
