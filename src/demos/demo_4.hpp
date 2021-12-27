@@ -110,15 +110,26 @@ namespace demo_4 {
     // CREATE BEHAVIOUR LOGIC
     helmetmesh.script([&](){
       int a = 0;
+      double b = 1;
+      std::vector<double> vec;
+
+      auto calc = [&](double v) {
+        std::cout << "El valor es " << v << std::endl;
+      };
 
       helmetmesh.on_update = [&](const float delta_time) {
         helmetmesh.rotation().y += 0.01;
-        std::cout << a << " " << delta_time << std::endl;
+        std::cout << vec.size() << " " << b << " " << a << " " << delta_time << std::endl;
         ++a;
+        b *= 2;
+        calc (b);
+        vec.push_back(b);
       };
+
+      __END_SCRIPT__
     });
 
-    scriptable_manager.init_scripts();
+    //scriptable_manager.init_scripts();
 
   };
 
