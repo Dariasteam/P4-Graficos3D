@@ -14,7 +14,7 @@ private:
   WorldManager () {}
   std::vector<Spatial*> world_objects;
 public:
-  AbstractCamera* camera;
+  Camera* camera;
 
   void add (Spatial* sp) { world_objects.push_back(sp); }
 
@@ -31,6 +31,14 @@ public:
     world_objects.push_back(mesh);
     ScriptableManager::get().add_object(mesh);
     return *mesh;
+  }
+
+  inline Camera& create_camera() {
+    Camera* camera = new Camera ();
+    this->camera = camera;
+    world_objects.push_back(camera);
+    ScriptableManager::get().add_object(camera);
+    return *camera;
   }
 
   void clear () {

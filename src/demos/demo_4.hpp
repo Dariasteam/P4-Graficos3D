@@ -1,4 +1,5 @@
 #include "../aux/demo.hpp"
+#include "scripts/orbital_camera.h"
 
 #include <cstdlib>
 #include <glm/fwd.hpp>
@@ -14,7 +15,7 @@ namespace demo_4 {
 
   // INIT
   const std::function<void (void)> init = [] () {
-    world_manager.camera = new OrbitalCamera;
+    auto& camera = world_manager.create_camera();
 
     FboManager::get().init();
     FboManager::get().resizeFBO(500, 500);
@@ -109,7 +110,7 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC
 
-
+/*
     helmetmesh.script([&](){
       helmetmesh.on_update = [&](const float delta_time) {
         helmetmesh.rotation().y += 0.01;
@@ -134,6 +135,7 @@ namespace demo_4 {
       __END_SCRIPT__
     });
 
+
     point_light.script([&]() {
       dir_light.on_input = [&](const InputEvent& ev) {
 
@@ -149,6 +151,8 @@ namespace demo_4 {
       };
       __END_SCRIPT__
     });
+*/
+    camera.script(orbital_camera);
 
   };
 
@@ -164,8 +168,6 @@ namespace demo_4 {
   // ON KEYBOARD
   const std::function<void (unsigned char key)> on_keyboard = [](unsigned char key) {
     scriptable_manager.on_keyboard(key);
-
-    world_manager.camera->handle_keys(key);
 
     if (key == 'G' || key == 'g') {
       std::cout << "Cambiando de escena" << std::endl;
@@ -185,18 +187,15 @@ namespace demo_4 {
     }
   };
 
-
   // ON MOUSE BUTTON
   const std::function<void (int, int, int, int)> on_mouse_button = [](int button, int state, int x, int y) {
     scriptable_manager.on_mouse_button(button, state, x, y);
-    world_manager.camera->handle_mouse_buttons(button, state, x, y);
   };
 
 
   // ON MOUSE MOTION
   const std::function<void (int, int)> on_mouse_motion = [](int x, int y) {
     scriptable_manager.on_mouse_motion(x, y);
-    world_manager.camera->handle_mouse_motion(x, y);
   };
 
 

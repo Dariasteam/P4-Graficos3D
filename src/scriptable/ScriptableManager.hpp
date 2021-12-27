@@ -36,6 +36,8 @@ public:
       state
     };
 
+    ev.button = button;
+
     send_event(ev);
   }
 

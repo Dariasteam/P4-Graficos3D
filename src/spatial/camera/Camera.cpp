@@ -1,8 +1,9 @@
 #include "Camera.h"
+#include <glm/fwd.hpp>
 
 // ABSTRACT
 
-void AbstractCamera::update_projection(double a) {
+void Camera::update_projection(double a) {
 	float n = .2f;
 	float f = 15.0f;
 	float x = 1.0f / (glm::tan(30.0f * 3.1419f / 180.0f));
@@ -13,7 +14,7 @@ void AbstractCamera::update_projection(double a) {
 	proj[3].z = 2.0f * n * f / (n - f);
 }
 
-void AbstractCamera::update_aspect_ratio(int width, int height) {
+void Camera::update_aspect_ratio(int width, int height) {
   set_w (width);
   set_h (height);
 
@@ -114,72 +115,4 @@ glm::mat4 FPSCamera::get_view_matrix() {
 
   // Rotation order guarantees correct horizon
   return rot_vertical * rot_horizontal * translation * view;
-}
-
-// ORBITAL
-
-OrbitalCamera::OrbitalCamera() {
-  // t.z used as radius of the rotation
-  t.z = -10;
-  t.x = 0.1;
-  t.y = 0.1;
-
-  // Put camera in the center of the world (origin of the rotation)
-  view[3].z = 0;
-}
-
-glm::mat4 OrbitalCamera::get_view_matrix() {
-  glm::mat4 rot_horizontal(1.0f);
-  glm::mat4 rot_vertical(1.0f);
-  glm::mat4 translation(1.0f);
-
-  rot_horizontal =
-      glm::rotate(rot_horizontal, r.x, glm::vec3(0.0f, 1.0f, 0.0f));
-  rot_vertical =
-      glm::rotate(rot_vertical, r.y, glm::vec3(right.x, right.y, right.z));
-
-  // Move position in base of the rotation
-  auto t2 = t * rot_horizontal * rot_vertical;
-
-  // Adjust right vector to obtain correct vertical rotation
-  right = view[0] * rot_horizontal;
-
-  translation = glm::translate(translation, glm::vec3(t2.x, t2.y, t2.z));
-
-  return rot_horizontal * rot_vertical * translation * view;
-}
-
-void OrbitalCamera::handle_keys(unsigned char key) {
-
-  switch (key) {
-    // TRANSLATIONS
-    case 'w':
-      t.z += .1;
-      break;
-
-    case 's':
-      t.z -= .1;
-      break;
-  }
-}
-
-void OrbitalCamera::handle_mouse_buttons(int button, int state, int x,
-                                                int y) {
-  mouse_button = button;
-  if (state == 0) { // PRESS
-    last_mouse_pos.x = x;
-    last_mouse_pos.y = y;
-  } else { // RELEASE
-    last_rot = r;
-  }
-};
-
-void OrbitalCamera::handle_mouse_motion(int x, int y) {
-  if (mouse_button == 0) { // PAN
-    r.x = last_rot.x + float(x - last_mouse_pos.x) / w;
-    r.y = last_rot.y + float(y - last_mouse_pos.y) / h;
-  } else if (mouse_button == 1) { // ZOOM
-    t.z += float(y - last_mouse_pos.y) / (h / 2);
-    last_mouse_pos.y = y;
-  }
 }

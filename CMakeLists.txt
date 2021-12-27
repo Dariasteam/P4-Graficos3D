@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(p4)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
@@ -23,10 +23,6 @@ foreach(file meshes img shaders_P4)
     file(COPY ${CMAKE_SOURCE_DIR}/${file} DESTINATION ${CMAKE_BINARY_DIR} )
 endif()
 endforeach()
-
-
-add_definitions ("-Wall -L../glm/glm/ -lGLEW -lGL -lglut -lGLU -lfreeimage")
-add_definitions ("-std=c++1z")
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)

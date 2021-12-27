@@ -43,9 +43,6 @@ public:
   }
 
 	virtual glm::mat4 get_model_matrix () = 0;
-
-	std::function<void (const float dummy_time)> update_logic
-		= [](const float dummy_time) {};
 };
 
 
