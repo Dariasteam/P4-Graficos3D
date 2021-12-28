@@ -3,7 +3,7 @@
 
 __START_SCRIPT__ (mesh_rotator, MeshInstance)
 
-  double public_ (value) = 0.01;
+  double export_ (value) = 0.01;
 
   $.on_update = [&](const float delta_time) {
     $.rotation().y += value;

@@ -115,12 +115,10 @@ namespace demo_4 {
 
     // CREATE BEHAVIOUR LOGIC
     dir_light.script(rotate_dir_light);
-
     helmetmesh.script(mesh_rotator);
     cubemesh.script(mesh_rotator);
-
     point_light.script(blue_light);
-    camera.script(fps_camera);
+    camera.script(orbital_camera);
 
     double* value;
     if (helmetmesh.get_parameter("value", &value)) {
