@@ -120,9 +120,15 @@ namespace demo_4 {
     point_light.script(blue_light);
     camera.script(orbital_camera);
 
-    double value = 20;
-    helmetmesh.get_parameter("value", value);
-    std::cout << value << std::endl;
+    double* value;
+
+    for (unsigned i = 0; i < 10000; i++) {
+      std::cout << "e" << std::endl;
+    };
+
+    if (helmetmesh.get_parameter("value", &value)) {
+      (*value) = 0.01;
+    }
   };
 
 

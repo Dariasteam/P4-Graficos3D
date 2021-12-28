@@ -17,6 +17,7 @@
 
 #define __START_SCRIPT__(_NAME_, _EXTENDS_) auto _NAME_ = [](Scriptable& self) -> void { _EXTENDS_& $ = *static_cast<_EXTENDS_*> (&self);
 #define __END_SCRIPT__  std::condition_variable cv; std::mutex m; std::unique_lock<std::mutex> lock(m); cv.wait(lock, []{return false;}); std::cout << "ERROR: This should never be reach in execution" << std::endl; };
+#define __PUBLIC__(_TYPE_,_NAME_,_VALUE_) _TYPE_ _NAME_ = _VALUE_; $.public_parameters[#_NAME_] = (void*)&_NAME_;
 
 struct InputEvent {
   enum {
@@ -46,12 +47,12 @@ struct Scriptable {
   std::function<void (const std::string& name)> get = [](const std::string& name) {};
 
   template<class T>
-  bool get_parameter(const std::string& s, T& t) {
+  bool get_parameter(const std::string& s, T** t) {
     auto it = public_parameters.find(s);
     if (it == public_parameters.end()) {
       return false;
     } else {
-      t = *(T*)it->second;
+      *t = (T*)it->second;
       return true;
     }
   };
