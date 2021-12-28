@@ -17,7 +17,7 @@
 
 #define __START_SCRIPT__(_NAME_, _EXTENDS_) auto _NAME_ = [](Scriptable& self) -> void { _EXTENDS_& $ = *static_cast<_EXTENDS_*> (&self);
 #define __END_SCRIPT__  std::condition_variable cv; std::mutex m; std::unique_lock<std::mutex> lock(m); cv.wait(lock, []{return false;}); std::cout << "ERROR: This should never be reach in execution" << std::endl; };
-#define __PUBLIC__(_TYPE_,_NAME_,_VALUE_) _TYPE_ _NAME_ = _VALUE_; $.public_parameters[#_NAME_] = (void*)&_NAME_;
+#define public_(_NAME_) _NAME_; $.public_parameters[#_NAME_] = (void*)&_NAME_ ; _NAME_
 
 struct InputEvent {
   enum {

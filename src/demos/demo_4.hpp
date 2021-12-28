@@ -127,8 +127,12 @@ namespace demo_4 {
     };
 
     if (helmetmesh.get_parameter("value", &value)) {
-      (*value) = 0.01;
+      (*value) = 0.1;
     }
+
+    std::function<void (void)>* c;
+    helmetmesh.get_parameter("call", &c);
+    (*c)();
   };
 
 
