@@ -39,10 +39,9 @@ struct Scriptable {
   std::function<void (const InputEvent& event)> on_input = [](const InputEvent& event) {};
 
   std::map<std::string, void*> public_parameters;
-  std::function<void (const std::string& name)> get = [](const std::string& name) {};
 
   template<class T>
-  bool get_parameter(const std::string& s, T** t) {
+  bool get(const std::string& s, T** t) {
     auto it = public_parameters.find(s);
     if (it == public_parameters.end()) {
       return false;

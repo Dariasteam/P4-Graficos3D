@@ -19,8 +19,10 @@
 struct Scene {
 public:
   void clean () {}
-  static Scene* generate_default ();
-  static Scene* generate_scene_2 ();
+
+  Scene (const std::function<void (Scene& scene)>& data) {
+    data (*this);
+  }
 
   std::function<void (void)> init = [](void) {
     std::cerr << "Warning: Llamada a 'init' sin implementar" <<std::endl;

@@ -7,19 +7,17 @@
 #include "scripts/blue_light.h"
 
 #include <cstdlib>
+#include <functional>
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
 #include <glm/matrix.hpp>
 #include <chrono>
 
-#include <thread>
-
 using namespace demo_default_objs;
 
-namespace demo_4 {
-
+const auto scene_data_4 = [](Scene& $) {
   // INIT
-  const std::function<void (void)> init = [] () {
+  $.init = [] () {
     auto& camera = world_manager.create_camera();
 
     FboManager::get().init();
@@ -121,14 +119,14 @@ namespace demo_4 {
     camera.script(orbital_camera);
 
     double* value;
-    if (helmetmesh.get_parameter("value", &value)) {
+    if (helmetmesh.get("value", &value)) {
       (*value) = 0.1;
     }
   };
 
 
   // ON_RESIZE
-  const std::function<void (int, int)> on_resize = [](int W, int H) {
+  $.on_resize = [](int W, int H) {
     world_manager.camera->update_aspect_ratio(W, H);
     glViewport(0, 0, W, H);
     glutPostRedisplay();
@@ -136,7 +134,7 @@ namespace demo_4 {
 
 
   // ON KEYBOARD
-  const std::function<void (unsigned char key)> on_keyboard = [](unsigned char key) {
+  $.on_keyboard = [](unsigned char key) {
     scriptable_manager.on_keyboard(key);
 
     if (key == 'G' || key == 'g') {
@@ -159,25 +157,25 @@ namespace demo_4 {
 
 
   // ON MOUSE BUTTON
-  const std::function<void (int, int, int, int)> on_mouse_button = [](int button, int state, int x, int y) {
+  $.on_mouse_button = [](int button, int state, int x, int y) {
     scriptable_manager.on_mouse_button(button, state, x, y);
   };
 
 
   // ON MOUSE MOTION
-  const std::function<void (int, int)> on_mouse_motion = [](int x, int y) {
+  $.on_mouse_motion = [](int x, int y) {
     scriptable_manager.on_mouse_motion(x, y);
   };
 
 
   // ON IDLE
-  const std::function<void (void)> on_idle = [] () {
+  $.on_idle = [] () {
     scriptable_manager.on_update();
     glutPostRedisplay();
   };
 
   // ON RENDER
-  const std::function<void (void)> render = []() {
+  $.render = []() {
 
     // RENDER TO FBO
     glBindFramebuffer(GL_FRAMEBUFFER, FboManager::get().deferred_fbo);
@@ -265,4 +263,4 @@ namespace demo_4 {
 
     glutSwapBuffers();
   };
-}
+};

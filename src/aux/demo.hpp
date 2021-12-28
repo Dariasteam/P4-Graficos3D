@@ -1,6 +1,7 @@
 #ifndef _DEMO_H_
 #define _DEMO_H_
 
+#include "../scene/Scene.hpp"
 #include "../spatial/light/LightManager.hpp"
 #include "../scene/SceneManager.hpp"
 #include "../spatial/mesh/MeshLoader.h"
