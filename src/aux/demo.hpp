@@ -12,6 +12,13 @@
 #include "../ogl/VBOManager.hpp"
 #include "../scriptable/ScriptableManager.hpp"
 
+#include <cstdlib>
+#include <functional>
+#include <glm/fwd.hpp>
+#include <glm/geometric.hpp>
+#include <glm/matrix.hpp>
+#include <chrono>
+
 namespace demo_default_objs {
   WorldManager& world_manager = WorldManager::get();
   ShaderManager& shader_manager = ShaderManager::get();

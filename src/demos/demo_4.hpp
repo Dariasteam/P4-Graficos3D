@@ -6,16 +6,9 @@
 #include "scripts/mesh_rotator.h"
 #include "scripts/blue_light.h"
 
-#include <cstdlib>
-#include <functional>
-#include <glm/fwd.hpp>
-#include <glm/geometric.hpp>
-#include <glm/matrix.hpp>
-#include <chrono>
-
-using namespace demo_default_objs;
-
 const auto scene_data_4 = [](Scene& $) {
+  using namespace demo_default_objs;
+
   // INIT
   $.init = [] () {
     auto& camera = world_manager.create_camera();

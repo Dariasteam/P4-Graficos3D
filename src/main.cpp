@@ -1,5 +1,6 @@
 #include "ogl/OpenGLManager.h"
 
+#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -13,9 +14,14 @@ int main(int argc, char** argv) {
 	// No es necesario en Linux ;D
 	std::locale::global(std::locale("es_ES.UTF-8")); // acentos ;)
 
-	Scene scene_4 (scene_data_4);
+	std::map<std::string, std::function<void (Scene& s)>> scenes {
+		{"scene_4", scene_data_4}
+	};
 
-	SceneManager::get().add_scene("scene_4", &scene_4);
+	for (const auto& entry : scenes) {
+		SceneManager::get().add_scene(entry.first, new Scene(entry.second));
+	}
+
 	SceneManager::get().set_init_scene("scene_4");
 
 	OGLManager opengl_manager;
