@@ -2,6 +2,7 @@
 
 #include "scripts/rotate_dir_light.h"
 #include "scripts/orbital_camera.h"
+#include "scripts/fps_camera.h"
 #include "scripts/mesh_rotator.h"
 #include "scripts/blue_light.h"
 
@@ -66,7 +67,7 @@ namespace demo_4 {
     // GENERATE INSTANCES OF THE MESHES ALREADY LOADED IN THE VBO
     const auto& ogl_meshes = vbo_manager.get_meshes();
 
-    //MeshInstance& cubemesh = world_manager.create_mesh_instance(ogl_meshes[0]);
+    MeshInstance& cubemesh = world_manager.create_mesh_instance(ogl_meshes[0]);
     MeshInstance& helmetmesh = world_manager.create_mesh_instance(ogl_meshes[1]);
 
     // GENERATE MATERIAL (INPUTS FOR SHADERS)
@@ -87,7 +88,7 @@ namespace demo_4 {
     shader_manager.bind_material("p0", mat_a);
     shader_manager.bind_material("p0", mat_b);
 
-    //mat_a.associate_mesh_instance(&cubemesh);
+    mat_a.associate_mesh_instance(&cubemesh);
     mat_b.associate_mesh_instance(&helmetmesh);
 
     // INSTANTIATE LIGHTS
@@ -113,26 +114,18 @@ namespace demo_4 {
     dir_light.direction.vec_3 = glm::normalize(glm::vec3{1, -1, 0});
 
     // CREATE BEHAVIOUR LOGIC
-
-
     dir_light.script(rotate_dir_light);
+
     helmetmesh.script(mesh_rotator);
+    cubemesh.script(mesh_rotator);
+
     point_light.script(blue_light);
-    camera.script(orbital_camera);
+    camera.script(fps_camera);
 
     double* value;
-
-    for (unsigned i = 0; i < 10000; i++) {
-      std::cout << "e" << std::endl;
-    };
-
     if (helmetmesh.get_parameter("value", &value)) {
       (*value) = 0.1;
     }
-
-    std::function<void (void)>* c;
-    helmetmesh.get_parameter("call", &c);
-    (*c)();
   };
 
 
@@ -165,6 +158,7 @@ namespace demo_4 {
       }
     }
   };
+
 
   // ON MOUSE BUTTON
   const std::function<void (int, int, int, int)> on_mouse_button = [](int button, int state, int x, int y) {

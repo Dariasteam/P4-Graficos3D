@@ -38,11 +38,6 @@ public:
 	glm::mat4 get_view_matrix() { return view; }
 	glm::mat4 get_projection_matrix() { return proj; };
 
-	/*
-	virtual void handle_keys (unsigned char key) = 0;
-	virtual void handle_mouse_buttons (int button, int state, int x, int y) = 0;
-	virtual void handle_mouse_motion (int x, int y) = 0;
-	*/
 
 	void update_aspect_ratio(int width, int height);
 	void update_projection (double a);
@@ -57,18 +52,6 @@ public:
 		update_projection(1);
 	}
 
-};
-
-class FPSCamera : public Camera {
-private:
-  glm::mat4 get_view_matrix();
-
-public:
-  FPSCamera();
-
-  void handle_keys(unsigned char key);
-  void handle_mouse_buttons(int button, int state, int x, int y);
-  void handle_mouse_motion(int x, int y);
 };
 
 #endif // _CAMERA_H_
