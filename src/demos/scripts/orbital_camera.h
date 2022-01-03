@@ -1,3 +1,6 @@
+#ifndef _ORBITAL_CAMERA_
+#define _ORBITAL_CAMERA_
+
 #include "../../spatial/camera/Camera.h"
 #include "../../scriptable/Scriptable.hpp"
 
@@ -76,3 +79,5 @@ __START_SCRIPT__ (orbital_camera, Camera)
   };
 
 __END_SCRIPT__
+
+#endif

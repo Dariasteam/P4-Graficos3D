@@ -1,3 +1,6 @@
+#ifndef _BLUE_LIGHT_
+#define _BLUE_LIGHT_
+
 #include "../../spatial/light/Light.hpp"
 #include "../../scriptable/Scriptable.hpp"
 
@@ -16,3 +19,5 @@ __START_SCRIPT__ (blue_light, PointLight)
   };
 
 __END_SCRIPT__
+
+#endif

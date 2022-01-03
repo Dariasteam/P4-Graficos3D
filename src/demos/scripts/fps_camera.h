@@ -1,3 +1,6 @@
+#ifndef _FPS_CAMERA_
+#define _FPS_CAMERA_
+
 #include "../../spatial/camera/Camera.h"
 #include "../../scriptable/Scriptable.hpp"
 
@@ -100,3 +103,5 @@ __START_SCRIPT__ (fps_camera, Camera)
   };
 
 __END_SCRIPT__
+
+#endif

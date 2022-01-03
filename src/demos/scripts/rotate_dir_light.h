@@ -1,3 +1,6 @@
+#ifndef _ROTATE_DIR_LIGHT_
+#define _ROTATE_DIR_LIGHT_
+
 #include "../../spatial/light/Light.hpp"
 #include "../../scriptable/Scriptable.hpp"
 
@@ -17,3 +20,5 @@ __START_SCRIPT__ (rotate_dir_light, DirectionalLight)
   };
 
 __END_SCRIPT__
+
+#endif

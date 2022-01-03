@@ -7,7 +7,7 @@
 #include "scene/Scene.hpp"
 
 
-//#include "demos/demo_3.hpp"
+#include "demos/demo_1.hpp"
 #include "demos/demo_4.hpp"
 
 int main(int argc, char** argv) {
@@ -15,7 +15,8 @@ int main(int argc, char** argv) {
 	std::locale::global(std::locale("es_ES.UTF-8")); // acentos ;)
 
 	std::map<std::string, std::function<void (Scene& s)>> scenes {
-		{"scene_4", scene_data_4}
+		{"scene_4", scene_data_4},
+		{"scene_1", scene_data_1},
 	};
 
 	for (const auto& entry : scenes) {

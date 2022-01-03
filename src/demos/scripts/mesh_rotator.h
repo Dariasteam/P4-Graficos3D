@@ -1,3 +1,6 @@
+#ifndef _MESH_ROTATOR_
+#define _MESH_ROTATOR_
+
 #include "../../spatial/mesh/MeshInstance.hpp"
 #include "../../scriptable/Scriptable.hpp"
 
@@ -10,3 +13,5 @@ __START_SCRIPT__ (mesh_rotator, MeshInstance)
   };
 
 __END_SCRIPT__
+
+#endif
